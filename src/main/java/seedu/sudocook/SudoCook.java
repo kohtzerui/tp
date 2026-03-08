@@ -15,16 +15,12 @@ public class SudoCook {
         Parser parser = new Parser(ui);
         recipes = new RecipeBook();
         ui.printWelcome();
+        Command cmd;
         String input = ui.readInput();
         while (!input.equals("bye")) {
-            if(input.startsWith("delete-r")){
-                int index = Integer.parseInt(input.substring(DELETE_R_PREFIX).trim());
-                recipes.removeRecipe(index);
-            } else if (input.startsWith("list-r")){
-                recipes.listRecipe();
-            } else{
-                ui.printError("I don't recognise that command!");
-            }
+            cmd = parser.parse(input);
+            cmd.execute(recipes);
+
             input = ui.readInput();
             ui.printLine();
         }
