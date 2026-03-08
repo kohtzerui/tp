@@ -39,7 +39,7 @@ public class Recipe {
 
         sb.append(INDENT + "Recipe Name: ").append(name).append("\n");
 
-        sb.append("\n" + INDENT + "Ingredients: \n");
+        sb.append("\n" + INDENT + "Ingredients:\n");
         if (ingredients.isEmpty()) {
             sb.append(INDENT + "(No ingredients listed)\n");
         } else {
@@ -48,7 +48,7 @@ public class Recipe {
             }
         }
 
-        sb.append("\n" + INDENT + "Steps: \n");
+        sb.append("\n" + INDENT + "Steps:\n");
         if (steps.isEmpty()) {
             sb.append(INDENT + "(No steps listed)\n");
         } else {
