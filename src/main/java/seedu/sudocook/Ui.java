@@ -8,12 +8,12 @@ public class Ui {
     private static final String INDENT = "    ";
     private final Scanner scanner = new Scanner(System.in);
 
-    public void printLine() {
+    public static void printLine() {
         System.out.println(INDENT + DIVIDER);
     }
 
     //Formats and prints a response message wrapped between two divider lines.
-    public void formatResponse(String message) {
+    public static void formatResponse(String message) {
         printLine();
         for (String line : message.split("\n")) {
             System.out.println(INDENT + " " + line);
@@ -33,7 +33,7 @@ public class Ui {
         formatResponse("Oops! " + message);
     }
 
-    public void printMessage(String message) {
+    public static void printMessage(String message) {
         formatResponse(message);
     }
 

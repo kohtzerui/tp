@@ -1,7 +1,20 @@
     ____________________________________________________________
+     Added recipe:
+         Recipe Name: Mixue
+     
+         Ingredients:
+         - MIXUE
+         - Courage
+     
+         Steps:
+         - Pour MIXUE into pot
+         - Heat the pot
+         - Drink with your extraordinary courage
+    ____________________________________________________________
+    ____________________________________________________________
      Welcome to SudoCook!
     ____________________________________________________________
-    >     Recipe Name: Heated MIXUE
+    >     Recipe Name: Mixue
 
     Ingredients:
     - MIXUE
@@ -13,6 +26,57 @@
     - Drink with your extraordinary courage
 
     >     ____________________________________________________________
+    ____________________________________________________________
+     Added recipe:
+         Recipe Name: Fried Rice
+     
+         Ingredients:
+         - rice 2 cups
+         - egg 2 pcs
+         - soy_sauce 1 tbsp
+     
+         Steps:
+         - Cook the rice.
+         - Scramble the eggs.
+         - Mix everything together.
+    ____________________________________________________________
+    >     ____________________________________________________________
+    Recipe Name: Mixue
+
+    Ingredients:
+    - MIXUE
+    - Courage
+
+    Steps:
+    - Pour MIXUE into pot
+    - Heat the pot
+    - Drink with your extraordinary courage
+
+    Recipe Name: Fried Rice
+
+    Ingredients:
+    - rice 2 cups
+    - egg 2 pcs
+    - soy_sauce 1 tbsp
+
+    Steps:
+    - Cook the rice.
+    - Scramble the eggs.
+    - Mix everything together.
+
+    >     ____________________________________________________________
+    >     ____________________________________________________________
+    Recipe Name: Mixue
+
+    Ingredients:
+    - MIXUE
+    - Courage
+
+    Steps:
+    - Pour MIXUE into pot
+    - Heat the pot
+    - Drink with your extraordinary courage
+
     >     ____________________________________________________________
     ____________________________________________________________
      Goodbye! Happy cooking!

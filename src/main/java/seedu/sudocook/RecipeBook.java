@@ -16,7 +16,7 @@ public class RecipeBook {
         testSteps.add("Heat the pot");
         testSteps.add("Drink with your extraordinary courage");
         Recipe heatingMIXUE = new Recipe("Heated MIXUE",testIngs,testSteps);
-        recipes.add(heatingMIXUE);
+        addRecipe("Mixue", testIngs, testSteps);
     }
 
     public void removeRecipe(int index) {
@@ -27,5 +27,11 @@ public class RecipeBook {
         for (Recipe recipe : recipes) {
             System.out.println(recipe);
         }
+    }
+
+    public void addRecipe(String name, ArrayList<String> ingredients, ArrayList<String> steps){
+        Recipe newRecipe = new Recipe(name, ingredients, steps);
+        recipes.add(newRecipe);
+        Ui.printMessage("Added recipe:\n" + newRecipe.toString());
     }
 }

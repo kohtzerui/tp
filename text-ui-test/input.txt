@@ -1,3 +1,6 @@
 list-r
-delete-r 1
+add-r {Fried Rice} i/rice 2 cups egg 2 pcs soy_sauce 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.}
+list-r
+delete-r 2
+list-r
 bye
