@@ -34,4 +34,13 @@ public class RecipeBook {
         recipes.add(newRecipe);
         Ui.printMessage("Added recipe:\n" + newRecipe.toString());
     }
+
+    public void addRecipe(Recipe recipe){
+        recipes.add(recipe);
+        Ui.printMessage("Added recipe:\n" + recipe.toString());
+    }
+
+    public int size(){
+        return recipes.size();
+    }
 }
