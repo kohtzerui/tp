@@ -13,13 +13,40 @@ public class Parser {
         this.ui = ui;
     }
 
-    public Command parse(String input){
+    public Command parse(String input) {
         Command c;
-        if(input.startsWith("delete-r")){
+        if (input.startsWith("delete-r")) {
             int index = Integer.parseInt(input.substring(DELETE_R_PREFIX).trim());
             c = new DeleteCommand(index);
-        } else if (input.startsWith("list-r")){
+        } else if (input.startsWith("list-r")) {
             c = new ListCommand();
+        } else if (input.startsWith("list-i")) {
+            c = new ListIngredientCommand(ui);
+        } else if (input.startsWith("delete-i")) {
+            String deleteInput = input.substring("delete-i".length()).trim();
+            String[] parts = deleteInput.split("\\s+");
+            if (parts.length == 0 || parts[0].isEmpty()) {
+                ui.printError("Invalid delete-i format. Use: delete-i INDEX/NAME [QUANTITY]");
+                return new Command(false);
+            }
+            if (parts.length == 1) {
+                c = new DeleteIngredientCommand(parts[0], ui);
+            } else if (parts.length == 2) {
+                try {
+                    double quantity = Double.parseDouble(parts[1]);
+                    if (quantity <= 0) {
+                        ui.printError("Quantity must be a positive number.");
+                        return new Command(false);
+                    }
+                    c = new DeleteIngredientCommand(parts[0], quantity, ui);
+                } catch (NumberFormatException e) {
+                    ui.printError("Invalid quantity for delete-i.");
+                    return new Command(false);
+                }
+            } else {
+                ui.printError("Invalid delete-i format. Use: delete-i INDEX/NAME [QUANTITY]");
+                return new Command(false);
+            }
         } else if (input.startsWith("add-i")) {
             String addIngredientInput = input.substring("add-i".length()).trim();
             Pattern addIngredientPattern = Pattern.compile("n/([^q/]+)\\s+q/([\\d.]+)\\s+u/(.+)");
@@ -90,7 +117,6 @@ public class Parser {
 
             c = new AddRecipeCommand(name, ingredients, steps);
 
-
         } else {
             c = new Command(false);
             ui.printError("I don't recognise that command!");
@@ -98,7 +124,6 @@ public class Parser {
         return c;
 
     }
-
 
     private String stripOptionalBraces(String token) {
         if (token.startsWith("{") && token.endsWith("}")) {

@@ -21,7 +21,9 @@ public class SudoCook {
         String input = ui.readInput();
         while (!input.equals("bye")) {
             cmd = parser.parse(input);
-            if (cmd instanceof AddIngredientCommand) {
+            if (cmd instanceof AddIngredientCommand ||
+                    cmd instanceof ListIngredientCommand ||
+                    cmd instanceof DeleteIngredientCommand) {
                 cmd.execute(inventory);
             } else {
                 cmd.execute(recipes);
