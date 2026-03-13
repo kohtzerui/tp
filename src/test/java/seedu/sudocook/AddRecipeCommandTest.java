@@ -1,0 +1,58 @@
+package seedu.sudocook;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+public class AddRecipeCommandTest {
+    private RecipeBook testRecipeBook = new RecipeBook();
+    private Recipe testRecipe;
+
+
+    @Test
+    public void addCommandTest() {
+        ArrayList<String> ingredients = new ArrayList<>();
+        ingredients.add("Water");
+        ingredients.add("Noodles");
+
+        ArrayList<String> steps = new ArrayList<>();
+        steps.add("Add water");
+        steps.add("Add noodles");
+        steps.add("Add cucumber");
+
+        AddRecipeCommand test = new AddRecipeCommand("Zhajiangmian", ingredients, steps);
+        test.execute(testRecipeBook);
+
+        assertEquals(2, testRecipeBook.size());
+    }
+
+    @Test
+    public void formatErrorTest() {
+        String testCmd = "add-r Gibberish Gibberish";
+        Ui ui = new Ui();
+        Parser parser = new Parser(ui);
+        Command cmd;
+        cmd = parser.parse(testCmd);
+        cmd.execute(testRecipeBook);
+        assertEquals(1, testRecipeBook.size());
+
+    }
+
+    @Test
+    public void parserTest() {
+        String testCmd = "add-r {Fried Rice} i/rice 2 cups egg " +
+                "2 pcs soy_sauce 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.}";
+        Ui ui = new Ui();
+        Parser parser = new Parser(ui);
+        Command cmd;
+        cmd = parser.parse(testCmd);
+        cmd.execute(testRecipeBook);
+        assertEquals(2, testRecipeBook.size());
+
+    }
+
+
+}
