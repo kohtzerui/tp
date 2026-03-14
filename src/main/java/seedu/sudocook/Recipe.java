@@ -29,7 +29,7 @@ public class Recipe {
         return steps;
     }
 
-    public ArrayList<String> getIngredients() {
+    public ArrayList<Ingredient> getIngredients() {
         return ingredients;
     }
 

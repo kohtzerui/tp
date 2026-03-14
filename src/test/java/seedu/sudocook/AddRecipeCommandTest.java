@@ -14,9 +14,9 @@ public class AddRecipeCommandTest {
 
     @Test
     public void addCommandTest() {
-        ArrayList<String> ingredients = new ArrayList<>();
-        ingredients.add("Water");
-        ingredients.add("Noodles");
+        ArrayList<Ingredient> ingredients = new ArrayList<>();
+        ingredients.add(new Ingredient("Water", 1, "cup"));
+        ingredients.add(new Ingredient("Noodles", 2, "packets"));
 
         ArrayList<String> steps = new ArrayList<>();
         steps.add("Add water");

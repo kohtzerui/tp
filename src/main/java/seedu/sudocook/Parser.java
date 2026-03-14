@@ -82,7 +82,7 @@ public class Parser {
 
             c = new AddIngredientCommand(name, quantity, unit, ui);
         } else if (input.startsWith("add-r")) {
-            ArrayList<String> ingredients = new ArrayList<>();
+            ArrayList<Ingredient> ingredients = new ArrayList<>();
             ArrayList<String> steps = new ArrayList<>();
             String addRecipeInput = input.substring("add-r".length()).trim();
             Pattern addRecipePattern = Pattern.compile("^(.*?)\\s+i/(.+?)\\s+s/(.+)$");
@@ -104,10 +104,25 @@ public class Parser {
                 ingredientTokens.add(stripOptionalBraces(ingredientMatcher.group()));
             }
 
-            for (int i = 0; i + 2 < ingredientTokens.size(); i += 3) {
-                ingredients.add(ingredientTokens.get(i) + " "
-                        + ingredientTokens.get(i + 1) + " "
-                        + ingredientTokens.get(i + 2));
+            if (ingredientTokens.size() % 3 != 0) {
+                ui.printError("Invalid add-r format. Ingredients should be NAME QUANTITY UNIT.");
+                return new Command(false);
+            }
+
+            for (int i = 0; i < ingredientTokens.size(); i += 3) {
+                String ingredientName = ingredientTokens.get(i);
+                String quantityToken = ingredientTokens.get(i + 1);
+                String unit = ingredientTokens.get(i + 2);
+                double quantity;
+
+                try {
+                    quantity = Double.parseDouble(quantityToken);
+                } catch (NumberFormatException e) {
+                    ui.printError("Invalid ingredient quantity in add-r format.");
+                    return new Command(false);
+                }
+
+                ingredients.add(new Ingredient(ingredientName, quantity, unit));
             }
 
             Matcher stepMatcher = tokenPattern.matcher(stepInput);
