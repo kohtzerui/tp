@@ -19,7 +19,7 @@ public class AddRecipeCommand extends Command {
     @Override
     public void execute(RecipeBook recipes) {
         assert(recipes!=null);
-        recipes.addRecipe(name, ingredients, steps);
-
+        Recipe addedRecipe = recipes.addRecipe(name, ingredients, steps);
+        Ui.printMessage("Added recipe:\n" + addedRecipe.toString());
     }
 }

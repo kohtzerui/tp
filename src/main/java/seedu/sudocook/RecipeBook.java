@@ -43,15 +43,15 @@ public class RecipeBook {
         Ui.printMessage(sb.toString());
     }
 
-    public void addRecipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps){
+    public Recipe addRecipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps){
         Recipe newRecipe = new Recipe(name, ingredients, steps);
         recipes.add(newRecipe);
-        Ui.printMessage("Added recipe:\n" + newRecipe.toString());
+        return newRecipe;
     }
 
-    public void addRecipe(Recipe recipe){
+    public Recipe addRecipe(Recipe recipe){
         recipes.add(recipe);
-        Ui.printMessage("Added recipe:\n" + recipe.toString());
+        return recipe;
     }
 
     public int size(){
