@@ -35,9 +35,6 @@ public class SudoCook {
             } else {
                 cmd.execute(recipes);
             }
-
-            System.out.flush();
-            ui.printLine();
             input = ui.readInput();
         }
         ui.printBye();

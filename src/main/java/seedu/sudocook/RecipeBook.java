@@ -29,9 +29,18 @@ public class RecipeBook {
     }
 
     public void listRecipe() {
-        for (Recipe recipe : recipes) {
-            System.out.println(recipe);
+        if (recipes.isEmpty()) {
+            Ui.printMessage("No recipes found.");
+            return;
         }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < recipes.size(); i++) {
+            sb.append(i + 1).append(". ").append(recipes.get(i).toString().stripLeading());
+            if (i < recipes.size() - 1) {
+                sb.append("\n");
+            }
+        }
+        Ui.printMessage(sb.toString());
     }
 
     public void addRecipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps){
