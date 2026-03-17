@@ -29,6 +29,11 @@ public class SudoCook {
         recipes = new RecipeBook();
         inventory = new Inventory();
 
+        assert ui != null : "Ui must be initialised";
+        assert parser != null : "Parser must be initialised";
+        assert recipes != null : "RecipeBook must be initialised";
+        assert inventory != null : "Inventory must be initialised";
+
         ui.printWelcome();
 
         Command cmd;
