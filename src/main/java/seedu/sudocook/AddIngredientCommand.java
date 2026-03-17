@@ -36,6 +36,9 @@ public class AddIngredientCommand extends Command {
      * @param inventory The inventory to add the ingredient to
      */
     public void execute(Inventory inventory) {
+        assert inventory != null : "Inventory must not be null";
+        assert name != null && !name.isEmpty() : "Ingredient name must not be empty";
+        assert quantity > 0 : "Ingredient quantity must be positive";
         Ingredient ingredient = new Ingredient(name, quantity, unit);
         inventory.addIngredient(ingredient);
         ui.printMessage("Added: " + ingredient);

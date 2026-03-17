@@ -60,11 +60,13 @@ public class Parser {
                 return new Command(false);
             }
         } else if (input.startsWith("add-i")) {
+            logger.log(Level.FINE, "Received add-i request");
             String addIngredientInput = input.substring("add-i".length()).trim();
             Pattern addIngredientPattern = Pattern.compile("n/([^q/]+)\\s+q/([\\d.]+)\\s+u/(.+)");
             Matcher addIngredientMatcher = addIngredientPattern.matcher(addIngredientInput);
 
             if (!addIngredientMatcher.matches()) {
+                logger.log(Level.WARNING, "Invalid add-i format");
                 ui.printError("Invalid add-i format. Use: add-i n/NAME q/QUANTITY u/UNIT");
                 return new Command(false);
             }
@@ -75,6 +77,7 @@ public class Parser {
 
             // Validate name doesn't contain special characters
             if (!name.matches("[a-zA-Z0-9\\s]+")) {
+                logger.log(Level.WARNING, "Ingredient name contains special characters");
                 ui.printError("Ingredient name should not contain special characters.");
                 return new Command(false);
             }
@@ -84,14 +87,17 @@ public class Parser {
             try {
                 quantity = Double.parseDouble(quantityStr);
                 if (quantity <= 0) {
+                    logger.log(Level.WARNING, "Invalid quantity: " + quantityStr);
                     ui.printError("Quantity must be a positive number.");
                     return new Command(false);
                 }
             } catch (NumberFormatException e) {
+                logger.log(Level.WARNING, "Invalid quantity format: " + quantityStr);
                 ui.printError("Invalid quantity format.");
                 return new Command(false);
             }
 
+            logger.log(Level.FINE, "Creating add-i command for: " + name);
             c = new AddIngredientCommand(name, quantity, unit, ui);
         } else if (input.startsWith("add-r")) {
             logger.log(Level.INFO, "Received logging request");

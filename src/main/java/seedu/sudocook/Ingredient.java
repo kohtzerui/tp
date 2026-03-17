@@ -16,6 +16,9 @@ public class Ingredient {
      * @param unit The unit of measurement
      */
     public Ingredient(String name, double quantity, String unit) {
+        assert name != null && !name.isEmpty() : "Ingredient name must not be null or empty";
+        assert quantity > 0 : "Ingredient quantity must be positive";
+        assert unit != null && !unit.isEmpty() : "Ingredient unit must not be null or empty";
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
