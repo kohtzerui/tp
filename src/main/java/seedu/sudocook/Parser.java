@@ -155,6 +155,8 @@ public class Parser {
 
             c = new AddRecipeCommand(name, ingredients, steps);
 
+        } else if (input.trim().equalsIgnoreCase("help")) {
+            c = new HelpCommand();
         } else {
             c = new Command(false);
             ui.printError("I don't recognise that command!");
