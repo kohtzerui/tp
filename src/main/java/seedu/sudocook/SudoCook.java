@@ -7,7 +7,6 @@ import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 import java.util.logging.Level;
 
-
 /**
  * Main class for the SudoCook application.
  * Initializes the application and runs the main loop.
@@ -50,6 +49,9 @@ public class SudoCook {
                     cmd instanceof DeleteIngredientCommand) {
                 logger.log(Level.FINE, "Routing command to Inventory");
                 cmd.execute(inventory);
+            } else if (cmd instanceof HelpCommand) {
+                logger.log(Level.FINE, "Routing help command");
+                cmd.execute(inventory); // Execute on either, it just prints UI
             } else {
                 logger.log(Level.FINE, "Routing command to RecipeBook");
                 cmd.execute(recipes);

@@ -41,23 +41,23 @@ public class Recipe {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(INDENT + "Recipe Name: ").append(name).append("\n");
+        sb.append("Recipe Name: ").append(name).append("\n");
 
-        sb.append("\n" + INDENT + "Ingredients:\n");
+        sb.append("\n").append(Ui.CYAN).append(INDENT).append("Ingredients:").append(Ui.RESET).append("\n");
         if (ingredients.isEmpty()) {
-            sb.append(INDENT + "(No ingredients listed)\n");
+            sb.append(Ui.CYAN).append(INDENT).append("(No ingredients listed)").append(Ui.RESET).append("\n");
         } else {
             for (Ingredient ingredient : ingredients) {
-                sb.append(INDENT + "- ").append(ingredient).append("\n");
+                sb.append(Ui.CYAN).append(INDENT).append("- ").append(ingredient).append(Ui.RESET).append("\n");
             }
         }
 
-        sb.append("\n" + INDENT + "Steps:\n");
+        sb.append("\n").append(Ui.CYAN).append(INDENT).append("Steps:").append(Ui.RESET).append("\n");
         if (steps.isEmpty()) {
-            sb.append(INDENT + "(No steps listed)\n");
+            sb.append(Ui.CYAN).append(INDENT).append("(No steps listed)").append(Ui.RESET).append("\n");
         } else {
             for (String step : steps) {
-                sb.append(INDENT + "- ").append(step).append("\n");
+                sb.append(Ui.CYAN).append(INDENT).append("- ").append(step).append(Ui.RESET).append("\n");
             }
         }
 

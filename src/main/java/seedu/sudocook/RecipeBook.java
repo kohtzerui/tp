@@ -39,18 +39,18 @@ public class RecipeBook {
                 sb.append("\n");
             }
         }
-        Ui.printMessage(sb.toString());
+        Ui.printGradientMessage(sb.toString());
     }
 
     public void addRecipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps){
         Recipe newRecipe = new Recipe(name, ingredients, steps);
         recipes.add(newRecipe);
-        Ui.printMessage("Added recipe:\n" + newRecipe.toString());
+        Ui.printGradientMessage("Added recipe:\n" + newRecipe.toString());
     }
 
     public void addRecipe(Recipe recipe){
         recipes.add(recipe);
-        Ui.printMessage("Added recipe:\n" + recipe.toString());
+        Ui.printGradientMessage("Added recipe:\n" + recipe.toString());
     }
 
     public int size(){
