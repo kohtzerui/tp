@@ -4,13 +4,15 @@ import java.util.Scanner;
 
 
 public class Ui {
-    private static final String DIVIDER = "____________________________________________________________";
-    private static final String INDENT = "    ";
-    private final Scanner scanner = new Scanner(System.in);
-
+    // All static variables first
     public static final String RESET = "\u001B[0m";
     public static final String RED = "\u001B[31m";
     public static final String CYAN = "\u001B[36m";
+    private static final String DIVIDER = "____________________________________________________________";
+    private static final String INDENT = "    ";
+
+    // Instance variables after static variables
+    private final Scanner scanner = new Scanner(System.in);
 
     public static void printLine() {
         System.out.println(INDENT + CYAN + DIVIDER + RESET);
@@ -19,7 +21,7 @@ public class Ui {
     //Formats and prints a response message wrapped between two divider lines.
     public static void formatResponse(String message) {
         System.out.println("");
-        for (String line : message.split("\n")) {
+        for (String line : message.split("\r?\n")) {
             if (line.isEmpty()) {
                 System.out.println();
                 continue;
@@ -75,7 +77,7 @@ public class Ui {
 
     public static void printGradientMessage(String message) {
         System.out.println("");
-        for (String line : message.split("\n")) {
+        for (String line : message.split("\r?\n")) {
             if (line.isEmpty()) {
                 System.out.println();
                 continue;
