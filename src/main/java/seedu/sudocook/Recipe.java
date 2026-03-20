@@ -8,18 +8,21 @@ public class Recipe {
     private String name;
     private ArrayList<Ingredient> ingredients;
     private ArrayList<String> steps;
+    private int time;
 
     public Recipe() {
         this.name = "Unknown Dish";
         this.ingredients = null;
         this.steps = null;
+        this.time = 0;
         assert(name.equals("Unknown Dish"));
     }
 
-    public Recipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps) {
+    public Recipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps, int time) {
         this.name = name;
         this.ingredients = ingredients;
         this.steps = steps;
+        this.time = time;
         assert(name != null);
         assert(ingredients != null);
         assert(steps != null);
@@ -27,6 +30,10 @@ public class Recipe {
 
     public String getName() {
         return name;
+    }
+
+    public int getTime() {
+        return time;
     }
 
     public ArrayList<String> getSteps() {
@@ -42,6 +49,7 @@ public class Recipe {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Recipe Name: ").append(name).append("\n");
+        sb.append("Preparation Time: ").append(time).append(" minutes\n");
 
         sb.append("\n").append(Ui.CYAN).append(INDENT).append("Ingredients:").append(Ui.RESET).append("\n");
         if (ingredients.isEmpty()) {

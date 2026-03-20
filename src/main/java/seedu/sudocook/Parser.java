@@ -105,7 +105,7 @@ public class Parser {
             ArrayList<Ingredient> ingredients = new ArrayList<>();
             ArrayList<String> steps = new ArrayList<>();
             String addRecipeInput = input.substring("add-r".length()).trim();
-            Pattern addRecipePattern = Pattern.compile("^(.*?)\\s+i/(.+?)\\s+s/(.+)$");
+            Pattern addRecipePattern = Pattern.compile("^(.*?)\\s+i/(.+?)\\s+s/(.+?)\\s+t/(\\d+)$");
             Matcher addRecipeMatcher = addRecipePattern.matcher(addRecipeInput);
 
             if (!addRecipeMatcher.matches()) {
@@ -117,6 +117,15 @@ public class Parser {
             String name = stripOptionalBraces(addRecipeMatcher.group(1).trim());
             String ingredientInput = addRecipeMatcher.group(2).trim();
             String stepInput = addRecipeMatcher.group(3).trim();
+            String timeInput = addRecipeMatcher.group(4).trim();
+            int time;
+            try {
+                time = Integer.parseInt(timeInput);
+            } catch (NumberFormatException e) {
+                ui.printError("Invalid add-r format. Time should be an integer.");
+                logger.log(Level.INFO, "Caught invalid add-r command format in TIME field");
+                return new Command(false);
+            }
 
             Pattern tokenPattern = Pattern.compile("\\{[^}]*\\}|\\S+");
             Matcher ingredientMatcher = tokenPattern.matcher(ingredientInput);
@@ -153,7 +162,31 @@ public class Parser {
                 steps.add(stripOptionalBraces(stepMatcher.group()));
             }
 
-            c = new AddRecipeCommand(name, ingredients, steps);
+            c = new AddRecipeCommand(name, ingredients, steps, time);
+
+        } else if (input.startsWith("filter-r")) {
+            logger.log(Level.INFO, "Received filter-r request");
+            String filterInput = input.substring("filter-r".length()).trim();
+            
+            Integer maxTime = null;
+            Pattern filterPattern = Pattern.compile("t/(\\d+)");
+            Matcher filterMatcher = filterPattern.matcher(filterInput);
+            
+            if (filterMatcher.find()) {
+                try {
+                    maxTime = Integer.parseInt(filterMatcher.group(1));
+                } catch (NumberFormatException e) {
+                    ui.printError("Invalid time format for filter-r.");
+                    return new Command(false);
+                }
+            }
+            
+            if (maxTime == null) {
+                ui.printError("No valid filter targets provided. Use: filter-r t/MAX_TIME");
+                return new Command(false);
+            }
+            
+            c = new FilterRecipeCommand(maxTime);
 
         } else if (input.trim().equalsIgnoreCase("help")) {
             c = new HelpCommand();

@@ -22,7 +22,7 @@ public class AddRecipeCommandTest {
         steps.add("Add noodles");
         steps.add("Add cucumber");
 
-        AddRecipeCommand test = new AddRecipeCommand("Zhajiangmian", ingredients, steps);
+        AddRecipeCommand test = new AddRecipeCommand("Zhajiangmian", ingredients, steps, 10);
         test.execute(testRecipeBook);
 
         assertEquals(2, testRecipeBook.size());
@@ -43,7 +43,7 @@ public class AddRecipeCommandTest {
     @Test
     public void parserTest() {
         String testCmd = "add-r {Fried Rice} i/rice 2 cups egg " +
-                "2 pcs soy_sauce 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.}";
+                "2 pcs soy_sauce 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.} t/15";
         Ui ui = new Ui();
         Parser parser = new Parser(ui);
         Command cmd;

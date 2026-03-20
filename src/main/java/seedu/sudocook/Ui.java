@@ -97,7 +97,7 @@ public class Ui {
         if (scanner.hasNextLine()) {
             return scanner.nextLine().trim();
         } else {
-            return "";
+            return "bye";
         }
     }
 }

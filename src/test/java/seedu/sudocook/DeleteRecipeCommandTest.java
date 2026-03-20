@@ -17,7 +17,7 @@ public class DeleteRecipeCommandTest {
         ArrayList<String> steps = new ArrayList<>();
         steps.add("Boil it.");
 
-        testRecipe = new Recipe("Boiled Water", ingredients, steps);
+        testRecipe = new Recipe("Boiled Water", ingredients, steps, 5);
         recipeBook.addRecipe(testRecipe);
     }
 

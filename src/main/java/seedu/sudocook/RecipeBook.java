@@ -15,7 +15,7 @@ public class RecipeBook {
         testSteps.add("Pour MIXUE into pot");
         testSteps.add("Heat the pot");
         testSteps.add("Drink with your extraordinary courage");
-        recipes.add(new Recipe("Mixue", testIngs, testSteps));
+        recipes.add(new Recipe("Mixue", testIngs, testSteps, 5));
     }
 
     public void removeRecipe(int index) {
@@ -42,8 +42,8 @@ public class RecipeBook {
         Ui.printGradientMessage(sb.toString());
     }
 
-    public void addRecipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps){
-        Recipe newRecipe = new Recipe(name, ingredients, steps);
+    public void addRecipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps, int time){
+        Recipe newRecipe = new Recipe(name, ingredients, steps, time);
         recipes.add(newRecipe);
         Ui.printGradientMessage("Added recipe:\n" + newRecipe.toString());
     }
@@ -51,6 +51,32 @@ public class RecipeBook {
     public void addRecipe(Recipe recipe){
         recipes.add(recipe);
         Ui.printGradientMessage("Added recipe:\n" + recipe.toString());
+    }
+
+    public void filterRecipes(Integer maxTime) {
+        ArrayList<Recipe> filtered = new ArrayList<>();
+        for (Recipe r : recipes) {
+            boolean keep = true;
+            if (maxTime != null && r.getTime() > maxTime) {
+                keep = false;
+            }
+            if (keep) {
+                filtered.add(r);
+            }
+        }
+        
+        if (filtered.isEmpty()) {
+            Ui.printMessage("No recipes found matching the criteria.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < filtered.size(); i++) {
+            sb.append(i + 1).append(". ").append(filtered.get(i).toString().stripLeading());
+            if (i < filtered.size() - 1) {
+                sb.append("\n");
+            }
+        }
+        Ui.printGradientMessage(sb.toString());
     }
 
     public int size(){
