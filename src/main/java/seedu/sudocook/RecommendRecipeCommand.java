@@ -1,7 +1,7 @@
 package seedu.sudocook;
 
 public class RecommendRecipeCommand extends Command {
-    private String ingredientName;
+    private final String ingredientName;
 
     public RecommendRecipeCommand(String ingredientName) {
         super(false);
