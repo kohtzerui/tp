@@ -16,4 +16,12 @@ public class Command {
 
     }
 
+    public void execute(Recipe recipe, Inventory inventory){
+
+    }
+
+    public int getIndex(){
+        return 0;
+    }
+
 }

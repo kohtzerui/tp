@@ -27,6 +27,16 @@ public class RecipeBook {
         recipes.remove(index - 1);
     }
 
+    public Recipe getRecipe(int i){
+
+        try {
+            return recipes.get(i);
+        } catch (IndexOutOfBoundsException e) {
+            Ui.printError("Index out of bounds");
+            return null;
+        }
+    }
+
     public void listRecipe() {
         if (recipes.isEmpty()) {
             Ui.printMessage("No recipes found.");

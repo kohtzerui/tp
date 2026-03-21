@@ -46,7 +46,7 @@ public class Ui {
         return sb.toString();
     }
 
-    public void printWelcome() {
+    public static void printWelcome() {
         System.out.println("");
         System.out.println(INDENT + CYAN + "Welcome to..." + RESET);
         String logo = 
@@ -63,11 +63,11 @@ public class Ui {
         printLine();
     }
 
-    public void printBye() {
+    public static void printBye() {
         printMessage("Goodbye! Happy cooking!");
     }
 
-    public void printError(String message) {
+    public static void printError(String message) {
         formatResponse(RED + "Oops! " + message + RESET);
     }
 

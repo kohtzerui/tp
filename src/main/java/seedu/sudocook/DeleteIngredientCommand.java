@@ -7,21 +7,20 @@ public class DeleteIngredientCommand extends Command {
     private final String nameOrIndex;
     private final double quantityToRemove;
     private final boolean isRemoveAll;
-    private final Ui ui;
+
 
     /**
      * Constructs a DeleteIngredientCommand to remove a specific quantity.
      *
      * @param nameOrIndex      The name or index (1-based) of the ingredient
      * @param quantityToRemove The quantity to remove
-     * @param ui               The UI instance for printing messages
      */
-    public DeleteIngredientCommand(String nameOrIndex, double quantityToRemove, Ui ui) {
+    public DeleteIngredientCommand(String nameOrIndex, double quantityToRemove) {
         super(false);
         this.nameOrIndex = nameOrIndex;
         this.quantityToRemove = quantityToRemove;
         this.isRemoveAll = false;
-        this.ui = ui;
+
     }
 
     /**
@@ -35,7 +34,7 @@ public class DeleteIngredientCommand extends Command {
         this.nameOrIndex = nameOrIndex;
         this.quantityToRemove = 0;
         this.isRemoveAll = true;
-        this.ui = ui;
+
     }
 
     @Override
@@ -56,7 +55,7 @@ public class DeleteIngredientCommand extends Command {
         }
 
         if (indexToRemove < 0 || indexToRemove >= inventory.size()) {
-            ui.printError("Ingredient not found in inventory.");
+            Ui.printError("Ingredient not found in inventory.");
             return;
         }
 

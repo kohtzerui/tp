@@ -50,7 +50,7 @@ public class Parser {
                         ui.printError("Quantity must be a positive number.");
                         return new Command(false);
                     }
-                    c = new DeleteIngredientCommand(parts[0], quantity, ui);
+                    c = new DeleteIngredientCommand(parts[0], quantity);
                 } catch (NumberFormatException e) {
                     ui.printError("Invalid quantity for delete-i.");
                     return new Command(false);
@@ -182,12 +182,23 @@ public class Parser {
             }
             
             if (maxTime == null) {
-                ui.printError("No valid filter targets provided. Use: filter-r t/MAX_TIME");
+                Ui.printError("No valid filter targets provided. Use: filter-r t/MAX_TIME");
                 return new Command(false);
             }
             
             c = new FilterRecipeCommand(maxTime);
 
+        } else if (input.startsWith("cook")){
+            logger.log(Level.INFO, "Received cook-r request");
+            String[] words = input.split(" ");
+            int index = 0;
+            try {
+                index = Integer.parseInt(words[1]) - 1;
+                c = new CookCommand(false, index);
+            } catch (NumberFormatException e) {
+                Ui.printError("You should indicate the index of the recipe when cooking!");
+                c = new Command(false);
+            }
         } else if (input.trim().equalsIgnoreCase("help")) {
             c = new HelpCommand();
         } else {

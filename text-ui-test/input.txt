@@ -1,6 +1,11 @@
 list-r
-add-r {Fried Rice} i/rice 2 cups egg 2 pcs soy_sauce 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.} t/15
+add-r {Fried Rice} i/rice 2 cups egg 2 pcs soySauce 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.} t/15
 list-r
+add-i n/rice q/3 u/cups
+add-i n/egg q/3 u/pcs
+add-i n/soySauce q/2 u/tbsp
+cook 2
+list-i
 filter-r t/10
 filter-r t/20
 delete-r 2

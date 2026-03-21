@@ -52,7 +52,12 @@ public class SudoCook {
             } else if (cmd instanceof HelpCommand) {
                 logger.log(Level.FINE, "Routing help command");
                 cmd.execute(inventory); // Execute on either, it just prints UI
-            } else {
+            } else if (cmd instanceof CookCommand){
+                logger.log(Level.FINE, "Routing cook command");
+
+                cmd.execute(recipes.getRecipe(cmd.getIndex()), inventory);
+
+            } else{
                 logger.log(Level.FINE, "Routing command to RecipeBook");
                 cmd.execute(recipes);
             }
