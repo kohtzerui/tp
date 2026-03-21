@@ -19,19 +19,20 @@ public class CookCommand extends Command {
 
     @Override
     public void execute(Recipe recipe, Inventory inventory) {
-        if(recipe==null){
+        if (recipe == null) {
             return;
         }
         try {
             for (Ingredient i : recipe.getIngredients()) {
-
-
-
-                if(inventory.size()==0 || inventory.getIngredient(inventory.findIndexByName(i.getName())).getQuantity() < i.getQuantity()){
+                int ingredientIndex = inventory.findIndexByName(i.getName());
+                if (ingredientIndex < 0
+                        || inventory.getIngredient(ingredientIndex).getQuantity() < i.getQuantity()) {
                     logger.log(Level.INFO, "Not enough ingredients for this recipe");
                     throw new RuntimeException("Not enough ingredients");
                 }
+            }
 
+            for (Ingredient i : recipe.getIngredients()) {
                 Command c = new DeleteIngredientCommand(i.getName(), i.getQuantity());
                 c.execute(inventory);
             }

@@ -14,7 +14,6 @@ public class DeleteIngredientCommand extends Command {
      *
      * @param nameOrIndex      The name or index (1-based) of the ingredient
      * @param quantityToRemove The quantity to remove
-
      */
     public DeleteIngredientCommand(String nameOrIndex, double quantityToRemove) {
         super(false);
