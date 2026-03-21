@@ -58,6 +58,7 @@ public class SudoCook {
                 cmd.execute(recipes.getRecipe(cmd.getIndex()), inventory);
 
             } else if (cmd instanceof RecommendRecipeCommand) {
+                logger.log(Level.FINE, "Routing recommend command");
                 cmd.execute(inventory, recipes);
             } else {
                 logger.log(Level.FINE, "Routing command to RecipeBook");
@@ -66,7 +67,7 @@ public class SudoCook {
             input = ui.readInput();
         }
         logger.log(Level.INFO, "SudoCook application shutting down");
-        ui.printBye();
+        Ui.printBye();
     }
 
     public static void main(String[] args) {

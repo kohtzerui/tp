@@ -27,15 +27,24 @@ public class Parser {
                 c = new DeleteRecipeCommand(index);
             } catch (NumberFormatException e) {
                 logger.log(Level.WARNING, "Invalid index format for delete-r");
-                ui.printError("Invalid index for delete-r. Use: delete-r INDEX");
+                Ui.printError("Invalid index for delete-r. Use: delete-r INDEX");
                 return new Command(false);
             }
         } else if (input.startsWith("list-r")) {
             logger.log(Level.INFO, "Received list-r request");
             c = new ListRecipeCommand();
         } else if (input.startsWith("recommend-r")) {
-            int targetIndex = input.indexOf("n/");
-            String ingredientName = input.substring(targetIndex + "n/".length()).trim();
+            logger.log(Level.INFO, "Received recommend-r request");
+            String args = input.substring("recommend-r".length()).trim();
+            if (!args.startsWith("n/")) {
+                Ui.printError("Invalid format. Use: recommend-r n/INGREDIENT_NAME");
+                return new Command(false);
+            }
+            String ingredientName = args.substring("n/".length()).trim();
+            if (ingredientName.isEmpty()) {
+                Ui.printError("Ingredient name cannot be empty.");
+                return new Command(false);
+            }
             c = new RecommendRecipeCommand(ingredientName);
         } else if (input.startsWith("list-i")) {
             c = new ListIngredientCommand();

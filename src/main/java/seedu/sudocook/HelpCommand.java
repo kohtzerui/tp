@@ -34,21 +34,25 @@ public class HelpCommand extends Command {
             "4. Filter Recipes\n" +
             "   Command : filter-r t/{MAX_TIME_IN_MINUTES}\n" +
             "   Example : filter-r t/30\n\n" +
+            "5. Recommend Recipes\n" +
+            "   Command : recommend-r n/{INGREDIENT_NAME}\n" +
+            "   Example : recommend-r n/egg\n"+
+            "   Purpose : Shows recipes using specific ingredient with sufficient stock.\n\n" +
             "INGREDIENT COMMANDS:\n" +
             "--------------------------------------------------------\n" +
-            "5. List Ingredients\n" +
+            "6. List Ingredients\n" +
             "   Command : list-i\n" +
             "   Purpose : Shows all ingredients currently in inventory.\n\n" +
-            "6. Add Ingredient\n" +
+            "7. Add Ingredient\n" +
             "   Command : add-i n/{NAME} q/{QUANTITY} u/{UNIT}\n" +
             "   Example : add-i n/Apple q/5 u/pcs\n\n" +
-            "7. Delete Ingredient\n" +
+            "8. Delete Ingredient\n" +
             "   Command : delete-i {INDEX/NAME} [{QUANTITY}]\n" +
             "   Example : delete-i Apple (Deletes all Apples)\n" +
             "   Example : delete-i Apple 2 (Deletes 2 Apples)\n\n" +
             "OTHER:\n" +
             "--------------------------------------------------------\n" +
-            "8. Exit\n" +
+            "9. Exit\n" +
             "   Command : bye\n" +
             "   Purpose : Exits SudoCook.\n\n" +
             "========================================================";
