@@ -1,0 +1,70 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+hide footbox
+
+skinparam MaxMessageSize 150
+
+actor User
+participant ":SudoCook" as SudoCook
+participant ":Parser" as Parser
+participant "cmd:RecommendRecipeCommand" as Cmd
+participant "inventory:Inventory" as Inventory
+participant "recipes:RecipeBook" as RecipeBook
+participant "recipe:Recipe" as Recipe
+participant ":Ui" as Ui
+
+User -> SudoCook : run()
+activate SudoCook
+
+SudoCook -> Parser : parse("recommend-r n/beef")
+activate Parser
+
+create Cmd
+Parser -> Cmd ** : RecommendRecipeCommand("beef")
+activate Cmd
+Cmd --> Parser
+deactivate Cmd
+
+Parser --> SudoCook : cmd
+deactivate Parser
+
+SudoCook -> Cmd : execute(inventory, recipes)
+activate Cmd
+
+loop for each ingredient in inventory
+    Cmd -> Inventory : getIngredient(i)
+    activate Inventory
+    Inventory --> Cmd : ingredient
+    deactivate Inventory
+    note right of Cmd : If name matches,\nrecord amount
+end
+
+loop for each recipe in recipes
+    Cmd -> RecipeBook : getRecipe(i)
+    activate RecipeBook
+    RecipeBook --> Cmd : recipe
+    deactivate RecipeBook
+
+    Cmd -> Recipe : getIngredients()
+    activate Recipe
+    Recipe --> Cmd : ingredientList
+    deactivate Recipe
+
+    note right of Cmd : If ingredient exists in recipe\nAND quantity <= amount,\nappend to list
+end
+
+Cmd -> Ui : printMessage(resultString)
+activate Ui
+Ui --> Cmd
+deactivate Ui
+
+SudoCook <-- Cmd
+deactivate Cmd
+destroy Cmd
+
+SudoCook --> User
+deactivate SudoCook
+
+@enduml
