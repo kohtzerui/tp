@@ -40,3 +40,13 @@ run{
     standardInput = System.in
     enableAssertions = true
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'seedu.sudocook.SudoCook'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    archiveFileName = 'sudocookg.jar'
+}
