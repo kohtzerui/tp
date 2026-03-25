@@ -5,9 +5,10 @@ import java.util.Scanner;
 
 public class Ui {
     // All static variables first
-    public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m";
-    public static final String CYAN = "\u001B[36m";
+    private static final boolean IS_TTY = System.console() != null;
+    public static final String RESET = IS_TTY ? "\u001B[0m" : "";
+    public static final String RED = IS_TTY ? "\u001B[31m" : "";
+    public static final String CYAN = IS_TTY ? "\u001B[36m" : "";
     private static final String DIVIDER = "____________________________________________________________";
     private static final String INDENT = "    ";
 
@@ -32,6 +33,9 @@ public class Ui {
     }
 
     public static String getGradientText(String text, int r1, int g1, int b1, int r2, int g2, int b2) {
+        if (!IS_TTY) {
+            return text;
+        }
         StringBuilder sb = new StringBuilder();
         int len = text.length();
         for (int i = 0; i < len; i++) {
