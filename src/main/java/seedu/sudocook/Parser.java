@@ -34,6 +34,20 @@ public class Parser {
         } else if (input.startsWith("list-r")) {
             logger.log(Level.INFO, "Received list-r request");
             c = new ListRecipeCommand();
+        } else if (input.startsWith("view-r")) {
+            logger.log(Level.INFO, "Received view-r request");
+            String viewArgs = input.substring("view-r".length()).trim();
+            if (viewArgs.isEmpty()) {
+                c = new ViewRecipeCommand();
+            } else {
+                try {
+                    int index = Integer.parseInt(viewArgs);
+                    c = new ViewRecipeCommand(index);
+                } catch (NumberFormatException e) {
+                    Ui.printError("Invalid index for view-r. Use: view-r [INDEX]");
+                    c = new Command(false);
+                }
+            }
         } else if (input.startsWith("recommend-r")) {
             logger.log(Level.INFO, "Received recommend-r request");
             String args = input.substring("recommend-r".length()).trim();

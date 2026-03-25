@@ -25,7 +25,7 @@ public class AddRecipeCommandTest {
         AddRecipeCommand test = new AddRecipeCommand("Zhajiangmian", ingredients, steps, 10);
         test.execute(testRecipeBook);
 
-        assertEquals(2, testRecipeBook.size());
+        assertEquals(1, testRecipeBook.size());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class AddRecipeCommandTest {
         Command cmd;
         cmd = parser.parse(testCmd);
         cmd.execute(testRecipeBook);
-        assertEquals(1, testRecipeBook.size());
+        assertEquals(0, testRecipeBook.size());
 
     }
 
@@ -49,7 +49,7 @@ public class AddRecipeCommandTest {
         Command cmd;
         cmd = parser.parse(testCmd);
         cmd.execute(testRecipeBook);
-        assertEquals(2, testRecipeBook.size());
+        assertEquals(1, testRecipeBook.size());
 
     }
 

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash text-ui-test/runtest.sh)"
+    ]
+  }
+}

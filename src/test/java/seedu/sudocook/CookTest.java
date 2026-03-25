@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
@@ -23,6 +24,14 @@ public class CookTest {
         recipes = new RecipeBook();
         ingredients = new Inventory();
         parser = new Parser(new Ui());
+        ArrayList<Ingredient> mixueIngredients = new ArrayList<>();
+        mixueIngredients.add(new Ingredient("Water", 1, "Liter"));
+        mixueIngredients.add(new Ingredient("Sugar", 1, "mg"));
+        ArrayList<String> mixueSteps = new ArrayList<>();
+        mixueSteps.add("Pour MIXUE into pot");
+        mixueSteps.add("Heat the pot");
+        mixueSteps.add("Drink with your extraordinary courage");
+        recipes.addRecipe(new Recipe("Mixue", mixueIngredients, mixueSteps, 5));
         originalOut = System.out;
         output = new ByteArrayOutputStream();
         System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));

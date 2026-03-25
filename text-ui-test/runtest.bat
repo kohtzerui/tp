@@ -12,6 +12,7 @@ for /f "tokens=*" %%a in (
     set jarloc=%%a
 )
 
+if exist data rmdir /s /q data
 java -ea -jar %jarloc% < ..\..\text-ui-test\input.txt > ..\..\text-ui-test\ACTUAL.TXT
 
 cd ..\..\text-ui-test

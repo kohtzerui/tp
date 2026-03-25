@@ -24,12 +24,12 @@ public class DeleteRecipeCommandTest {
     @Test
     public void execute_validIndex_recipeRemoved() {
 
-        assertEquals(2, recipeBook.size());
+        assertEquals(1, recipeBook.size());
 
         DeleteRecipeCommand deleteCommand = new DeleteRecipeCommand(1);
         deleteCommand.execute(recipeBook);
 
-        assertEquals(1, recipeBook.size());
+        assertEquals(0, recipeBook.size());
     }
 
     @Test
