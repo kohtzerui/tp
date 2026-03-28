@@ -1,9 +1,9 @@
 package seedu.sudocook;
 
-public class RecommendRecipeCommand extends Command {
+public class RecommendByIngredientCommand extends Command {
     private final String ingredientName;
 
-    public RecommendRecipeCommand(String ingredientName) {
+    public RecommendByIngredientCommand(String ingredientName) {
         super(false);
         this.ingredientName = ingredientName;
     }

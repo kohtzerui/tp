@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RecommendRecipeCommandTest {
+public class RecommendByIngredientCommandTest {
     private RecipeBook recipes;
     private Inventory inventory;
     private ByteArrayOutputStream output;
@@ -43,7 +43,7 @@ public class RecommendRecipeCommandTest {
     public void execute_ingredientInInventoryAndRecipe_printsRecipe() {
         inventory.addIngredient(new Ingredient("Sugar", 2, "mg"));
 
-        RecommendRecipeCommand cmd = new RecommendRecipeCommand("Sugar");
+        RecommendByIngredientCommand cmd = new RecommendByIngredientCommand("Sugar");
         cmd.execute(inventory, recipes);
 
         assertTrue(getOutput().contains("Mixue"));
@@ -51,7 +51,7 @@ public class RecommendRecipeCommandTest {
 
     @Test
     public void execute_ingredientNotInInventory_printsError() {
-        RecommendRecipeCommand cmd = new RecommendRecipeCommand("Egg");
+        RecommendByIngredientCommand cmd = new RecommendByIngredientCommand("Egg");
         cmd.execute(inventory, recipes);
 
         assertTrue(getOutput().contains("does not exist in inventory"));
@@ -61,7 +61,7 @@ public class RecommendRecipeCommandTest {
     public void execute_ingredientInInventoryButNoRecipeUseIt_printsNoMatch() {
         inventory.addIngredient(new Ingredient("Egg", 1, "pcs"));
 
-        RecommendRecipeCommand cmd = new RecommendRecipeCommand("Egg");
+        RecommendByIngredientCommand cmd = new RecommendByIngredientCommand("Egg");
         cmd.execute(inventory, recipes);
 
         assertTrue(getOutput().contains("No recipes"));
@@ -90,7 +90,7 @@ public class RecommendRecipeCommandTest {
         inventory.addIngredient(new Ingredient("Salt", 1, "g"));   // 不匹配，走 line 16 false
         inventory.addIngredient(new Ingredient("Sugar", 2, "mg")); // 匹配
 
-        RecommendRecipeCommand cmd = new RecommendRecipeCommand("Sugar");
+        RecommendByIngredientCommand cmd = new RecommendByIngredientCommand("Sugar");
         cmd.execute(inventory, recipes);
 
         assertTrue(getOutput().contains("Mixue"));
@@ -101,7 +101,7 @@ public class RecommendRecipeCommandTest {
         // Mixue 需要 Sugar 1mg，但 inventory 只有 0.5mg，走 line 29 qty > amount
         inventory.addIngredient(new Ingredient("Sugar", 0.5, "mg"));
 
-        RecommendRecipeCommand cmd = new RecommendRecipeCommand("Sugar");
+        RecommendByIngredientCommand cmd = new RecommendByIngredientCommand("Sugar");
         cmd.execute(inventory, recipes);
 
         assertTrue(getOutput().contains("No recipes"));

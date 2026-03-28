@@ -9,7 +9,7 @@ skinparam MaxMessageSize 150
 actor User
 participant ":SudoCook" as SudoCook
 participant ":Parser" as Parser
-participant "cmd:RecommendRecipeCommand" as Cmd
+participant "cmd:RecommendByIngredientCommand" as Cmd
 participant "inventory:Inventory" as Inventory
 participant "recipes:RecipeBook" as RecipeBook
 participant "recipe:Recipe" as Recipe
@@ -22,7 +22,7 @@ SudoCook -> Parser : parse("recommend-r n/beef")
 activate Parser
 
 create Cmd
-Parser -> Cmd ** : RecommendRecipeCommand("beef")
+Parser -> Cmd ** : RecommendByIngredientCommand("beef")
 activate Cmd
 Cmd --> Parser
 deactivate Cmd

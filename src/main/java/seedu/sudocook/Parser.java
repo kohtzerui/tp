@@ -62,7 +62,7 @@ public class Parser {
                     Ui.printError("Ingredient name cannot be empty.");
                     return new Command(false);
                 }
-                c = new RecommendRecipeCommand(ingredientName);
+                c = new RecommendByIngredientCommand(ingredientName);
             }
         } else if (input.startsWith("list-i")) {
             c = new ListIngredientCommand();

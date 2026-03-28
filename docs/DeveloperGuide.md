@@ -34,7 +34,7 @@ The feature involves five classes:
 | Class | Role |
 |---|---|
 | `Parser` | Parses raw input, selects the correct command variant, and validates format |
-| `RecommendRecipeCommand` | Executes ingredient-based recommendation logic |
+| `RecommendByIngredientCommand` | Executes ingredient-based recommendation logic |
 | `RecommendByInventoryCommand` | Executes inventory-based recommendation logic |
 | `Inventory` | Provides access to current ingredient stocks |
 | `RecipeBook` | Provides access to all known recipes |
@@ -43,7 +43,7 @@ The feature involves five classes:
 
 1. The user enters `recommend-r n/<ingredient>`.
 2. `Parser.parse()` detects the `n/` prefix, extracts the ingredient name, and constructs a
-   `RecommendRecipeCommand`. If the format is invalid or the name is empty, an error is printed and
+   `RecommendByIngredientCommand`. If the format is invalid or the name is empty, an error is printed and
    a no-op `Command` is returned.
 3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
 4. Inside `execute()`:
@@ -55,7 +55,7 @@ The feature involves five classes:
     - If no recipe qualifies, a "No recipes meet the requirement" message is printed; otherwise the
       list of matching recipe names is printed.
 
-Key snippet from `RecommendRecipeCommand`:
+Key snippet from `RecommendByIngredientCommand`:
 
 ```text
   for (int i = 0; i < recipes.size(); i++) {
@@ -113,9 +113,11 @@ Key snippet from `RecommendByInventoryCommand`:
 
 #### Sequence Diagrams
 
-![Recommend Recipe Sequence Diagram](team/RecommendSD-0.png)
+![Recommend Recipe Sequence Diagram](team/RecommendSD.png)
 
 *Figure 1: Sequence Diagram for `recommend-r n/INGREDIENT_NAME` (ingredient-based mode)*
+
+<br>
 
 ![Recommend By Inventory Sequence Diagram](team/RecommendByInventorySD.png)
 
