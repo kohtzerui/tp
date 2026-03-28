@@ -56,13 +56,24 @@
          - Mix everything together.
     ____________________________________________________________
     >
-     Added: rice (3.0 cups)
+     Added: rice (3.0 cups) expires: 2020-01-01
     ____________________________________________________________
     >
-     Added: egg (3.0 pcs)
+     Added: egg (3.0 pcs) expires: 2019-01-01
     ____________________________________________________________
     >
-     Added: soySauce (2.0 tbsp)
+     Added: soySauce (2.0 tbsp) expires: 2023-01-01
+    ____________________________________________________________
+    >
+     Here are the ingredients in your inventory:
+     1. rice (3.0 cups) expires: 2020-01-01
+     2. egg (3.0 pcs) expires: 2019-01-01
+     3. soySauce (2.0 tbsp) expires: 2023-01-01
+    ____________________________________________________________
+    >
+     Here are the ingredients in your inventory expiring before 2021-01-01:
+     1. rice (3.0 cups) expires: 2020-01-01
+     2. egg (3.0 pcs) expires: 2019-01-01
     ____________________________________________________________
     >
      Removed 2.0 cups of rice.
@@ -81,9 +92,9 @@
     ____________________________________________________________
     >
      Here are the ingredients in your inventory:
-     1. rice (1.0 cups)
-     2. egg (1.0 pcs)
-     3. soySauce (1.0 tbsp)
+     1. rice (1.0 cups) expires: 2020-01-01
+     2. egg (1.0 pcs) expires: 2019-01-01
+     3. soySauce (1.0 tbsp) expires: 2023-01-01
     ____________________________________________________________
     >
      No recipes found matching the criteria.

@@ -3,9 +3,11 @@ add-r {Fried Rice} i/rice 2 cups egg 2 pcs soySauce 1 tbsp s/{Cook the rice.} {S
 list-r
 view-r
 view-r 1
-add-i n/rice q/3 u/cups
-add-i n/egg q/3 u/pcs
-add-i n/soySauce q/2 u/tbsp
+add-i n/rice q/3 u/cups ex/2020-01-01
+add-i n/egg q/3 u/pcs ex/2019-01-01
+add-i n/soySauce q/2 u/tbsp ex/2023-01-01
+list-i
+list-i ex/2021-01-01
 cook 1
 list-i
 filter-r t/10
