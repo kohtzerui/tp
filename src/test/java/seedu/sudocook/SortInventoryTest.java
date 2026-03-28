@@ -24,7 +24,11 @@ public class SortInventoryTest {
         Command test = new SortInventoryCommand(false);
         test.execute(inventory);
 
-        assertTrue(inventory.getIngredients().get(0).getExpiryDate().isBefore(inventory.getIngredients().get(1).getExpiryDate())
-                && inventory.getIngredients().get(1).getExpiryDate().isBefore(inventory.getIngredients().get(2).getExpiryDate()));
+        boolean firstBeforeSecond = inventory.getIngredients().get(0).getExpiryDate()
+                .isBefore(inventory.getIngredients().get(1).getExpiryDate());
+        boolean secondBeforeThird = inventory.getIngredients().get(1).getExpiryDate()
+                .isBefore(inventory.getIngredients().get(2).getExpiryDate());
+
+        assertTrue(firstBeforeSecond && secondBeforeThird);
     }
 }
