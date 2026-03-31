@@ -10,13 +10,16 @@
 
 #### Overview
 
-The `recommend-r` command supports two modes of recipe recommendation:
+The `recommend-r` command supports three modes of recipe recommendation:
 
 - **Ingredient-based mode** (`recommend-r n/INGREDIENT_NAME`): recommends recipes that use a specific
   ingredient, provided the inventory holds enough of it.
 - **Inventory-based mode** (`recommend-r`): recommends every recipe whose **full** ingredient list
   can be satisfied by the current inventory — i.e. every required ingredient is present and in
   sufficient quantity.
+- **Missing-based mode** (`recommend-r missing/N`): recommends recipes that are missing **at most N**
+  ingredients (or insufficient quantities), and shows the exact shortfall for each missing ingredient
+  so the user knows what to buy.
 
 **Command formats:**
 
@@ -24,18 +27,20 @@ The `recommend-r` command supports two modes of recipe recommendation:
 |---|---|---|
 | Ingredient-based | `recommend-r n/INGREDIENT_NAME` | `recommend-r n/egg` |
 | Inventory-based | `recommend-r` | `recommend-r` |
+| Missing-based | `recommend-r missing/N` | `recommend-r missing/2` |
 
   ---
 
 #### Implementation
 
-The feature involves five classes:
+The feature involves six classes:
 
 | Class | Role |
 |---|---|
 | `Parser` | Parses raw input, selects the correct command variant, and validates format |
 | `RecommendByIngredientCommand` | Executes ingredient-based recommendation logic |
 | `RecommendByInventoryCommand` | Executes inventory-based recommendation logic |
+| `RecommendByMissingCommand` | Executes missing-based recommendation logic |
 | `Inventory` | Provides access to current ingredient stocks |
 | `RecipeBook` | Provides access to all known recipes |
 
@@ -106,6 +111,50 @@ Key snippet from `RecommendByInventoryCommand`:
           }
       }
       return true;
+  }
+```
+
+  ---
+
+**Missing-based mode — step-by-step execution:**
+
+1. The user enters `recommend-r missing/<N>`.
+2. `Parser.parse()` detects the `missing/` prefix, extracts and validates `N` as a positive integer,
+   and constructs a `RecommendByMissingCommand(N)`. If `N` is not a positive integer, an error is
+   printed and a no-op `Command` is returned.
+3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
+4. Inside `execute()`, each recipe is evaluated by `getMissingIngredients(recipe, inventory)`:
+    - For every ingredient required by the recipe, the inventory is searched for a case-insensitive
+      name match.
+    - If the ingredient is absent or the available quantity is less than required, the shortfall
+      (`required quantity − available quantity`) and unit are recorded.
+    - The method returns the list of formatted shortfall strings (e.g. `"Salt (1.0 g)"`).
+5. Back in `execute()`, the recipe is included in the output only if the number of missing items is
+   **between 1 and N** (inclusive). Recipes with zero missing items — i.e. fully makeable ones —
+   are always excluded.
+6. If no recipe qualifies, a "No recipes found" message is printed; otherwise the numbered list
+   with per-recipe shortfall details is printed.
+
+Key snippet from `RecommendByMissingCommand`:
+
+```text
+  private ArrayList<String> getMissingIngredients(Recipe recipe, Inventory inventory) {
+      ArrayList<String> missing = new ArrayList<>();
+      for (Ingredient required : recipe.getIngredients()) {
+          double available = 0;
+          for (int j = 0; j < inventory.size(); j++) {
+              Ingredient item = inventory.getIngredient(j);
+              if (item.getName().equalsIgnoreCase(required.getName())) {
+                  available = item.getQuantity();
+                  break;
+              }
+          }
+          if (available < required.getQuantity()) {
+              double shortfall = required.getQuantity() - available;
+              missing.add(required.getName() + " (" + shortfall + " " + required.getUnit() + ")");
+          }
+      }
+      return missing;
   }
 ```
 
@@ -394,18 +443,37 @@ though it adds a small amount of indirection.
 ## Product scope
 ### Target user profile
 
-{Describe the target user profile}
+A single student living independently (e.g., in a campus dorm) who types fast and prefers keyboard-driven workflows over 
+mouse/touch input. This student enjoys cooking by himself/herself, but often gets frustrated because of being too lazy 
+to organize the stored ingredients and not knowing what to cook.
+
 
 ### Value proposition
 
-{Describe the value proposition: what problem does it solve?}
+SudoCook is a cross-platform, portable, command-line pantry and recipe helper that reduces food waste by letting the 
+user quickly log ingredients and expiry dates, and reduces meal indecision by suggesting recipes based on what’s 
+currently in the pantry and the user’s available cooking time. All data is stored locally in a human-editable plain-text 
+file (e.g., JSON or CSV) and managed through an object-oriented Java 17 codebase packaged as a single runnable JAR, with 
+no DBMS and no reliance on remote servers.
+
 
 ## User Stories
 
-|Version| As a ... | I want to ... | So that I can ...|
-|--------|----------|---------------|------------------|
-|v1.0|new user|see usage instructions|refer to them when I forget how to use the application|
-|v2.0|user|find a to-do item by name|locate a to-do without having to go through the entire list|
+|Version| As a ...     | I want to ... | So that I can ...|
+|--------|--------------|---------------|------------------|
+|v1.0| Busy Student |Add an item and expiry date using a single short command|I can digitize my pantry quickly after grocery shopping|
+|v1.0| Novice Cook  |View step-by-step instructions for a specific recipe|I can follow the process accurately and complete the dish|
+|v1.0| User|Delete items quickly|My inventory list remains accurate after I throw things away/ use them|
+|v1.0| User |View all ingredients|I know what ingredients have been added so far|
+|v1.0| User |Add a recipe|I don't have to rely on my memory for instructions|
+|v1.0| User |Delete a recipe|I can keep my recipe list clean and organized|
+|v2.0| Budget-conscious Student|List all items sorted by their expiry dates|I can prioritize ingredients about to spoil and avoid wasting money|
+|v2.0| Indecisive Student|Request recipe suggestions based on current stock|I don't have to spend mental energy deciding what to cook|
+|v2.0| Power User|Mark a recipe as "cooked" to auto-deduct ingredients|My stock levels remain accurate with minimal manual adjustment|
+|v2.0| Organized Student|Compare a specific dish's requirements against inventory|I can see if I have everything or need a precise shopping list|
+|v2.0| Fast-typer|Use an "undo" command to revert the last change|I can quickly fix accidental deletions or typos|
+|v2.0| Tech-savvy User|Store data in a human-editable JSON/CSV file|My data is permanent, portable, and easy to backup|
+|v2.0| Health-conscious Student|Specify a dietary plan (e.g., Vegan) for automated meal plans|I can maintain nutritional goals without manual calculations|
 
 ## Non-Functional Requirements
 

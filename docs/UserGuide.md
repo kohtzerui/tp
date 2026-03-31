@@ -16,10 +16,11 @@
 
 ### Recommending recipes: `recommend-r`
 
-The `recommend-r` command has two modes:
+The `recommend-r` command has three modes:
 
 - **Ingredient-based** — finds recipes that use a specific ingredient you already have enough of.
 - **Inventory-based** — finds every recipe that can be fully made using your current inventory.
+- **Missing-based** — finds recipes you are almost able to make, listing exactly what you still need to buy.
 
 <br>
 
@@ -81,6 +82,42 @@ Recipes you can make with your inventory:
 Expected output (no recipe can be fully made):
 ```
 No recipes can be made with the current inventory.
+```
+
+<br>
+
+#### Missing-based recommendation
+
+Shows recipes you are **almost** able to make — specifically, those missing at most `N` ingredients (or quantities). For each recipe shown, the exact shortfall for each missing ingredient is listed so you know precisely what to buy.
+
+Format: `recommend-r missing/N`
+
+* `N` must be a positive integer (e.g. `1`, `2`).
+* A recipe is included only if the number of ingredients with insufficient stock is **between 1 and N** (inclusive). Recipes you can already make in full are excluded.
+* For each missing ingredient the output shows the ingredient name, the shortfall amount, and the unit.
+* Ingredient name matching is case-insensitive.
+
+Examples:
+
+`recommend-r missing/1`
+
+`recommend-r missing/2`
+
+Expected output (some recipes qualify):
+```
+Recipes you're almost able to make:
+1. Omelette (missing: Salt (1.0 g))
+2. Pasta (missing: Flour (200.0 g), Salt (5.0 g))
+```
+
+Expected output (no recipe is missing at most N ingredients):
+```
+No recipes found missing at most 1 ingredient(s).
+```
+
+Expected output (invalid N):
+```
+Oops! Missing count must be a positive number.
 ```
 
 ---

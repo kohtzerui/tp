@@ -62,7 +62,8 @@ public class SudoCook {
 
                 cmd.execute(recipes.getRecipe(cmd.getIndex()), inventory);
 
-            } else if (cmd instanceof RecommendByIngredientCommand || cmd instanceof RecommendByInventoryCommand) {
+            } else if (cmd instanceof RecommendByIngredientCommand || cmd instanceof RecommendByInventoryCommand
+                    || cmd instanceof RecommendByMissingCommand) {
                 logger.log(Level.FINE, "Routing recommend command");
                 cmd.execute(inventory, recipes);
             } else if (cmd instanceof SortInventoryCommand){

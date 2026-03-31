@@ -43,6 +43,9 @@ public class HelpCommand extends Command {
             "   Example : recommend-r n/egg\n" +
             "   Example : recommend-r\n" +
             "   Purpose : Recommend available recipes based on specific ingredient or current inventory.\n\n" +
+            "   Command : recommend-r missing/{N}\n" +
+            "   Example : recommend-r missing/2\n" +
+            "   Purpose : Show recipes missing at most N ingredients, with exact shortfall per item.\n\n" +
             "INGREDIENT COMMANDS:\n" +
             "--------------------------------------------------------\n" +
             "7. List Ingredients\n" +

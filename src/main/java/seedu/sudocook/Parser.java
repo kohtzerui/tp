@@ -53,8 +53,22 @@ public class Parser {
             String args = input.substring("recommend-r".length()).trim();
             if (args.isEmpty()) {
                 c = new RecommendByInventoryCommand();
+            } else if (args.startsWith("missing/")) {
+                String numStr = args.substring("missing/".length()).trim();
+                try {
+                    int n = Integer.parseInt(numStr);
+                    if (n <= 0) {
+                        Ui.printError("Missing count must be a positive number.");
+                        return new Command(false);
+                    }
+                    c = new RecommendByMissingCommand(n);
+                } catch (NumberFormatException e) {
+                    Ui.printError("Invalid format. Use: recommend-r missing/N");
+                    return new Command(false);
+                }
             } else if (!args.startsWith("n/")) {
-                Ui.printError("Invalid format. Use: recommend-r n/INGREDIENT_NAME or recommend-r");
+                Ui.printError("Invalid format. Use: recommend-r n/INGREDIENT_NAME, "
+                        + "recommend-r missing/N, or recommend-r");
                 return new Command(false);
             } else {
                 String ingredientName = args.substring("n/".length()).trim();
