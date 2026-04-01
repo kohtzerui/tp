@@ -14,6 +14,146 @@
 
 ## Features
 
+### Adding a recipe: `add-r`
+
+Adds a new recipe to the recipe book.
+
+Format: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY UNIT]... s/{STEP_1} [{STEP_2}]... t/TIME_IN_MINUTES`
+
+* `NAME` can be wrapped in `{}` to support spaces.
+* Each ingredient must be provided in groups of three: `NAME QUANTITY UNIT`.
+* Ingredients or steps containing spaces should be wrapped in `{}`.
+* `TIME_IN_MINUTES` must be a positive integer.
+
+Examples:
+
+`add-r {Fried Rice} i/rice 2 cups egg 2 pcs {soy sauce} 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.} t/15`
+
+`add-r {Instant Noodles} i/water 2 cups noodles 1 packet s/{Boil water.} {Cook noodles.} t/5`
+
+Example output excerpt (successful addition):
+```
+Added recipe:
+Recipe Name: Fried Rice
+Preparation Time: 15 minutes
+```
+
+Expected output (invalid format):
+```
+Oops! Invalid add-r format.
+```
+
+Expected output (invalid ingredient quantity):
+```
+Oops! Invalid ingredient quantity in add-r format.
+```
+
+---
+
+### Listing ingredients: `list-i`
+
+Shows the ingredients currently stored in your inventory.
+
+Format:
+
+* `list-i`
+* `list-i ex/YYYY-MM-DD`
+
+* `list-i` shows every ingredient in the inventory.
+* `list-i ex/YYYY-MM-DD` shows only ingredients whose expiry date is **before** the given date.
+* Ingredients without an expiry date are excluded from filtered results.
+* The date must be in `YYYY-MM-DD` format.
+
+Examples:
+
+`list-i`
+
+`list-i ex/2026-04-01`
+
+Expected output (listing all ingredients):
+```
+Here are the ingredients in your inventory:
+1. Milk (1.0 carton) expires: 2026-03-30
+2. Salt (1.0 kg)
+```
+
+Expected output (listing ingredients before a cutoff date):
+```
+Here are the ingredients in your inventory expiring before 2026-04-01:
+1. Milk (1.0 carton) expires: 2026-03-30
+```
+
+Expected output (no matching ingredients):
+```
+There are no ingredients expiring before 2026-04-01.
+```
+
+Expected output (invalid date):
+```
+Oops! Invalid expiry date format. Use: YYYY-MM-DD
+```
+
+---
+
+### Sorting ingredients by expiry date: `sort-i`
+
+Sorts the inventory so that ingredients with earlier expiry dates appear first.
+
+Format: `sort-i`
+
+* Ingredients with no expiry date are placed at the end of the inventory list.
+* Use `list-i` after sorting to view the updated order.
+
+Example:
+
+`sort-i`
+
+Expected output:
+```
+Sorted!
+```
+
+---
+
+### Cooking a recipe: `cook`
+
+Prepares a recipe and deducts its required ingredients from the inventory.
+
+Format: `cook INDEX`
+
+* `INDEX` refers to the recipe's position in the recipe list.
+* Use `list-r` or `view-r` first if you need to confirm the correct index.
+* The recipe is only cooked if all required ingredients exist in the inventory in sufficient quantity.
+* If any ingredient is missing or insufficient, no inventory changes are made.
+
+Examples:
+
+`cook 1`
+
+`cook 3`
+
+Result after a successful cook:
+```
+The recipe is cooked successfully and the required ingredients are removed from the inventory.
+```
+
+Expected output (not enough ingredients):
+```
+Oops! Not enough ingredients
+```
+
+Expected output (invalid index format):
+```
+Oops! You should indicate the index of the recipe when cooking!
+```
+
+Expected output (index out of range):
+```
+Oops! Index out of bounds
+```
+
+---
+
 ### Recommending recipes: `recommend-r`
 
 The `recommend-r` command has three modes:
@@ -163,6 +303,12 @@ Oops! Invalid index for delete-r. Use: delete-r INDEX
 
 ## Command Summary
 
-{Give a 'cheat sheet' of commands here}
-
-* Add todo `todo n/TODO_NAME d/DEADLINE`
+* Add recipe: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT... s/{STEP_1} {STEP_2}... t/TIME_IN_MINUTES`
+* List ingredients: `list-i`
+* List ingredients expiring before a date: `list-i ex/YYYY-MM-DD`
+* Sort ingredients by expiry: `sort-i`
+* Cook recipe by index: `cook INDEX`
+* Recommend recipes by ingredient: `recommend-r n/INGREDIENT_NAME`
+* Recommend recipes from inventory: `recommend-r`
+* Recommend nearly-makeable recipes: `recommend-r missing/N`
+* Delete recipe: `delete-r INDEX`
