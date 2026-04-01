@@ -257,6 +257,80 @@ displayed starting from 1.
 *Decision:* Reusing `DeleteIngredientCommand` keeps ingredient-removal behavior centralized even
 though it adds a small amount of indirection.
 
+### `sort-i` - Sort Inventory by Expiry Date
+
+#### Overview
+
+The `sort-i` command sorts the inventory so that ingredients with earlier expiry dates appear
+first. Ingredients without an expiry date are placed at the end of the list.
+
+**Command format:** `sort-i`
+
+  ---
+
+#### Implementation
+
+The feature involves four main classes:
+
+| Class | Role |
+|---|---|
+| `Parser` | Detects the `sort-i` prefix and constructs a `SortInventoryCommand` |
+| `SortInventoryCommand` | Delegates sorting to `Inventory` and prints a confirmation message |
+| `Inventory` | Stores ingredients and performs the in-place sort |
+| `Ui` | Displays the success message |
+
+**Step-by-step execution:**
+
+1. The user enters `sort-i`.
+2. `Parser.parse()` detects the prefix and constructs a `SortInventoryCommand`.
+3. `SudoCook` detects the command type and calls `cmd.execute(inventory)`.
+4. Inside `execute()`:
+    - `Inventory.sortIngredients()` sorts the internal ingredient list by expiry date.
+    - `Ui.printMessage("Sorted!")` is called to confirm completion.
+
+Key snippet from `SortInventoryCommand`:
+
+```text
+  public void execute (Inventory ingredients){
+      ingredients.sortIngredients();
+      Ui.printMessage("Sorted!");
+  }
+```
+
+  ---
+
+#### Sequence Diagram
+
+![Sort Inventory Sequence Diagram](team/SortInventory.png)
+
+*Figure 3: Sequence Diagram for the `sort-i` command*
+
+  ---
+
+#### Design Considerations
+
+**Aspect: Sorting criterion**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Sort by expiry date with `null` values last (current) | Helps users prioritise ingredients that expire sooner | Less useful when many ingredients have no expiry date |
+| Sort alphabetically by name | Easy to scan for a specific ingredient | Does not help with expiry-based planning |
+
+*Decision:* Sorting by expiry date is more useful for kitchen inventory management because it
+surfaces ingredients that should be used sooner.
+
+  ---
+
+**Aspect: Location of sorting logic**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Keep sorting in `Inventory` (current) | Keeps data manipulation close to the stored list; command stays simple | Sort order is defined in the inventory layer |
+| Implement sorting in `SortInventoryCommand` | Makes the command self-contained | Mixes orchestration with collection logic |
+
+*Decision:* The sorting logic is kept in `Inventory` so command classes remain focused on
+triggering behaviour rather than manipulating internal data structures directly.
+
 
 ## Product scope
 ### Target user profile
