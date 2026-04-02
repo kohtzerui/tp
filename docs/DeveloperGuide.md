@@ -436,6 +436,81 @@ covering both use cases.
 *Decision:* Ingredients without expiry dates are excluded in cutoff mode because the filter is
 intended to show only items known to expire before the requested date.
 
+### `add-i` — Add an Ingredient
+
+#### Overview
+
+The `add-i` command adds an ingredient to the user's inventory with optional expiry date tracking.
+The user specifies the ingredient name, quantity, and unit of measurement. An expiry date in
+YYYY-MM-DD format can optionally be provided to help track when ingredients should be used.
+
+**Command format:** `add-i n/NAME q/QUANTITY u/UNIT [ex/YYYY-MM-DD]`
+
+---
+
+#### Implementation
+
+The feature involves four main classes:
+
+| Class | Role |
+|---|---|
+| `Parser` | Parses raw input, extracts name/quantity/unit/expiry, validates format, and constructs an `AddIngredientCommand` |
+| `AddIngredientCommand` | Delegates to `Inventory.addIngredient()` to store the ingredient |
+| `Inventory` | Stores ingredients and provides access to the ingredient list |
+| `Ui` | Displays success or error messages |
+
+**Step-by-step execution:**
+
+1. The user enters `add-i n/<name> q/<quantity> u/<unit> [ex/<date>]`.
+2. `Parser.parse()` detects the `add-i` prefix and uses regex to extract the name, quantity, unit,
+   and optional expiry date fields.
+3. If the expiry date is provided, it is validated against the YYYY-MM-DD format. If invalid, an
+   error is printed and a no-op `Command` is returned.
+4. The quantity is validated to ensure it is a positive number. If invalid, an error is printed
+   and a no-op `Command` is returned.
+5. An `AddIngredientCommand` is constructed with the parsed values.
+6. `SudoCook` detects the command type and calls `cmd.execute(inventory)`.
+7. Inside `execute()`:
+    - `Inventory.addIngredient(name, quantity, unit, expiryDate)` adds the ingredient to the list.
+    - A success message is printed via `Ui.printMessage()`.
+
+Key snippet from `AddIngredientCommand`:
+
+```text
+  public void execute(Inventory inventory) {
+      inventory.addIngredient(name, quantity, unit, expiryDate);
+      Ui.printMessage("Added " + name + " (" + quantity + " " + unit + ")"
+          + (expiryDate != null ? " expires: " + expiryDate : ""));
+  }
+```
+
+---
+
+#### Design Considerations
+
+**Aspect: Expiry date requirement**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Optional expiry date (current) | Supports items without known expiry; flexible for non-perishables | Users may forget to enter expiry for perishables |
+| Mandatory expiry date | Ensures all items are tracked with expiry | Less flexible for indefinite items like spices |
+
+*Decision:* Making expiry date optional provides maximum flexibility while still supporting expiry
+tracking where it matters most.
+
+---
+
+**Aspect: Quantity validation**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Allow decimals (current) | Accommodates fractional measurements like 2.5 cups | Slightly more complex parsing and validation |
+| Integer quantities only | Simpler validation | Loses precision for recipes using fractions |
+
+*Decision:* Decimal quantities were chosen to support common cooking measurements that often involve
+fractions.
+
+---
 
 ### `filter-r` — Filter Recipes
 
@@ -776,6 +851,97 @@ The `help` feature is implemented using a simple command pattern that bridges to
 *Decision:* Storing the help message directly as a static string in `HelpCommand` was chosen for its
 simplicity and lack of external dependencies, ensuring the help feature always works even if the
 filesystem is restricted.
+
+---
+
+### `undo` — Undo Commands
+
+#### Overview
+
+The `undo` command reverts the most recent command that modified the inventory or recipes. It maintains
+a history of up to 50 command snapshots, allowing users to undo multiple changes in sequence. Read-only
+commands (like `list-r`, `search-i`, `help`) and their execution side effects are not undoable.
+
+**Command format:** `undo`
+
+---
+
+#### Implementation
+
+The feature involves four main classes:
+
+| Class | Role |
+|---|---|
+| `Parser` | Detects the `undo` keyword and constructs an `UndoCommand` |
+| `UndoCommand` | Restores the previous inventory and recipe state from history |
+| `CommandHistory` | Manages a queue of up to 50 state snapshots (inventory + recipes) |
+| `SudoCook` | Saves state snapshots before executing modifying commands |
+
+**Step-by-step execution:**
+
+1. The user enters `undo`.
+2. `Parser.parse()` detects the `undo` keyword and constructs a new `UndoCommand`.
+3. `SudoCook` detects the command type and calls `cmd.execute(history, recipes, inventory)`.
+4. Inside `execute()`:
+    - `CommandHistory.canUndo()` checks if there are any saved snapshots.
+    - If no snapshots exist, a "No commands to undo" message is printed.
+    - If snapshots exist, the most recent snapshot is retrieved and restored to both `recipes` and
+      `inventory`.
+    - A success message is printed via `Ui.printMessage()`.
+
+Key snippet from `UndoCommand`:
+
+```text
+  public void execute(CommandHistory history, RecipeBook recipes, Inventory inventory) {
+      if (!history.canUndo()) {
+          Ui.printMessage("No commands to undo.");
+          return;
+      }
+      CommandHistory.Snapshot snapshot = history.undo();
+      recipes.restoreState(snapshot.getRecipes());
+      inventory.restoreState(snapshot.getIngredients());
+      Ui.printMessage("Command undone successfully!");
+  }
+```
+
+---
+
+#### Design Considerations
+
+**Aspect: History size limit**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Fixed limit of 50 snapshots (current) | Prevents unbounded memory growth; reasonable for typical session | Users cannot undo very old commands |
+| Unbounded history | Users can undo any past command | Memory usage grows without limit over time |
+| Configurable limit | Flexible; can be tuned per system | Adds complexity to configuration |
+
+*Decision:* A fixed limit of 50 snapshots was chosen as a practical balance between usability and
+memory efficiency. Users can typically revisit recent changes without excessive memory overhead.
+
+---
+
+**Aspect: What to undo**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Only modifying commands (current) | Keeps history focused on state-changing operations; read-only commands don't interfere | Users cannot undo side effects of read-only commands |
+| All commands including read-only | Truly reverses every action | Adds unnecessary entries to history; clutters UI |
+
+*Decision:* Only modifying commands are placed in history. Read-only commands like `list-i` and
+`search-r` do not alter state, so undoing them would be meaningless.
+
+---
+
+**Aspect: Automatic snapshot timing**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Save snapshot before each modifying command (current) | Simple and deterministic; undo always reverses the last modification | Minor overhead for every command |
+| Snapshot only on explicit `save` command | Gives users control over what to preserve | Requires users to manually checkpoint, which is cumbersome |
+
+*Decision:* Automatic snapshots before each modifying command were chosen because users expect `undo`
+to work immediately without manual setup, and the performance overhead is negligible.
 
 ---
 
