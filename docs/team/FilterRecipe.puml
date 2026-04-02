@@ -19,8 +19,6 @@ activate SudoCook
 SudoCook -> Parser : parse("filter-r t/20 c/500")
 activate Parser
 
-note right of Parser : Extract t/ and c/ values\nusing regex patterns
-
 create Cmd
 Parser -> Cmd ** : FilterRecipeCommand(maxTime, maxCalories)
 activate Cmd
@@ -37,7 +35,6 @@ Cmd -> RecipeBook : filterRecipes(maxTime, maxCalories)
 activate RecipeBook
 
 loop for each recipe in recipes
-    note right of RecipeBook : Check time <= maxTime (if set)\nAND calories <= maxCalories (if set)
 end
 
 alt matching recipes found

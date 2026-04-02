@@ -725,6 +725,60 @@ Key snippet from `FuzzySearch`:
 
 ---
 
+### `help` — Help Command
+
+#### Overview
+
+The `help` command provides users with a comprehensive guide of all available commands, their
+purposes, and correct formats. This is particularly useful for new users or for reminding seasoned
+users of exact command syntax.
+
+**Command format:** `help`
+
+---
+
+#### Implementation
+
+The `help` feature is implemented using a simple command pattern that bridges to the UI layer:
+
+| Class | Role |
+|---|---|
+| `Parser` | Detects the `help` keyword and constructs a `HelpCommand` |
+| `HelpCommand` | Contains the help message string and triggers its display |
+| `Ui` | Outputs the help message to the terminal |
+
+**Step-by-step execution:**
+
+1. The user enters `help`.
+2. `Parser.parse()` detects the keyword and returns a new `HelpCommand`.
+3. `SudoCook` receives the command and calls `cmd.execute(inventory)`.
+4. Inside `execute()`, the `helpMessage` string is passed to `Ui.printMessage()`.
+
+---
+
+#### Sequence Diagram
+
+![Help Sequence Diagram](team/Help.png)
+
+*Figure 11: Sequence Diagram for the `help` command*
+
+---
+
+#### Design Considerations
+
+**Aspect: Centralisation of help information**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Store help text in `HelpCommand` (current) | Command is self-contained; easy to find and edit the "source of truth" | Slightly increases the size of the command class |
+| Separate help text into a text file or resource | Keeps code clean; allows for localization | Requires additional file I/O and complicates deployment/JAR packaging |
+
+*Decision:* Storing the help message directly as a static string in `HelpCommand` was chosen for its
+simplicity and lack of external dependencies, ensuring the help feature always works even if the
+filesystem is restricted.
+
+---
+
 ## Product scope
 ### Target user profile
 

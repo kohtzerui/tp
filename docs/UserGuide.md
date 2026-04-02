@@ -482,6 +482,31 @@ Oops! Please provide a search query. Use: search-i QUERY
 
 ---
 
+### Viewing help: `help`
+
+Displays a guide of all available commands and their formats.
+
+Format: `help`
+
+Example:
+
+`help`
+
+Example output excerpt:
+```
+SudoCook Help Guide
+========================================================
+
+RECIPE COMMANDS:
+--------------------------------------------------------
+1. List Recipes
+   Command : list-r
+   Purpose : Shows names of all available recipes.
+...
+```
+
+---
+
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?
@@ -508,4 +533,5 @@ are fully portable.
 | Recommend by ingredient | `recommend-r n/INGREDIENT_NAME` |
 | Recommend from inventory | `recommend-r` |
 | Recommend nearly-makeable | `recommend-r missing/N` |
+| View help | `help` |
 | Exit | `bye` |

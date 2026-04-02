@@ -35,8 +35,10 @@ through an intuitive text interface.
     - Improved `RecipeBook.java` index validation to provide clear error messages when the recipe book
       is empty (instead of displaying an illogical range like "1 to 0").
 
-- **UI enhancements** (`Ui.java`)
-    - Refactored the `Help` command output formatting with gradient line endings for a polished CLI experience.
+- **Implemented the `help` command** (`HelpCommand.java`, `SudoCook.java`, `Parser.java`)
+    - Developed a centralized help system that displays all available commands and their formats.
+    - Integrated with `SudoCook` logic to route help requests, ensuring users can discover features easily.
+    - Enhanced the `Help` command output formatting with gradient line endings for a polished CLI experience.
     - Fixed startup behavior and Checkstyle violations across multiple files.
 
 #### Contributions to the User Guide (UG)

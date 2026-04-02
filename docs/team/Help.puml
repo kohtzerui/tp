@@ -1,0 +1,45 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+hide footbox
+
+skinparam MaxMessageSize 150
+
+actor User
+participant ":SudoCook" as SudoCook
+participant ":Parser" as Parser
+participant "cmd:HelpCommand" as Cmd
+participant ":Ui" as Ui
+
+User -> SudoCook : enter help command
+activate SudoCook
+
+SudoCook -> Parser : parse("help")
+activate Parser
+
+create Cmd
+Parser -> Cmd ** : HelpCommand()
+activate Cmd
+Cmd --> Parser
+deactivate Cmd
+
+Parser --> SudoCook : cmd
+deactivate Parser
+
+SudoCook -> Cmd : execute(inventory)
+activate Cmd
+
+Cmd -> Ui : printMessage(helpMessage)
+activate Ui
+Ui --> Cmd
+deactivate Ui
+
+SudoCook <-- Cmd
+deactivate Cmd
+destroy Cmd
+
+SudoCook --> User
+deactivate SudoCook
+
+@enduml

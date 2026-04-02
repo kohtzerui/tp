@@ -19,8 +19,6 @@ activate SudoCook
 SudoCook -> Parser : parse("delete-r 1")
 activate Parser
 
-note right of Parser : Parse index from input
-
 create Cmd
 Parser -> Cmd ** : DeleteRecipeCommand(index)
 activate Cmd
