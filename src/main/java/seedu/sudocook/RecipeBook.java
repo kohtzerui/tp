@@ -114,6 +114,27 @@ public class RecipeBook {
         Ui.printGradientMessage(sb.toString());
     }
 
+    public void searchRecipes(String query) {
+        if (recipes.isEmpty()) {
+            Ui.printMessage("No recipes found.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        int count = 0;
+        for (int i = 0; i < recipes.size(); i++) {
+            if (FuzzySearch.isMatch(query, recipes.get(i).getName())) {
+                count++;
+                sb.append(i + 1).append(". ").append(recipes.get(i).getName()).append("\n");
+            }
+        }
+        if (count == 0) {
+            Ui.printMessage("No recipes matched \"" + query + "\".");
+        } else {
+            Ui.printGradientMessage("Found " + count + " recipe(s) matching \""
+                    + query + "\":\n" + sb.toString().stripTrailing());
+        }
+    }
+
     public int size(){
         return recipes.size();
     }

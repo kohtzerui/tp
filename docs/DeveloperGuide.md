@@ -424,6 +424,191 @@ covering both use cases.
 intended to show only items known to expire before the requested date.
 
 
+### `filter-r` — Filter Recipes
+
+#### Overview
+
+The `filter-r` command allows users to filter recipes based on maximum preparation time and/or
+maximum calorie count. Both filter criteria are optional and can be used independently or combined.
+
+**Command format:** `filter-r [t/MAX_TIME] [c/MAX_CALORIES]`
+
+---
+
+#### Implementation
+
+The feature involves three classes:
+
+| Class | Role |
+|---|---|
+| `Parser` | Detects the `filter-r` prefix, extracts optional `t/` and `c/` values using regex, and constructs a `FilterRecipeCommand` |
+| `FilterRecipeCommand` | Stores the filter criteria and delegates to `RecipeBook.filterRecipes()` |
+| `RecipeBook` | Iterates over all recipes, applies the time and/or calorie filters, and prints matching results |
+
+**Step-by-step execution:**
+
+1. The user enters `filter-r [t/MAX_TIME] [c/MAX_CALORIES]`.
+2. `Parser.parse()` detects the `filter-r` prefix and extracts the optional `t/` and `c/` arguments
+   using `Pattern.compile("t/(\\d+)")` and `Pattern.compile("c/(\\d+)")` respectively.
+3. If neither argument is provided, an error is printed and a no-op `Command` is returned.
+4. A `FilterRecipeCommand` is constructed with `maxTime` and `maxCalories` (both nullable `Integer`).
+5. `SudoCook` calls `cmd.execute(recipes)`.
+6. Inside `RecipeBook.filterRecipes(maxTime, maxCalories)`:
+    - Each recipe is checked against both criteria (if provided).
+    - A recipe is kept only if its time ≤ `maxTime` (when set) **and** its calories ≤ `maxCalories` (when set).
+    - If no recipes match, a "No recipes found" message is printed.
+    - Otherwise, the matching recipes are printed in a numbered list.
+
+Key snippet from `RecipeBook`:
+
+```text
+  for (Recipe r : recipes) {
+      boolean keep = true;
+      if (maxTime != null && r.getTime() > maxTime) {
+          keep = false;
+      }
+      if (maxCalories != null && r.getCalories() > maxCalories) {
+          keep = false;
+      }
+      if (keep) {
+          filtered.add(r);
+      }
+  }
+```
+
+---
+
+#### Design Considerations
+
+**Aspect: Optional vs. mandatory filter criteria**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Both optional (current) | Flexible; user can filter by time only, calories only, or both | Parser must handle missing arguments gracefully |
+| Both mandatory | Simpler parsing | Forces the user to always specify both, even when only one is relevant |
+
+*Decision:* Making both criteria optional provides maximum flexibility for the user.
+
+---
+
+**Aspect: Filter logic (AND vs. OR)**
+
+| Option | Pros | Cons |
+|---|---|---|
+| AND logic (current) — recipe must satisfy all provided criteria | Produces more precise, narrowed results | May return fewer results |
+| OR logic — recipe must satisfy at least one criterion | Returns more results | Less useful for precise searching |
+
+*Decision:* AND logic was chosen because users who specify multiple criteria typically want to narrow
+their search, not broaden it.
+
+---
+
+### `search-r` and `search-i` — Fuzzy Search for Recipes and Ingredients
+
+#### Overview
+
+Two commands are provided for fuzzy searching by name:
+
+- `search-r QUERY` searches the recipe book for recipes whose names fuzzy-match the query.
+- `search-i QUERY` searches the inventory for ingredients whose names fuzzy-match the query.
+
+Unlike exact or substring matching, fuzzy search tolerates typos and partial input, making it more
+forgiving for users who cannot recall an exact name.
+
+**Command formats:**
+- `search-r QUERY` — e.g. `search-r fried rice`
+- `search-i QUERY` — e.g. `search-i tomatto` (typo tolerated)
+
+---
+
+#### Implementation
+
+The feature involves the following classes:
+
+| Class | Role |
+|---|---|
+| `Parser` | Detects the `search-r` or `search-i` prefix, extracts the query, and constructs the appropriate command |
+| `SearchRecipeCommand` | Calls `RecipeBook.searchRecipes(query)` |
+| `SearchIngredientCommand` | Calls `Inventory.searchIngredients(query)` |
+| `RecipeBook` | Iterates over recipes and prints those whose names pass `FuzzySearch.isMatch()` |
+| `Inventory` | Iterates over ingredients and prints those whose names pass `FuzzySearch.isMatch()` |
+| `FuzzySearch` | Stateless utility class that computes a fuzzy score between a query and a target string |
+
+**Step-by-step execution (`search-r`):**
+
+1. The user enters `search-r <query>`.
+2. `Parser.parse()` detects the `search-r` prefix and extracts the query string. If it is empty, an error is printed and a no-op `Command` is returned.
+3. A `SearchRecipeCommand` is constructed with the query.
+4. `SudoCook` calls `cmd.execute(recipeBook)` (falls through to the default recipe routing branch).
+5. Inside `execute()`, `RecipeBook.searchRecipes(query)` iterates over all recipes and calls `FuzzySearch.isMatch(query, recipe.getName())` for each. Matching recipes are collected and printed.
+
+The `search-i` flow is identical, but targets `Inventory` and `SearchIngredientCommand`.
+
+**Fuzzy scoring in `FuzzySearch`:**
+
+`FuzzySearch.score(query, target)` returns an integer 0–100 using a priority cascade:
+
+| Priority | Condition | Score |
+|---|---|---|
+| 1 | Exact match (case-insensitive) | 100 |
+| 2 | Target contains query as a substring | 90 |
+| 3 | Query characters appear as a subsequence in target | 40–80 (scales with coverage) |
+| 4 | Levenshtein distance below threshold | 0–60 |
+
+`FuzzySearch.isMatch()` returns `true` when the score is ≥ 40.
+
+Key snippet from `FuzzySearch`:
+
+```text
+  if (t.contains(q)) return 90;
+
+  int subseq = subsequenceScore(q, t);
+  if (subseq > 0) return subseq;
+
+  int dist = levenshtein(q, t);
+  int maxLen = Math.max(q.length(), t.length());
+  return Math.max(0, (int) ((1.0 - (double) dist / maxLen) * 60));
+```
+
+---
+
+#### Design Considerations
+
+**Aspect: Scoring strategy**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Priority cascade (exact → substring → subsequence → Levenshtein) (current) | Fast short-circuit for common cases; graceful degradation for typos | Scores are heuristic, not a formal similarity metric |
+| Pure Levenshtein distance only | Simple and well-understood | Penalises partial queries (e.g. `rice` searching `Fried Rice`) |
+| External fuzzy library | Battle-tested and feature-rich | Adds a dependency; overkill for a small dataset |
+
+*Decision:* A pure-Java cascade was chosen to avoid external dependencies while still handling the most common search patterns (substring and typo).
+
+---
+
+**Aspect: Match threshold**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Threshold at 40 (current) | Accepts subsequence matches and minor typos; rejects poor matches | May include weak matches for very short queries |
+| Higher threshold (e.g. 60) | More precise results | Rejects useful subsequence/typo matches |
+| No threshold (return all scored) | Maximum recall | Clutters results with irrelevant entries |
+
+*Decision:* 40 was chosen as it is the minimum score awarded to a full character-subsequence match, giving a natural cutoff between recognisable and unrecognisable matches.
+
+---
+
+**Aspect: Where to place fuzzy logic**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Separate `FuzzySearch` utility class (current) | Single responsibility; reusable across recipe and ingredient search | One extra file |
+| Inline inside `RecipeBook` / `Inventory` | Fewer files | Duplicates logic; harder to test or modify |
+
+*Decision:* A dedicated utility class keeps scoring logic testable and reusable without coupling it to any particular data class.
+
+---
+
 ## Product scope
 ### Target user profile
 

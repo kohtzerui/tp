@@ -38,6 +38,10 @@ public class HelpCommand extends Command {
             "5. Filter Recipes\n" +
             "   Command : filter-r t/{MAX_TIME_IN_MINUTES}\n" +
             "   Example : filter-r t/30\n\n" +
+            "5a. Search Recipes (Fuzzy)\n" +
+            "   Command : search-r {QUERY}\n" +
+            "   Example : search-r fried rice\n" +
+            "   Purpose : Fuzzy search recipes by name (handles typos and partial matches).\n\n" +
             "6. Recommend Recipes\n" +
             "   Command : recommend-r [n/{INGREDIENT_NAME}]\n" +
             "   Example : recommend-r n/egg\n" +
@@ -59,6 +63,10 @@ public class HelpCommand extends Command {
             "   Command : delete-i {INDEX/NAME} [{QUANTITY}]\n" +
             "   Example : delete-i Apple (Deletes all Apples)\n" +
             "   Example : delete-i Apple 2 (Deletes 2 Apples)\n\n" +
+            "9a. Search Ingredients (Fuzzy)\n" +
+            "   Command : search-i {QUERY}\n" +
+            "   Example : search-i tomato\n" +
+            "   Purpose : Fuzzy search ingredients by name (handles typos and partial matches).\n\n" +
             "OTHER:\n" +
             "--------------------------------------------------------\n" +
             "10. Exit\n" +

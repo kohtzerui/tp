@@ -304,6 +304,22 @@ public class Parser {
             logger.log(Level.INFO, "Received sort-i request");
             c = new SortInventoryCommand(false);
             return c;
+        } else if (input.startsWith("search-r")) {
+            logger.log(Level.INFO, "Received search-r request");
+            String query = input.substring("search-r".length()).trim();
+            if (query.isEmpty()) {
+                Ui.printError("Please provide a search query. Use: search-r QUERY");
+                return new Command(false);
+            }
+            c = new SearchRecipeCommand(query);
+        } else if (input.startsWith("search-i")) {
+            logger.log(Level.INFO, "Received search-i request");
+            String query = input.substring("search-i".length()).trim();
+            if (query.isEmpty()) {
+                Ui.printError("Please provide a search query. Use: search-i QUERY");
+                return new Command(false);
+            }
+            c = new SearchIngredientCommand(query);
         } else if (input.trim().equalsIgnoreCase("help")) {
             c = new HelpCommand();
         } else {

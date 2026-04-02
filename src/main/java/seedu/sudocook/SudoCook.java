@@ -49,7 +49,10 @@ public class SudoCook {
                 continue;
             }
             cmd = parser.parse(input);
-            if (cmd instanceof AddIngredientCommand ||
+            if (cmd instanceof SearchIngredientCommand) {
+                logger.log(Level.FINE, "Routing search-i command to Inventory");
+                cmd.execute(inventory);
+            } else if (cmd instanceof AddIngredientCommand ||
                     cmd instanceof ListIngredientCommand ||
                     cmd instanceof DeleteIngredientCommand) {
                 logger.log(Level.FINE, "Routing command to Inventory");
