@@ -8,7 +8,8 @@ public class AddRecipeCommand extends Command {
     String name;
     int time;
     int calories;
-    public AddRecipeCommand(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps, int time, int calories) {
+    public AddRecipeCommand(String name, ArrayList<Ingredient> ingredients,
+            ArrayList<String> steps, int time, int calories) {
         super(false);
         assert(name!=null);
         assert(ingredients!=null);

@@ -66,7 +66,8 @@ public class RecipeBook {
         Ui.printGradientMessage(recipes.get(index - 1).toString().stripLeading());
     }
 
-    public void addRecipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps, int time, int calories){
+    public void addRecipe(String name, ArrayList<Ingredient> ingredients,
+            ArrayList<String> steps, int time, int calories) {
         Recipe newRecipe = new Recipe(name, ingredients, steps, time, calories);
         recipes.add(newRecipe);
         Ui.printGradientMessage("Added recipe:\n" + newRecipe.toString());
