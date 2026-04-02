@@ -206,6 +206,10 @@ public class Parser {
             try {
                 time = Integer.parseInt(timeInput);
                 calories = Integer.parseInt(calorieInput);
+                if (time < 0 || calories < 0) {
+                    Ui.printError("Time and calories cannot be negative.");
+                    return new Command(false);
+                }
             } catch (NumberFormatException e) {
                 Ui.printError("Invalid add-r format. Time and calories should be integers.");
                 logger.log(Level.INFO, "Caught invalid add-r command format in numeric fields");

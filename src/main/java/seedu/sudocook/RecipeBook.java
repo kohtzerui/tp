@@ -10,9 +10,12 @@ public class RecipeBook {
     }
 
     public void removeRecipe(int index) {
+        if (recipes.isEmpty()) {
+            throw new IndexOutOfBoundsException("The recipe book is currently empty.");
+        }
         if (index < 1 || index > recipes.size()) {
             throw new IndexOutOfBoundsException(
-                    "Index " + index + " is out of range. Valid range: 1 to " + recipes.size()
+                    "Index " + index + " is out of range. (Valid range: 1 to " + recipes.size() + ")"
             );
         }
         recipes.remove(index - 1);
@@ -59,8 +62,12 @@ public class RecipeBook {
     }
 
     public void viewRecipe(int index) {
+        if (recipes.isEmpty()) {
+            Ui.printError("The recipe book is currently empty.");
+            return;
+        }
         if (index < 1 || index > recipes.size()) {
-            Ui.printError("Index " + index + " is out of range. Valid range: 1 to " + recipes.size());
+            Ui.printError("Index " + index + " is out of range. (Valid range: 1 to " + recipes.size() + ")");
             return;
         }
         Ui.printGradientMessage(recipes.get(index - 1).toString().stripLeading());
