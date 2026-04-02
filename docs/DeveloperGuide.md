@@ -2,7 +2,8 @@
 
 ## Acknowledgements
 
-{list here sources of all reused/adapted ideas, code, documentation, and third-party libraries -- include links to the original source as well}
+This project is based on the [AddressBook-Level3 (AB3)](https://se-education.org/addressbook-level3/)
+project created by the [SE-EDU initiative](https://se-education.org).
 
 ## Design & implementation
 
@@ -424,30 +425,136 @@ covering both use cases.
 intended to show only items known to expire before the requested date.
 
 
+### `filter-r` — Filter Recipes
+
+#### Overview
+
+The `filter-r` command allows users to filter recipes based on maximum preparation time and/or
+maximum calorie count. Both filter criteria are optional and can be used independently or combined.
+
+**Command format:** `filter-r [t/MAX_TIME] [c/MAX_CALORIES]`
+
+---
+
+#### Implementation
+
+The feature involves three classes:
+
+| Class | Role |
+|---|---|
+| `Parser` | Detects the `filter-r` prefix, extracts optional `t/` and `c/` values using regex, and constructs a `FilterRecipeCommand` |
+| `FilterRecipeCommand` | Stores the filter criteria and delegates to `RecipeBook.filterRecipes()` |
+| `RecipeBook` | Iterates over all recipes, applies the time and/or calorie filters, and prints matching results |
+
+**Step-by-step execution:**
+
+1. The user enters `filter-r [t/MAX_TIME] [c/MAX_CALORIES]`.
+2. `Parser.parse()` detects the `filter-r` prefix and extracts the optional `t/` and `c/` arguments
+   using `Pattern.compile("t/(\\d+)")` and `Pattern.compile("c/(\\d+)")` respectively.
+3. If neither argument is provided, an error is printed and a no-op `Command` is returned.
+4. A `FilterRecipeCommand` is constructed with `maxTime` and `maxCalories` (both nullable `Integer`).
+5. `SudoCook` calls `cmd.execute(recipes)`.
+6. Inside `RecipeBook.filterRecipes(maxTime, maxCalories)`:
+    - Each recipe is checked against both criteria (if provided).
+    - A recipe is kept only if its time ≤ `maxTime` (when set) **and** its calories ≤ `maxCalories`
+      (when set).
+    - If no recipes match, a "No recipes found" message is printed.
+    - Otherwise, the matching recipes are printed in a numbered list.
+
+Key snippet from `RecipeBook`:
+
+```text
+  for (Recipe r : recipes) {
+      boolean keep = true;
+      if (maxTime != null && r.getTime() > maxTime) {
+          keep = false;
+      }
+      if (maxCalories != null && r.getCalories() > maxCalories) {
+          keep = false;
+      }
+      if (keep) {
+          filtered.add(r);
+      }
+  }
+```
+
+---
+
+#### Design Considerations
+
+**Aspect: Optional vs. mandatory filter criteria**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Both optional (current) | Flexible; user can filter by time only, calories only, or both | Parser must handle missing arguments gracefully |
+| Both mandatory | Simpler parsing | Forces the user to always specify both, even when only one is relevant |
+
+*Decision:* Making both criteria optional provides maximum flexibility for the user.
+
+---
+
+**Aspect: Filter logic (AND vs. OR)**
+
+| Option | Pros | Cons |
+|---|---|---|
+| AND logic (current) — recipe must satisfy all provided criteria | Produces more precise, narrowed results | May return fewer results |
+| OR logic — recipe must satisfy at least one criterion | Returns more results | Less useful for precise searching |
+
+*Decision:* AND logic was chosen because users who specify multiple criteria typically want to narrow
+their search, not broaden it.
+
+
 ## Product scope
 ### Target user profile
 
-{Describe the target user profile}
+A single student living independently (e.g., in a campus dorm) who types fast and prefers
+keyboard-driven workflows over mouse/touch input. This student enjoys cooking but often gets
+frustrated by disorganised ingredients and indecision about what to cook.
 
 ### Value proposition
 
-{Describe the value proposition: what problem does it solve?}
+SudoCook is a cross-platform, portable, command-line pantry and recipe helper that reduces food
+waste by letting the user quickly log ingredients and expiry dates, and reduces meal indecision by
+suggesting recipes based on what’s currently in the pantry and the user’s available cooking time. All
+data is stored locally in a human-editable JSON file and managed through an object-oriented Java 17
+codebase packaged as a single runnable JAR, with no DBMS and no reliance on remote servers.
 
 ## User Stories
 
-|Version| As a ... | I want to ... | So that I can ...|
-|--------|----------|---------------|------------------|
-|v1.0|new user|see usage instructions|refer to them when I forget how to use the application|
-|v2.0|user|find a to-do item by name|locate a to-do without having to go through the entire list|
+| Version | As a ... | I want to ... | So that I can ... |
+|---------|----------|---------------|-------------------|
+| v1.0 | Busy Student | Add an item and expiry date using a single short command | I can digitize my pantry quickly after grocery shopping |
+| v1.0 | Novice Cook | View step-by-step instructions for a specific recipe | I can follow the process accurately and complete the dish |
+| v1.0 | User | Delete items quickly | My inventory list remains accurate after I throw things away or use them |
+| v1.0 | User | View all ingredients | I know what ingredients have been added so far |
+| v1.0 | User | Add a recipe | I don’t have to rely on my memory for instructions |
+| v1.0 | User | Delete a recipe | I can keep my recipe list clean and organized |
+| v2.0 | Budget-conscious Student | List all items sorted by their expiry dates | I can prioritize ingredients about to spoil and avoid wasting money |
+| v2.0 | Indecisive Student | Request recipe suggestions based on current stock | I don’t have to spend mental energy deciding what to cook |
+| v2.0 | Power User | Mark a recipe as “cooked” to auto-deduct ingredients | My stock levels remain accurate with minimal manual adjustment |
+| v2.0 | Health-conscious Student | Filter recipes by calorie count | I can maintain nutritional goals without manual calculations |
 
 ## Non-Functional Requirements
 
-{Give non-functional requirements}
+1. The application should work on any mainstream OS (Windows, macOS, Linux) with Java 17 installed.
+2. A user with above-average typing speed should be able to accomplish most tasks faster than using a GUI-based application.
+3. The data files should be human-readable and editable with a plain text editor.
+4. The application should respond to user commands within 1 second under normal usage.
 
 ## Glossary
 
-* *glossary item* - Definition
+* *Recipe* — A named dish with a list of required ingredients, preparation steps, time, and calorie count.
+* *Ingredient* — A named item with a quantity, unit, and optional expiry date.
+* *Inventory* — The collection of ingredients currently available to the user.
+* *Recipe Book* — The collection of all saved recipes.
 
 ## Instructions for manual testing
 
-{Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
+1. **Launch**: Run `java -jar sudocook.jar`. Verify the welcome banner appears.
+2. **Add a recipe**: `add-r {Fried Rice} i/rice 2 cups egg 2 pcs s/{Cook rice} {Fry egg} t/15 c/400`. Verify the recipe is added with the correct details.
+3. **List recipes**: `list-r`. Verify the recipe name appears in a numbered list.
+4. **View recipe**: `view-r 1`. Verify full recipe details including calories are displayed.
+5. **Filter recipes**: `filter-r t/20`. Verify only recipes with time ≤ 20 are shown.
+6. **Filter by calories**: `filter-r c/300`. Verify only recipes with calories ≤ 300 are shown.
+7. **Delete a recipe**: `delete-r 1`. Verify the recipe is removed and `list-r` no longer shows it.
+8. **Persistence**: Exit with `bye`, restart the application, and verify saved recipes are loaded.

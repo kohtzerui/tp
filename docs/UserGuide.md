@@ -1,16 +1,19 @@
 
-# User Guide
+# SudoCook User Guide
 
 ## Introduction
 
-{Give a product intro}
+**SudoCook** is a Java-based Command-Line Interface (CLI) application designed to help users manage
+recipes and kitchen inventory efficiently. It enables students and home cooks to track their
+ingredients, discover what they can cook, and filter recipes based on preparation time and calorie
+count — all through an intuitive text interface.
 
 ## Quick Start
 
-{Give steps to get started quickly}
-
 1. Ensure that you have Java 17 or above installed.
-1. Down the latest version of `Duke` from [here](http://link.to/duke).
+2. Download the latest version of `SudoCook` from [here](https://github.com/AY2526S2-CS2113-W13-2/tp/releases).
+3. Copy the JAR file to the folder you want to use as the home folder for SudoCook.
+4. Open a terminal, navigate to the folder, and run: `java -jar sudocook.jar`
 
 ## Features
 
@@ -18,34 +21,41 @@
 
 Adds a new recipe to the recipe book.
 
-Format: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY UNIT]... s/{STEP_1} [{STEP_2}]... t/TIME_IN_MINUTES`
+Format: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY UNIT]... s/{STEP_1} [{STEP_2}]... t/TIME_IN_MINUTES c/CALORIES`
 
 * `NAME` can be wrapped in `{}` to support spaces.
 * Each ingredient must be provided in groups of three: `NAME QUANTITY UNIT`.
 * Ingredients or steps containing spaces should be wrapped in `{}`.
-* `TIME_IN_MINUTES` must be a positive integer.
+* `TIME_IN_MINUTES` must be a non-negative integer.
+* `CALORIES` must be a non-negative integer representing the calorie count in kcal.
 
 Examples:
 
-`add-r {Fried Rice} i/rice 2 cups egg 2 pcs {soy sauce} 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.} t/15`
+`add-r {Fried Rice} i/rice 2 cups egg 2 pcs {soy sauce} 1 tbsp s/{Cook the rice.} {Scramble the eggs.} {Mix everything together.} t/15 c/400`
 
-`add-r {Instant Noodles} i/water 2 cups noodles 1 packet s/{Boil water.} {Cook noodles.} t/5`
+`add-r {Instant Noodles} i/water 2 cups noodles 1 packet s/{Boil water.} {Cook noodles.} t/5 c/350`
 
 Example output excerpt (successful addition):
 ```
 Added recipe:
 Recipe Name: Fried Rice
 Preparation Time: 15 minutes
+Calories: 400 kcal
 ```
 
 Expected output (invalid format):
 ```
-Oops! Invalid add-r format.
+Oops! Invalid add-r format. Use: add-r NAME i/INGREDIENTS s/STEPS t/TIME c/CALORIES
 ```
 
 Expected output (invalid ingredient quantity):
 ```
 Oops! Invalid ingredient quantity in add-r format.
+```
+
+Expected output (negative time or calories):
+```
+Oops! Time and calories cannot be negative.
 ```
 
 ---
@@ -295,20 +305,97 @@ Oops! Invalid index for delete-r. Use: delete-r INDEX
 
 ---
 
+### Filtering recipes: `filter-r`
+
+Filters recipes by maximum preparation time and/or maximum calorie count.
+
+Format: `filter-r [t/MAX_TIME] [c/MAX_CALORIES]`
+
+* At least one of `t/MAX_TIME` or `c/MAX_CALORIES` must be provided.
+* `MAX_TIME` is the maximum preparation time in minutes (non-negative integer).
+* `MAX_CALORIES` is the maximum calorie count in kcal (non-negative integer).
+* Both filters can be used together to narrow results further.
+
+Examples:
+
+`filter-r t/20`
+
+`filter-r c/300`
+
+`filter-r t/30 c/500`
+
+Expected output (matching recipes found):
+```
+1. Recipe Name: Instant Noodles
+Preparation Time: 5 minutes
+Calories: 350 kcal
+...
+```
+
+Expected output (no matching recipes):
+```
+No recipes found matching the criteria.
+```
+
+Expected output (no filter provided):
+```
+Oops! No valid filter targets provided. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]
+```
+
+---
+
+### Listing recipes: `list-r`
+
+Shows a compact numbered list of all recipe names.
+
+Format: `list-r`
+
+Expected output:
+```
+1. Fried Rice
+2. Instant Noodles
+```
+
+---
+
+### Viewing recipe details: `view-r`
+
+Shows the full details (ingredients, steps, time, and calories) for recipes.
+
+Format:
+* `view-r` — shows full details for all recipes.
+* `view-r INDEX` — shows full details for the recipe at the given 1-based index.
+
+Examples:
+
+`view-r`
+
+`view-r 1`
+
+---
+
 ## FAQ
 
-**Q**: How do I transfer my data to another computer? 
+**Q**: How do I transfer my data to another computer?
 
-**A**: {your answer here}
+**A**: Copy the `data/` folder (which contains `recipes.json` and `inventory.json`) from your current
+SudoCook home directory to the same location on the other computer. The data files are plain JSON and
+are fully portable.
 
 ## Command Summary
 
-* Add recipe: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT... s/{STEP_1} {STEP_2}... t/TIME_IN_MINUTES`
-* List ingredients: `list-i`
-* List ingredients expiring before a date: `list-i ex/YYYY-MM-DD`
-* Sort ingredients by expiry: `sort-i`
-* Cook recipe by index: `cook INDEX`
-* Recommend recipes by ingredient: `recommend-r n/INGREDIENT_NAME`
-* Recommend recipes from inventory: `recommend-r`
-* Recommend nearly-makeable recipes: `recommend-r missing/N`
-* Delete recipe: `delete-r INDEX`
+| Action | Format |
+|---|---|
+| Add recipe | `add-r {NAME} i/INGREDIENTS s/STEPS t/TIME c/CALORIES` |
+| List recipes | `list-r` |
+| View recipe(s) | `view-r` or `view-r INDEX` |
+| Filter recipes | `filter-r [t/MAX_TIME] [c/MAX_CALORIES]` |
+| Delete recipe | `delete-r INDEX` |
+| Cook recipe | `cook INDEX` |
+| Add ingredient | `add-i n/NAME q/QUANTITY u/UNIT ex/EXPIRY_DATE` |
+| List ingredients | `list-i` or `list-i ex/YYYY-MM-DD` |
+| Sort ingredients | `sort-i` |
+| Recommend by ingredient | `recommend-r n/INGREDIENT_NAME` |
+| Recommend from inventory | `recommend-r` |
+| Recommend nearly-makeable | `recommend-r missing/N` |
+| Exit | `bye` |
