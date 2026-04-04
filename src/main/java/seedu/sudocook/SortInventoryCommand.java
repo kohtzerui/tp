@@ -7,7 +7,7 @@ public class SortInventoryCommand extends Command{
 
     @Override
     public void execute (Inventory ingredients){
+        Ui.printMessage("Sorting...");
         ingredients.sortIngredients();
-        Ui.printMessage("Sorted!");
     }
 }
