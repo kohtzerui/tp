@@ -301,7 +301,7 @@ public class Parser {
             try {
                 index = Integer.parseInt(words[1]) - 1;
                 c = new CookCommand(false, index);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Ui.printError("You should indicate the index of the recipe when cooking!");
                 c = new Command(false);
             }

@@ -314,7 +314,8 @@ The feature involves four main classes:
 1. The user enters `cook <index>`.
 2. `Parser.parse()` detects the `cook` prefix, parses the recipe index, converts it from 1-based to
    0-based form, and constructs a `CookCommand`.
-3. If the index is not a valid number, an error is printed and a no-op `Command` is returned.
+3. If the index is missing or not a valid number, an error is printed and a no-op `Command` is
+   returned.
 4. `SudoCook` detects the command type, retrieves the target recipe using
    `recipes.getRecipe(cmd.getIndex())`, and calls `cmd.execute(recipe, inventory)`.
 5. Inside `execute()`:
