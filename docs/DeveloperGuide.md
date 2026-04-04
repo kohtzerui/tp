@@ -7,45 +7,61 @@ project created by the [SE-EDU initiative](https://se-education.org).
 
 ## Design & implementation
 
-### `recommend-r` — Ingredient-based Recipe Recommendation
+### `recommend-r` — Recipe Recommendation
 
 #### Overview
 
-The `recommend-r` command recommends recipes that the user can make given a specific ingredient                                                                       
-currently in their inventory. It checks that the ingredient exists in the inventory and that the
-recipe's required quantity does not exceed what is available.
+The `recommend-r` command supports three modes of recipe recommendation:
 
-**Command format:** `recommend-r n/INGREDIENT_NAME`
+- **Ingredient-based mode** (`recommend-r n/INGREDIENT_NAME`): recommends recipes that use a specific
+  ingredient, provided the inventory holds enough of it.
+- **Inventory-based mode** (`recommend-r`): recommends every recipe whose **full** ingredient list
+  can be satisfied by the current inventory — i.e. every required ingredient is present and in
+  sufficient quantity.
+- **Missing-based mode** (`recommend-r missing/N`): recommends recipes that are missing **at most N**
+  ingredients (or insufficient quantities), and shows the exact shortfall for each missing ingredient
+  so the user knows what to buy.
+
+**Command formats:**
+
+| Mode | Format | Example |
+|---|---|---|
+| Ingredient-based | `recommend-r n/INGREDIENT_NAME` | `recommend-r n/egg` |
+| Inventory-based | `recommend-r` | `recommend-r` |
+| Missing-based | `recommend-r missing/N` | `recommend-r missing/2` |
 
   ---
 
 #### Implementation
 
-The feature involves four classes:
+The feature involves six classes:
 
 | Class | Role |
 |---|---|
-| `Parser` | Parses raw input, validates format, and constructs a `RecommendRecipeCommand` |
-| `RecommendRecipeCommand` | Executes the recommendation logic |
+| `Parser` | Parses raw input, selects the correct command variant, and validates format |
+| `RecommendByIngredientCommand` | Executes ingredient-based recommendation logic |
+| `RecommendByInventoryCommand` | Executes inventory-based recommendation logic |
+| `RecommendByMissingCommand` | Executes missing-based recommendation logic |
 | `Inventory` | Provides access to current ingredient stocks |
 | `RecipeBook` | Provides access to all known recipes |
 
-**Step-by-step execution:**
+**Ingredient-based mode — step-by-step execution:**
 
 1. The user enters `recommend-r n/<ingredient>`.
-2. `Parser.parse()` verifies the `n/` prefix and extracts the ingredient name. If the format is
-   invalid or the name is empty, an error is printed and a no-op `Command` is returned.
-3. A `RecommendRecipeCommand` is constructed with the ingredient name.
-4. `SudoCook` detects the command type and calls `cmd.execute(inventory, recipes)`.
-5. Inside `execute()`:
-    - The inventory is searched linearly for a case-insensitive match. The available quantity is recorded.
-    - If the ingredient is not found, `Ui.printError()` is called and execution stops.
-    - Otherwise, each recipe in `RecipeBook` is inspected. A recipe qualifies if it contains the
-      ingredient **and** requires a quantity ≤ the available amount.
-    - If no recipe qualifies, a "No recipes meet the requirement" message is printed; otherwise the
-      list of matching recipe names is printed.
+2. `Parser.parse()` detects the `n/` prefix, extracts the ingredient name, and constructs a
+   `RecommendByIngredientCommand`. If the format is invalid or the name is empty, an error is printed and
+   a no-op `Command` is returned.
+3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
+4. Inside `execute()`:
+   - The inventory is searched linearly for a case-insensitive name match. The available quantity
+     is recorded.
+   - If the ingredient is not found, `Ui.printError()` is called and execution stops.
+   - Otherwise, each recipe in `RecipeBook` is inspected. A recipe qualifies if it contains the
+     ingredient **and** requires a quantity ≤ the available amount.
+   - If no recipe qualifies, a "No recipes meet the requirement" message is printed; otherwise the
+     list of matching recipe names is printed.
 
-Key snippet from `RecommendRecipeCommand`:
+Key snippet from `RecommendByIngredientCommand`:
 
 ```text
   for (int i = 0; i < recipes.size(); i++) {
@@ -63,15 +79,116 @@ Key snippet from `RecommendRecipeCommand`:
 
   ---
 
-#### Sequence Diagram
+**Inventory-based mode — step-by-step execution:**
 
-![Recommend Recipe Sequence Diagram](team/RecommendSD-0.png)
+1. The user enters `recommend-r` (no arguments).
+2. `Parser.parse()` detects the absence of arguments and constructs a
+   `RecommendByInventoryCommand`.
+3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
+4. Inside `execute()`, each recipe is evaluated by `canMake(recipe, inventory)`:
+   - For every ingredient required by the recipe, the inventory is searched for a
+     case-insensitive name match.
+   - If the ingredient is absent or the available quantity is less than required, `canMake`
+     returns `false` and the recipe is excluded.
+   - If all ingredients pass, `canMake` returns `true` and the recipe is appended to the result.
+   - If no recipe is makeable, a "No recipes can be made" message is printed; otherwise the list of
+     makeable recipe names is printed.
 
-*Figure 1: Sequence Diagram for the `recommend-r` command*
+Key snippet from `RecommendByInventoryCommand`:
+
+```text
+  private boolean canMake(Recipe recipe, Inventory inventory) {
+      for (Ingredient required : recipe.getIngredients()) {
+          double available = -1;
+          for (int j = 0; j < inventory.size(); j++) {
+              Ingredient item = inventory.getIngredient(j);
+              if (item.getName().equalsIgnoreCase(required.getName())) {
+                  available = item.getQuantity();
+                  break;
+              }
+          }
+          if (available < required.getQuantity()) {
+              return false;
+          }
+      }
+      return true;
+  }
+```
+
+  ---
+
+**Missing-based mode — step-by-step execution:**
+
+1. The user enters `recommend-r missing/<N>`.
+2. `Parser.parse()` detects the `missing/` prefix, extracts and validates `N` as a positive integer,
+   and constructs a `RecommendByMissingCommand(N)`. If `N` is not a positive integer, an error is
+   printed and a no-op `Command` is returned.
+3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
+4. Inside `execute()`, each recipe is evaluated by `getMissingIngredients(recipe, inventory)`:
+   - For every ingredient required by the recipe, the inventory is searched for a case-insensitive
+     name match.
+   - If the ingredient is absent or the available quantity is less than required, the shortfall
+     (`required quantity − available quantity`) and unit are recorded.
+   - The method returns the list of formatted shortfall strings (e.g. `"Salt (1.0 g)"`).
+5. Back in `execute()`, the recipe is included in the output only if the number of missing items is
+   **between 1 and N** (inclusive). Recipes with zero missing items — i.e. fully makeable ones —
+   are always excluded.
+6. If no recipe qualifies, a "No recipes found" message is printed; otherwise the numbered list
+   with per-recipe shortfall details is printed.
+
+Key snippet from `RecommendByMissingCommand`:
+
+```text
+  private ArrayList<String> getMissingIngredients(Recipe recipe, Inventory inventory) {
+      ArrayList<String> missing = new ArrayList<>();
+      for (Ingredient required : recipe.getIngredients()) {
+          double available = 0;
+          for (int j = 0; j < inventory.size(); j++) {
+              Ingredient item = inventory.getIngredient(j);
+              if (item.getName().equalsIgnoreCase(required.getName())) {
+                  available = item.getQuantity();
+                  break;
+              }
+          }
+          if (available < required.getQuantity()) {
+              double shortfall = required.getQuantity() - available;
+              missing.add(required.getName() + " (" + shortfall + " " + required.getUnit() + ")");
+          }
+      }
+      return missing;
+  }
+```
+
+  ---
+
+#### Sequence Diagrams
+
+![Recommend Recipe Sequence Diagram](team/RecommendSD.png)
+
+*Figure 1: Sequence Diagram for `recommend-r n/INGREDIENT_NAME` (ingredient-based mode)*
+
+<br>
+<br>
+
+![Recommend By Inventory Sequence Diagram](team/RecommendByInventorySD.png)
+
+*Figure 2: Sequence Diagram for `recommend-r` (inventory-based mode)*
 
   ---
 
 #### Design Considerations
+
+**Aspect: Two modes under one command vs. separate commands**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Single `recommend-r` command with optional `n/` argument (current) | Consistent command prefix; easier to discover both modes via `help` | Slightly more complex parsing logic |
+| Separate commands (e.g. `recommend-r` and `recommend-all`) | Fully independent; no shared parsing | More commands for the user to remember |
+
+*Decision:* Keeping both modes under `recommend-r` provides a natural extension of the existing
+command and keeps the help output concise.
+
+  ---
 
 **Aspect: Case sensitivity of ingredient matching**
 
@@ -103,6 +220,8 @@ Key snippet from `RecommendRecipeCommand`:
 | Pre-built index (ingredient → recipes) | O(1) lookup per ingredient | Added complexity; index must stay in sync |
 
 *Decision:* Linear scan is sufficient for the expected data sizes. An index can be introduced if performance becomes a concern.
+
+---
 
 ### `list-r` and `view-r` — Recipe Listing and Viewing
 
