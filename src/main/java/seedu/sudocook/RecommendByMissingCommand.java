@@ -2,6 +2,10 @@ package seedu.sudocook;
 
 import java.util.ArrayList;
 
+/**
+ * Command to recommend recipes that are missing at most N ingredients,
+ * showing the exact shortfall for each missing ingredient.
+ */
 public class RecommendByMissingCommand extends Command {
     private final int maxMissing;
 

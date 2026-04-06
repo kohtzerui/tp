@@ -1,5 +1,9 @@
 package seedu.sudocook;
 
+/**
+ * Command to recommend recipes that use a specified ingredient,
+ * provided the inventory holds sufficient quantity of it.
+ */
 public class RecommendByIngredientCommand extends Command {
     private final String ingredientName;
 
