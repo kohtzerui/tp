@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Parser {
+    private static final int INGREDIENT_TOKEN_GROUP_SIZE = 3;
     private static Logger logger = Logger.getLogger("Parser");
     private final Ui ui;
 
@@ -224,13 +225,13 @@ public class Parser {
                 ingredientTokens.add(stripOptionalBraces(ingredientMatcher.group()));
             }
 
-            if (ingredientTokens.size() % 3 != 0) {
+            if (ingredientTokens.size() % INGREDIENT_TOKEN_GROUP_SIZE != 0) {
                 Ui.printError("Invalid add-r format. Ingredients should be NAME QUANTITY UNIT.");
                 logger.log(Level.INFO, "Caught invalid add-r command format in INGREDIENT NAME field");
                 return new Command(false);
             }
 
-            for (int i = 0; i < ingredientTokens.size(); i += 3) {
+            for (int i = 0; i < ingredientTokens.size(); i += INGREDIENT_TOKEN_GROUP_SIZE) {
                 String ingredientName = ingredientTokens.get(i);
                 String quantityToken = ingredientTokens.get(i + 1);
                 String unit = ingredientTokens.get(i + 2);
