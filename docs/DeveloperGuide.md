@@ -187,7 +187,7 @@ Key snippet from `RecommendByMissingCommand`:
 
 ![Recommend By Inventory Sequence Diagram](team/RecommendByMissingSD.png)
 
-*Figure 4: Sequence Diagram for `recommend-r` (missing-based mode)*
+*Figure 4: Sequence Diagram for `recommend-r missing/N` (missing-based mode)*
 
   ---
 
