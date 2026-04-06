@@ -1,6 +1,7 @@
 @startuml
 'https://plantuml.com/sequence-diagram
 
+scale 4
 autonumber
 hide footbox
 
@@ -11,6 +12,7 @@ participant ":SudoCook" as SudoCook
 participant ":Parser" as Parser
 participant "cmd:RecommendByIngredientCommand" as Cmd
 participant "inventory:Inventory" as Inventory
+participant "ingredient:Ingredient" as Ingredient
 participant "recipes:RecipeBook" as RecipeBook
 participant "recipe:Recipe" as Recipe
 participant ":Ui" as Ui
@@ -22,12 +24,12 @@ SudoCook -> Parser : parse("recommend-r n/beef")
 activate Parser
 
 create Cmd
-Parser -> Cmd ** : RecommendByIngredientCommand("beef")
+Parser -> Cmd ** :RecommendByIngredientCommand("beef")
 activate Cmd
 Cmd --> Parser
 deactivate Cmd
 
-Parser --> SudoCook : cmd
+Parser --> SudoCook : cmd:RecommendByIngredientCommand
 deactivate Parser
 
 SudoCook -> Cmd : execute(inventory, recipes)
@@ -38,7 +40,12 @@ loop for each ingredient in inventory
     activate Inventory
     Inventory --> Cmd : ingredient
     deactivate Inventory
-    note right of Cmd : If name matches,\nrecord amount
+    opt ingredient name matches
+        Cmd -> Ingredient : getQuantity()
+        activate Ingredient
+        Ingredient --> Cmd : amount
+        deactivate Ingredient
+    end
 end
 
 loop for each recipe in recipes
@@ -52,7 +59,15 @@ loop for each recipe in recipes
     Recipe --> Cmd : ingredientList
     deactivate Recipe
 
-    note right of Cmd : If ingredient exists in recipe\nAND quantity <= amount,\nappend to list
+    loop for each ingredient in ingredientList
+        opt ingredient name matches AND quantity <= amount
+            Cmd -> Recipe : getName()
+            activate Recipe
+            Recipe --> Cmd : recipeName
+            deactivate Recipe
+            note right of Cmd : append recipeName to resultList (sb)
+        end
+    end
 end
 
 Cmd -> Ui : printMessage(resultString)

@@ -1,0 +1,102 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+scale 4
+hide empty members
+hide circle
+skinparam classAttributeIconSize 0
+
+class Command {
+    + isExit: boolean
+    + Command(isExit: boolean)
+    + execute(inventory: Inventory, recipes: RecipeBook): void
+}
+
+class RecommendByIngredientCommand {
+    - ingredientName: String
+    + RecommendByIngredientCommand(ingredientName: String)
+    + execute(inventory: Inventory, recipes: RecipeBook): void
+}
+
+class RecommendByInventoryCommand {
+    + RecommendByInventoryCommand()
+    + execute(inventory: Inventory, recipes: RecipeBook): void
+    - canMake(recipe: Recipe, inventory: Inventory): boolean
+}
+
+class RecommendByMissingCommand {
+    - maxMissing: int
+    + RecommendByMissingCommand(maxMissing: int)
+    + execute(inventory: Inventory, recipes: RecipeBook): void
+    - getMissingIngredients(recipe: Recipe, inventory: Inventory): ArrayList<String>
+}
+
+class Inventory {
+    - ingredients: ArrayList<Ingredient>
+    + getIngredient(index: int): Ingredient
+    + getSize(): int
+}
+
+class RecipeBook {
+    - recipes: ArrayList<Recipe>
+    + getRecipe(index: int): Recipe
+    + getSize(): int
+}
+
+class Recipe {
+    - name: String
+    - ingredients: ArrayList<Ingredient>
+    - time: int
+    - calories: int
+    + getName(): String
+    + getIngredients(): ArrayList<Ingredient>
+}
+
+class Ingredient {
+    - name: String
+    - quantity: double
+    - unit: String
+    - expiryDate: LocalDate
+    + getName(): String
+    + getQuantity(): double
+    + getUnit(): String
+}
+
+class Parser {
+    + parse(input: String): Command
+}
+
+class Ui {
+    + {static} printMessage(message: String): void
+    + {static} printError(message: String): void
+}
+
+' Inheritance
+RecommendByIngredientCommand --|> Command
+RecommendByInventoryCommand --|> Command
+RecommendByMissingCommand --|> Command
+
+' Parser creates command objects
+Parser ..> RecommendByIngredientCommand : creates
+Parser ..> RecommendByInventoryCommand : creates
+Parser ..> RecommendByMissingCommand : creates
+
+' Composition
+Inventory "1" *-- "*" Ingredient
+RecipeBook "1" *-- "*" Recipe
+Recipe "*" *-- "*" Ingredient
+
+' Dependencies (method parameters / static calls)
+RecommendByIngredientCommand ..> Inventory
+RecommendByIngredientCommand ..> RecipeBook
+RecommendByIngredientCommand ..> Ui
+
+RecommendByInventoryCommand ..> Inventory
+RecommendByInventoryCommand ..> RecipeBook
+RecommendByInventoryCommand ..> Ui
+
+RecommendByMissingCommand ..> Inventory
+RecommendByMissingCommand ..> RecipeBook
+RecommendByMissingCommand ..> Ui
+
+@enduml

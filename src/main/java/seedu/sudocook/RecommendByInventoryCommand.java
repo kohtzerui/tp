@@ -1,5 +1,9 @@
 package seedu.sudocook;
 
+/**
+ * Command to recommend recipes whose full ingredient list
+ * can be satisfied by the current inventory.
+ */
 public class RecommendByInventoryCommand extends Command {
 
     public RecommendByInventoryCommand() {

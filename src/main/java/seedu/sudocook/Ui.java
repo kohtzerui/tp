@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 
 public class Ui {
-    // All static variables first
     private static final boolean IS_TTY = System.console() != null;
     public static final String RESET = IS_TTY ? "\u001B[0m" : "";
     public static final String RED = IS_TTY ? "\u001B[31m" : "";
@@ -19,7 +18,9 @@ public class Ui {
         System.out.println(INDENT + CYAN + DIVIDER + RESET);
     }
 
-    //Formats and prints a response message wrapped between two divider lines.
+    /**
+     * Formats and prints a response message wrapped between two divider lines.
+     */
     public static void formatResponse(String message) {
         System.out.println("");
         for (String line : message.split("\r?\n")) {
