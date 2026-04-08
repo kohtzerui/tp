@@ -845,9 +845,9 @@ The feature involves the following classes:
 | `Parser` | Detects the `search-r` or `search-i` prefix, extracts the query, and constructs the appropriate command |
 | `SearchRecipeCommand` | Calls `RecipeBook.searchRecipes(query)` |
 | `SearchIngredientCommand` | Calls `Inventory.searchIngredients(query)` |
-| `RecipeBook` | Iterates over recipes and prints those whose names pass `FuzzySearch.isMatch()` |
-| `Inventory` | Iterates over ingredients and prints those whose names pass `FuzzySearch.isMatch()` |
-| `FuzzySearch` | Stateless utility class that computes a fuzzy score between a query and a target string |
+| `RecipeBook` | Builds a list of recipe names, calls `FuzzySearch.rankMatchIndices()` to get matches ranked by score, and prints the results |
+| `Inventory` | Builds a list of ingredient names, calls `FuzzySearch.rankMatchIndices()` to get matches ranked by score, and prints the results |
+| `FuzzySearch` | Stateless utility class that computes a fuzzy score between a query and a target string, and returns match indices sorted by descending score |
 
 **Step-by-step execution (`search-r`):**
 
@@ -855,7 +855,7 @@ The feature involves the following classes:
 2. `Parser.parse()` detects the `search-r` prefix and extracts the query string. If it is empty, an error is printed and a no-op `Command` is returned.
 3. A `SearchRecipeCommand` is constructed with the query.
 4. `SudoCook` calls `cmd.execute(recipeBook)` (falls through to the default recipe routing branch).
-5. Inside `execute()`, `RecipeBook.searchRecipes(query)` iterates over all recipes and calls `FuzzySearch.isMatch(query, recipe.getName())` for each. Matching recipes are collected and printed.
+5. Inside `execute()`, `RecipeBook.searchRecipes(query)` builds a list of recipe names and calls `FuzzySearch.rankMatchIndices(query, names)`, which returns the indices of matching recipes sorted by descending score. Results are printed in ranked order (best match first).
 
 The `search-i` flow is identical, but targets `Inventory` and `SearchIngredientCommand`.
 
@@ -933,6 +933,57 @@ Key snippet from `FuzzySearch`:
 | Inline inside `RecipeBook` / `Inventory` | Fewer files | Duplicates logic; harder to test or modify |
 
 *Decision:* A dedicated utility class keeps scoring logic testable and reusable without coupling it to any particular data class.
+
+---
+
+### `sort-r` — Sort Recipes
+
+#### Overview
+
+The `sort-r` command sorts all recipes in the recipe book by a user-specified criteria.
+
+**Command formats:**
+- `sort-r n/` — sort recipes alphabetically by name
+- `sort-r t/` — sort recipes by preparation time (ascending)
+- `sort-r c/` — sort recipes by calorie count (ascending)
+
+---
+
+#### Implementation
+
+The feature involves the following classes:
+
+| Class | Role |
+|---|---|
+| `Parser` | Detects the `sort-r` prefix, validates the criteria (`n/`, `t/`, `c/`), and constructs a `SortRecipeCommand` |
+| `SortRecipeCommand` | Stores the criteria and calls `RecipeBook.sortRecipes(criteria)` |
+| `RecipeBook` | Sorts the internal recipe list using a `Comparator` based on the criteria, then calls `listRecipe()` to display the result |
+
+**Step-by-step execution:**
+
+1. The user enters `sort-r <criteria>` (e.g. `sort-r t/`).
+2. `Parser.parse()` detects the `sort-r` prefix and extracts the criteria string. If the criteria is not one of `n/`, `t/`, or `c/`, an error is printed and a no-op `Command` is returned.
+3. A `SortRecipeCommand` is constructed with the validated criteria.
+4. `SudoCook` detects the command as a `SortRecipeCommand` and calls `cmd.execute(recipeBook)`.
+5. Inside `execute()`, `RecipeBook.sortRecipes(criteria)` sorts the internal list using the appropriate `Comparator`:
+    - `n/` → `Comparator.comparing(r -> r.getName().toLowerCase())`
+    - `t/` → `Comparator.comparingInt(Recipe::getTime)`
+    - `c/` → `Comparator.comparingInt(Recipe::getCalories)`
+6. After sorting, `listRecipe()` is called to display the updated recipe list.
+
+---
+
+#### Design Considerations
+
+**Aspect: Supporting multiple sort criteria vs. fixed sort order**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Multiple criteria via flag (e.g. `n/`, `t/`, `c/`) (current) | Flexible; users can sort by what matters to them | Slightly more complex parsing |
+| Fixed sort by name only | Simpler implementation | Less useful — users may want to find quick or low-calorie recipes |
+| Chained multi-criteria sort (e.g. `sort-r n/ t/`) | Maximum flexibility | Over-engineered for the current use case |
+
+*Decision:* A single criteria flag was chosen to balance flexibility with simplicity, mirroring the existing `filter-r` flag pattern already familiar to users.
 
 ---
 

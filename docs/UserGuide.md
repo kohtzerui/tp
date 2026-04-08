@@ -487,6 +487,44 @@ Oops! Please provide a search query. Use: search-r QUERY
 
 ---
 
+### Sorting recipes: `sort-r`
+
+Sorts all recipes in the recipe book by a chosen criteria.
+
+Format: `sort-r CRITERIA`
+
+* `CRITERIA` must be one of:
+    * `n/` — sort alphabetically by recipe name
+    * `t/` — sort by preparation time (ascending)
+    * `c/` — sort by calorie count (ascending)
+
+Examples:
+
+`sort-r n/`
+
+`sort-r t/`
+
+`sort-r c/`
+
+Expected output (sorted by name):
+```
+1. Apple Pie
+2. Fried Rice
+3. Tomato Soup
+```
+
+Expected output (empty recipe book):
+```
+No recipes to sort.
+```
+
+Expected output (invalid criteria):
+```
+Oops! Invalid sort-r format. Use: sort-r n/ | t/ | c/
+```
+
+---
+
 ### Searching ingredients: `search-i`
 
 Fuzzy-searches the inventory by ingredient name. Handles partial input, case differences, and minor typos.
@@ -597,6 +635,7 @@ are fully portable.
 | Add ingredient | `add-i n/NAME q/QUANTITY u/UNIT ex/EXPIRY_DATE` |
 | List ingredients | `list-i` or `list-i ex/YYYY-MM-DD` |
 | Sort ingredients | `sort-i` |
+| Sort recipes | `sort-r n/` or `sort-r t/` or `sort-r c/` |
 | Search recipes | `search-r QUERY` |
 | Search ingredients | `search-i QUERY` |
 | Recommend by ingredient | `recommend-r n/INGREDIENT_NAME` |

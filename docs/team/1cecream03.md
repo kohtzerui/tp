@@ -37,6 +37,13 @@ through an intuitive text interface.
       substring → character subsequence → Levenshtein distance. No external libraries were used.
     * The match threshold (score ≥ 40) was chosen as the minimum score for a full character
       subsequence match, giving a natural cutoff between recognisable and unrecognisable results.
+    * Enhanced search results to display matches ranked by relevance score (best match first)
+      via a new `rankMatchIndices()` method in `FuzzySearch`, replacing the previous insertion-order output.
+
+* **Implemented `sort-r` command** (`SortRecipeCommand.java`)
+    * `sort-r n/` sorts recipes alphabetically by name, `sort-r t/` by ascending preparation time,
+      and `sort-r c/` by ascending calorie count.
+    * Invalid or missing criteria are caught with a clear error message guiding the user to the correct format.
 
 ---
 
@@ -45,6 +52,8 @@ through an intuitive text interface.
   expected output variants (all recipes, single recipe, invalid index).
 * Documented `search-r` and `search-i` with format specifications, examples showing partial and
   typo-tolerant queries, and expected output variants (matches found, no matches).
+* Documented `sort-r` with format specifications, all three criteria options, usage examples,
+  and expected output variants (sorted list, empty book, invalid criteria).
 
 ---
 
@@ -61,6 +70,11 @@ through an intuitive text interface.
     * Three Design Consideration aspects with option tables and rationale (scoring strategy,
       match threshold, placement of fuzzy logic).
     * Added sequence diagrams: `SearchRecipe.png` and `SearchIngredient.png`.
+* Authored the `sort-r` implementation section:
+    * Class responsibility table for the involved classes.
+    * Step-by-step execution walkthrough for all three sort criteria.
+    * One Design Consideration aspect with rationale (supporting multiple sort criteria vs. fixed order).
+    * Added sequence diagram: `SortRecipe.png`.
 
 ---
 
@@ -68,4 +82,4 @@ through an intuitive text interface.
 * Set up the foundational `Parser` and `Ui` classes used by all teammates' commands throughout
   the project, establishing consistent input handling and output formatting conventions.
 * Wrote unit tests for `SearchRecipeCommand`, `SearchIngredientCommand`, `UiTest`,
-  `ListRecipeCommand`, and `ViewRecipeCommand`.
+  `ListRecipeCommand`, `ViewRecipeCommand`, `SortRecipeCommand`, and `FuzzySearch`.
