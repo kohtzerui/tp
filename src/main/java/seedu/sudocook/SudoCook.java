@@ -69,6 +69,9 @@ public class SudoCook {
                     || cmd instanceof RecommendByMissingCommand) {
                 logger.log(Level.FINE, "Routing recommend command");
                 cmd.execute(inventory, recipes);
+            } else if (cmd instanceof SortRecipeCommand) {
+                logger.log(Level.FINE, "Routing sort recipe command");
+                cmd.execute(recipes);
             } else if (cmd instanceof SortInventoryCommand){
                 logger.log(Level.FINE, "Routing sort inventory command");
                 cmd.execute(inventory);

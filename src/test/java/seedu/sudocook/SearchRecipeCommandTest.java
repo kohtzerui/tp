@@ -76,4 +76,19 @@ public class SearchRecipeCommandTest {
         new SearchRecipeCommand("rice").execute(new RecipeBook());
         assertTrue(getOutput().contains("No recipes found"));
     }
+
+    @Test
+    public void execute_multipleMatches_exactMatchAppearsBeforePartial() {
+        ArrayList<Ingredient> ingredients = new ArrayList<>();
+        ingredients.add(new Ingredient("Rice", 1, "cup"));
+        ArrayList<String> steps = new ArrayList<>();
+        steps.add("Cook");
+        recipeBook.addRecipe(new Recipe("Rice", ingredients, steps, 5, 100));
+
+        new SearchRecipeCommand("Rice").execute(recipeBook);
+        String out = getOutput();
+        // "Rice" (exact) should appear before "Fried Rice" (partial)
+        assertTrue(out.indexOf("Rice\n") < out.indexOf("Fried Rice")
+                || out.indexOf("3. Rice") < out.indexOf("1. Fried Rice"));
+    }
 }

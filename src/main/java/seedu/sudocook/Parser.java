@@ -43,6 +43,8 @@ public class Parser {
             return parseCook(trimmedInput);
         } else if (matchesCommandKeyword(trimmedInput, "sort-i")) {
             return parseSortI();
+        } else if (matchesCommandKeyword(trimmedInput, "sort-r")) {
+            return parseSortR(trimmedInput);
         } else if (matchesCommandKeyword(trimmedInput, "search-r")) {
             return parseSearchR(trimmedInput);
         } else if (matchesCommandKeyword(trimmedInput, "search-i")) {
@@ -353,6 +355,16 @@ public class Parser {
             Ui.printError("You should indicate the index of the recipe when cooking!");
             return new Command(false);
         }
+    }
+
+    private Command parseSortR(String input) {
+        logger.log(Level.INFO, "Received sort-r request");
+        String criteria = input.substring("sort-r".length()).trim();
+        if (!criteria.equals("n/") && !criteria.equals("t/") && !criteria.equals("c/")) {
+            Ui.printError("Invalid sort-r format. Use: sort-r n/ | t/ | c/");
+            return new Command(false);
+        }
+        return new SortRecipeCommand(criteria);
     }
 
     private Command parseSortI() {

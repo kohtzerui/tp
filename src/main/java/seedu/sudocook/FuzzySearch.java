@@ -1,5 +1,7 @@
 package seedu.sudocook;
 
+import java.util.ArrayList;
+
 public class FuzzySearch {
     private static final int MATCH_THRESHOLD = 40;
 
@@ -31,6 +33,20 @@ public class FuzzySearch {
 
     public static boolean isMatch(String query, String target) {
         return score(query, target) >= MATCH_THRESHOLD;
+    }
+
+    /**
+     * Returns indices of matching candidates from the list, sorted by descending score.
+     */
+    public static ArrayList<Integer> rankMatchIndices(String query, ArrayList<String> candidates) {
+        ArrayList<Integer> matchIndices = new ArrayList<>();
+        for (int i = 0; i < candidates.size(); i++) {
+            if (isMatch(query, candidates.get(i))) {
+                matchIndices.add(i);
+            }
+        }
+        matchIndices.sort((a, b) -> score(query, candidates.get(b)) - score(query, candidates.get(a)));
+        return matchIndices;
     }
 
     private static int subsequenceScore(String query, String target) {

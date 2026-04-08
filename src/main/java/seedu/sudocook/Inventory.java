@@ -76,20 +76,25 @@ public class Inventory {
             Ui.printMessage("No ingredients found.");
             return;
         }
+        ArrayList<String> names = new ArrayList<>();
+        for (Ingredient ingredient : ingredients) {
+            names.add(ingredient.getName());
+        }
+        ArrayList<Integer> rankedIndices = FuzzySearch.rankMatchIndices(query, names);
+        if (rankedIndices.isEmpty()) {
+            Ui.printMessage("No ingredients matched \"" + query + "\".");
+            return;
+        }
         StringBuilder sb = new StringBuilder();
-        int count = 0;
-        for (int i = 0; i < ingredients.size(); i++) {
-            if (FuzzySearch.isMatch(query, ingredients.get(i).getName())) {
-                count++;
-                sb.append(i + 1).append(". ").append(ingredients.get(i)).append("\n");
+        for (int i = 0; i < rankedIndices.size(); i++) {
+            int idx = rankedIndices.get(i);
+            sb.append(idx + 1).append(". ").append(ingredients.get(idx));
+            if (i < rankedIndices.size() - 1) {
+                sb.append("\n");
             }
         }
-        if (count == 0) {
-            Ui.printMessage("No ingredients matched \"" + query + "\".");
-        } else {
-            Ui.printGradientMessage("Found " + count + " ingredient(s) matching \""
-                    + query + "\":\n" + sb.toString().stripTrailing());
-        }
+        Ui.printGradientMessage("Found " + rankedIndices.size() + " ingredient(s) matching \""
+                + query + "\":\n" + sb.toString());
     }
 
     public int findIndexByName(String name) {

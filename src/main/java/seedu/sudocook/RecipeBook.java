@@ -1,6 +1,7 @@
 package seedu.sudocook;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class RecipeBook {
     private ArrayList<Recipe> recipes;
@@ -119,20 +120,47 @@ public class RecipeBook {
             Ui.printMessage("No recipes found.");
             return;
         }
-        StringBuilder matchingRecipesBuilder = new StringBuilder();
-        int matchingRecipeCount = 0;
-        for (int i = 0; i < recipes.size(); i++) {
-            if (FuzzySearch.isMatch(query, recipes.get(i).getName())) {
-                matchingRecipeCount++;
-                matchingRecipesBuilder.append(i + 1).append(". ").append(recipes.get(i).getName()).append("\n");
+        ArrayList<String> names = new ArrayList<>();
+        for (Recipe recipe : recipes) {
+            names.add(recipe.getName());
+        }
+        ArrayList<Integer> rankedIndices = FuzzySearch.rankMatchIndices(query, names);
+        if (rankedIndices.isEmpty()) {
+            Ui.printMessage("No recipes matched \"" + query + "\".");
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < rankedIndices.size(); i++) {
+            int idx = rankedIndices.get(i);
+            sb.append(idx + 1).append(". ").append(recipes.get(idx).getName());
+            if (i < rankedIndices.size() - 1) {
+                sb.append("\n");
             }
         }
-        if (matchingRecipeCount == 0) {
-            Ui.printMessage("No recipes matched \"" + query + "\".");
-        } else {
-            Ui.printGradientMessage("Found " + matchingRecipeCount + " recipe(s) matching \""
-                    + query + "\":\n" + matchingRecipesBuilder.toString().stripTrailing());
+        Ui.printGradientMessage("Found " + rankedIndices.size() + " recipe(s) matching \""
+                + query + "\":\n" + sb.toString());
+    }
+
+    public void sortRecipes(String criteria) {
+        if (recipes.isEmpty()) {
+            Ui.printMessage("No recipes to sort.");
+            return;
         }
+        switch (criteria) {
+        case "n/":
+            recipes.sort(Comparator.comparing(r -> r.getName().toLowerCase()));
+            break;
+        case "t/":
+            recipes.sort(Comparator.comparingInt(Recipe::getTime));
+            break;
+        case "c/":
+            recipes.sort(Comparator.comparingInt(Recipe::getCalories));
+            break;
+        default:
+            Ui.printError("Unknown sort criteria. Use: sort-r n/ | t/ | c/");
+            return;
+        }
+        listRecipe();
     }
 
     public int getSize(){

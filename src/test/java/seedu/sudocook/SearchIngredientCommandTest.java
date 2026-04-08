@@ -70,4 +70,16 @@ public class SearchIngredientCommandTest {
         new SearchIngredientCommand("tomato").execute(new Inventory());
         assertTrue(getOutput().contains("No ingredients found"));
     }
+
+    @Test
+    public void execute_multipleMatches_exactMatchAppearsBeforePartial() {
+        inventory.addIngredient(new Ingredient("Tomato Paste", 2, "tbsp"));
+
+        new SearchIngredientCommand("Tomato").execute(inventory);
+        String out = getOutput();
+        assertTrue(out.contains("Found 2 ingredient(s)"));
+        // exact "Tomato" should rank above "Tomato Paste"
+        assertTrue(out.indexOf("Tomato\n") < out.indexOf("Tomato Paste")
+                || out.indexOf("Tomato ") < out.indexOf("Tomato Paste"));
+    }
 }
