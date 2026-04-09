@@ -40,6 +40,7 @@ public class Storage {
      * @param inventory The inventory to save
      */
     public static void saveInventory(Inventory inventory) {
+        initializeStorage();
         try {
             JSONArray ingredientList = new JSONArray();
             for (Ingredient ingredient : inventory.getIngredients()) {
@@ -69,6 +70,7 @@ public class Storage {
      * @param inventory The inventory to populate
      */
     public static void loadInventory(Inventory inventory) {
+        initializeStorage();
         File file = new File(INVENTORY_FILE);
         if (!file.exists()) {
             logger.log(Level.INFO, "Inventory file does not exist, starting with empty inventory");
@@ -110,6 +112,7 @@ public class Storage {
      * @param recipeBook The recipe book to save
      */
     public static void saveRecipes(RecipeBook recipeBook) {
+        initializeStorage();
         try {
             JSONArray recipeList = new JSONArray();
             for (Recipe recipe : recipeBook.getRecipes()) {
@@ -152,6 +155,7 @@ public class Storage {
      * @param recipeBook The recipe book to populate
      */
     public static void loadRecipes(RecipeBook recipeBook) {
+        initializeStorage();
         File file = new File(RECIPES_FILE);
         if (!file.exists()) {
             logger.log(Level.INFO, "Recipes file does not exist, starting with empty recipe book");

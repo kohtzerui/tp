@@ -57,6 +57,16 @@ public class Inventory {
         return ingredients.size();
     }
 
+    /**
+     * Returns the number of ingredients in the inventory.
+     * Alias for getSize().
+     *
+     * @return The number of ingredients
+     */
+    public int size() {
+        return getSize();
+    }
+
     public void removeIngredient(int index) {
         ingredients.remove(index);
     }
