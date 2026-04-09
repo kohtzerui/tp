@@ -115,4 +115,11 @@ public class Inventory {
         }
         return -1;
     }
+
+    /**
+     * Clears all ingredients from the inventory.
+     */
+    public void clear() {
+        ingredients.clear();
+    }
 }

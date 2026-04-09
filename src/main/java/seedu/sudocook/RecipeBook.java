@@ -185,4 +185,11 @@ public class RecipeBook {
     public ArrayList<Recipe> getRecipes() {
         return new ArrayList<>(recipes);
     }
+
+    /**
+     * Clears all recipes from the recipe book.
+     */
+    public void clear() {
+        recipes.clear();
+    }
 }
