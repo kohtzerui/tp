@@ -168,6 +168,16 @@ public class RecipeBook {
     }
 
     /**
+     * Returns the number of recipes in the recipe book.
+     * Alias for getSize().
+     *
+     * @return The number of recipes
+     */
+    public int size() {
+        return getSize();
+    }
+
+    /**
      * Returns a copy of the recipes list for external use.
      *
      * @return ArrayList of recipes
