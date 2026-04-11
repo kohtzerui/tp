@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,6 +102,22 @@ public class CookTest {
         executeCookCommand(cmd);
 
         assertEquals(0, ingredients.getSize());
+    }
+
+    @Test
+    public void execute_validCookWithMultipleExpiries_consumesEarliestExpiryFirst() {
+        ingredients.addIngredient(new Ingredient("Water", 0.5, "Liter", LocalDate.of(2026, 4, 1)));
+        ingredients.addIngredient(new Ingredient("Water", 1, "Liter", LocalDate.of(2026, 5, 1)));
+        ingredients.addIngredient(new Ingredient("Sugar", 1, "mg"));
+
+        Command cmd = parser.parse("cook 1");
+        executeCookCommand(cmd);
+
+        Ingredient water = ingredients.getIngredient(ingredients.findIndexByName("Water"));
+        assertEquals(1, ingredients.getSize());
+        assertEquals(0.5, water.getQuantity());
+        assertEquals(1, water.getExpiryQuantities().size());
+        assertEquals(LocalDate.of(2026, 5, 1), water.getExpiryQuantities().get(0).getExpiryDate());
     }
 
     private void executeCookCommand(Command cmd) {

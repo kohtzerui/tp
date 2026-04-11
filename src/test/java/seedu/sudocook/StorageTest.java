@@ -64,6 +64,27 @@ public class StorageTest {
     }
 
     @Test
+    public void saveAndLoadInventory_multipleExpiries_preservesExpiryQuantities() {
+        Inventory inventory = new Inventory();
+        inventory.addIngredient(new Ingredient("Milk", 1, "carton", LocalDate.of(2026, 4, 1)));
+        inventory.addIngredient(new Ingredient("Milk", 2, "carton", LocalDate.of(2026, 5, 1)));
+
+        Storage.saveInventory(inventory);
+
+        Inventory loadedInventory = new Inventory();
+        Storage.loadInventory(loadedInventory);
+
+        Ingredient loadedIngredient = loadedInventory.getIngredient(0);
+        assertEquals(1, loadedInventory.size());
+        assertEquals(3, loadedIngredient.getQuantity());
+        assertEquals(2, loadedIngredient.getExpiryQuantities().size());
+        assertEquals(LocalDate.of(2026, 4, 1), loadedIngredient.getExpiryQuantities().get(0).getExpiryDate());
+        assertEquals(1, loadedIngredient.getExpiryQuantities().get(0).getQuantity());
+        assertEquals(LocalDate.of(2026, 5, 1), loadedIngredient.getExpiryQuantities().get(1).getExpiryDate());
+        assertEquals(2, loadedIngredient.getExpiryQuantities().get(1).getQuantity());
+    }
+
+    @Test
     public void loadInventory_fileDoesNotExist_startsWithEmptyInventory() {
         Inventory inventory = new Inventory();
         Storage.loadInventory(inventory);

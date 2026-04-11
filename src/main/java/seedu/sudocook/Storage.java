@@ -48,7 +48,19 @@ public class Storage {
                 ingredientObj.put("name", ingredient.getName());
                 ingredientObj.put("quantity", ingredient.getQuantity());
                 ingredientObj.put("unit", ingredient.getUnit());
-                if (ingredient.getExpiryDate() != null) {
+
+                JSONArray expiryQuantities = new JSONArray();
+                for (Ingredient.ExpiryQuantity expiryQuantity : ingredient.getExpiryQuantities()) {
+                    JSONObject expiryQuantityObj = new JSONObject();
+                    expiryQuantityObj.put("quantity", expiryQuantity.getQuantity());
+                    if (expiryQuantity.getExpiryDate() != null) {
+                        expiryQuantityObj.put("expiryDate", expiryQuantity.getExpiryDate().toString());
+                    }
+                    expiryQuantities.put(expiryQuantityObj);
+                }
+                ingredientObj.put("expiryQuantities", expiryQuantities);
+
+                if (ingredient.getExpiryQuantities().size() == 1 && ingredient.getExpiryDate() != null) {
                     ingredientObj.put("expiryDate", ingredient.getExpiryDate().toString());
                 }
                 ingredientList.put(ingredientObj);
@@ -90,20 +102,48 @@ public class Storage {
                 String name = ingredientObj.getString("name");
                 double quantity = ingredientObj.getDouble("quantity");
                 String unit = ingredientObj.getString("unit");
-                Ingredient ingredient;
-
-                if (ingredientObj.has("expiryDate")) {
-                    LocalDate expiryDate = LocalDate.parse(ingredientObj.getString("expiryDate"));
-                    ingredient = new Ingredient(name, quantity, unit, expiryDate);
-                } else {
-                    ingredient = new Ingredient(name, quantity, unit);
-                }
-                inventory.addIngredient(ingredient);
+                inventory.addIngredient(loadInventoryIngredient(ingredientObj, name, quantity, unit));
             }
             logger.log(Level.INFO, "Inventory loaded successfully");
         } catch (IOException e) {
             logger.log(Level.WARNING, "Failed to load inventory: " + e.getMessage());
         }
+    }
+
+    private static Ingredient loadInventoryIngredient(JSONObject ingredientObj, String name, double quantity,
+            String unit) {
+        if (!ingredientObj.has("expiryQuantities")) {
+            return createIngredient(name, quantity, unit, ingredientObj);
+        }
+
+        JSONArray expiryQuantities = ingredientObj.getJSONArray("expiryQuantities");
+        if (expiryQuantities.length() == 0) {
+            return createIngredient(name, quantity, unit, ingredientObj);
+        }
+
+        JSONObject firstExpiryQuantity = expiryQuantities.getJSONObject(0);
+        Ingredient ingredient = createIngredient(name, firstExpiryQuantity.getDouble("quantity"), unit,
+                firstExpiryQuantity);
+        for (int i = 1; i < expiryQuantities.length(); i++) {
+            JSONObject expiryQuantity = expiryQuantities.getJSONObject(i);
+            ingredient.addQuantity(expiryQuantity.getDouble("quantity"), getExpiryDate(expiryQuantity));
+        }
+        return ingredient;
+    }
+
+    private static Ingredient createIngredient(String name, double quantity, String unit, JSONObject ingredientObj) {
+        LocalDate expiryDate = getExpiryDate(ingredientObj);
+        if (expiryDate != null) {
+            return new Ingredient(name, quantity, unit, expiryDate);
+        }
+        return new Ingredient(name, quantity, unit);
+    }
+
+    private static LocalDate getExpiryDate(JSONObject ingredientObj) {
+        if (ingredientObj.has("expiryDate")) {
+            return LocalDate.parse(ingredientObj.getString("expiryDate"));
+        }
+        return null;
     }
 
     /**

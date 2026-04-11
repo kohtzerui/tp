@@ -2,6 +2,8 @@ package seedu.sudocook;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InventoryTest {
@@ -19,6 +21,21 @@ public class InventoryTest {
         testInventory.addIngredient(new Ingredient("Sugar", 50, "g"));
         assertEquals(1, testInventory.getSize());
         assertEquals(150, testInventory.getIngredient(0).getQuantity());
+    }
+
+    @Test
+    public void updateQuantity_multipleExpiries_deductsEarliestExpiryFirst() {
+        testInventory.addIngredient(new Ingredient("Milk", 1, "carton", LocalDate.of(2026, 4, 1)));
+        testInventory.addIngredient(new Ingredient("Milk", 2, "carton", LocalDate.of(2026, 5, 1)));
+
+        testInventory.updateQuantity(0, 1.5);
+
+        Ingredient ingredient = testInventory.getIngredient(0);
+        assertEquals(1, testInventory.getSize());
+        assertEquals(1.5, ingredient.getQuantity());
+        assertEquals(1, ingredient.getExpiryQuantities().size());
+        assertEquals(LocalDate.of(2026, 5, 1), ingredient.getExpiryQuantities().get(0).getExpiryDate());
+        assertEquals(1.5, ingredient.getExpiryQuantities().get(0).getQuantity());
     }
 
     @Test

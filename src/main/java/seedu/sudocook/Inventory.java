@@ -16,7 +16,7 @@ public class Inventory {
     /**
      * Adds an ingredient to the inventory.
      * If an ingredient with the same name and unit already exists, updates the
-     * quantity.
+     * expiry-specific quantities.
      *
      * @param ingredient The ingredient to add
      */
@@ -24,7 +24,7 @@ public class Inventory {
         for (Ingredient existing : ingredients) {
             if (existing.getName().equalsIgnoreCase(ingredient.getName())
                     && existing.getUnit().equalsIgnoreCase(ingredient.getUnit())) {
-                existing.setQuantity(existing.getQuantity() + ingredient.getQuantity());
+                existing.addQuantitiesFrom(ingredient);
                 return;
             }
         }
@@ -73,8 +73,10 @@ public class Inventory {
 
     public void updateQuantity(int index, double quantityToRemove) {
         Ingredient ingredient = ingredients.get(index);
-        double newQuantity = ingredient.getQuantity() - quantityToRemove;
-        ingredient.setQuantity(newQuantity);
+        ingredient.deductQuantity(quantityToRemove);
+        if (ingredient.getQuantity() <= 0) {
+            ingredients.remove(index);
+        }
     }
 
     public Ingredient getIngredient(int index) {

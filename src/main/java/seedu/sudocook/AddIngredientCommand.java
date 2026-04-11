@@ -63,24 +63,7 @@ public class AddIngredientCommand extends Command {
         } else {
             ingredient = new Ingredient(name, quantity, unit);
         }
-        propagateExpiryDateToMatchingIngredient(inventory);
         inventory.addIngredient(ingredient);
         Ui.printMessage("Added: " + ingredient);
-    }
-
-    private void propagateExpiryDateToMatchingIngredient(Inventory inventory) {
-        if (expiryDate == null) {
-            return;
-        }
-
-        for (int i = 0; i < inventory.getSize(); i++) {
-            Ingredient existing = inventory.getIngredient(i);
-            if (existing.getName().equalsIgnoreCase(name)
-                    && existing.getUnit().equalsIgnoreCase(unit)
-                    && existing.getExpiryDate() == null) {
-                existing.setExpiryDate(expiryDate);
-                return;
-            }
-        }
     }
 }

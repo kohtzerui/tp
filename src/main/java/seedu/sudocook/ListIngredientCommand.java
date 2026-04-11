@@ -58,7 +58,7 @@ public class ListIngredientCommand extends Command {
 
         StringBuilder sb = new StringBuilder(getHeader(expiry));
         for (int i = 0; i < ingredients.size(); i++) {
-            sb.append(i + 1).append(". ").append(ingredients.get(i).toString());
+            sb.append(i + 1).append(". ").append(ingredients.get(i).toString(expiry));
             if (i < ingredients.size() - 1) {
                 sb.append("\n");
             }
@@ -74,8 +74,7 @@ public class ListIngredientCommand extends Command {
 
         ArrayList<Ingredient> filteredIngredients = new ArrayList<>();
         for (Ingredient ingredient : ingredients) {
-            LocalDate ingredientExpiry = ingredient.getExpiryDate();
-            if (ingredientExpiry != null && ingredientExpiry.isBefore(expiry)) {
+            if (ingredient.hasExpiryBefore(expiry)) {
                 filteredIngredients.add(ingredient);
             }
         }

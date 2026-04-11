@@ -36,13 +36,7 @@ public class CommandHistory {
             // Deep copy inventory
             this.inventory = new Inventory();
             for (Ingredient ingredient : inventory.getIngredients()) {
-                if (ingredient.getExpiryDate() != null) {
-                    this.inventory.addIngredient(new Ingredient(ingredient.getName(), 
-                            ingredient.getQuantity(), ingredient.getUnit(), ingredient.getExpiryDate()));
-                } else {
-                    this.inventory.addIngredient(new Ingredient(ingredient.getName(), 
-                            ingredient.getQuantity(), ingredient.getUnit()));
-                }
+                this.inventory.addIngredient(ingredient.copy());
             }
         }
     }
@@ -97,13 +91,7 @@ public class CommandHistory {
         // Clear and restore inventory
         inventory.clear();
         for (Ingredient ingredient : snapshot.inventory.getIngredients()) {
-            if (ingredient.getExpiryDate() != null) {
-                inventory.addIngredient(new Ingredient(ingredient.getName(), 
-                        ingredient.getQuantity(), ingredient.getUnit(), ingredient.getExpiryDate()));
-            } else {
-                inventory.addIngredient(new Ingredient(ingredient.getName(), 
-                        ingredient.getQuantity(), ingredient.getUnit()));
-            }
+            inventory.addIngredient(ingredient.copy());
         }
 
         // Clear and restore recipe book

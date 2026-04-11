@@ -48,6 +48,19 @@ public class ListIngredientCommandTest {
     }
 
     @Test
+    public void parse_withExpiryFilter_listsOnlyMatchingExpiryQuantities() {
+        inventory.addIngredient(new Ingredient("Milk", 1, "carton", LocalDate.of(2026, 4, 1)));
+        inventory.addIngredient(new Ingredient("Milk", 2, "carton", LocalDate.of(2026, 5, 1)));
+
+        Parser parser = new Parser(new Ui());
+        Command cmd = parser.parse("list-i ex/2026-04-15");
+        cmd.execute(inventory);
+
+        assertTrue(getOutput().contains("Milk (1.0 carton) expiries: [2026-04-01: 1.0 carton]"));
+        assertFalse(getOutput().contains("2026-05-01"));
+    }
+
+    @Test
     public void parse_withNoMatches_printsFilteredEmptyMessage() {
         inventory.addIngredient(new Ingredient("Milk", 1, "carton", LocalDate.of(2026, 4, 2)));
 

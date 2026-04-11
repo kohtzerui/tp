@@ -23,6 +23,25 @@ public class AddIngredientCommandTest {
     }
 
     @Test
+    public void execute_matchingDatedIngredientWithDifferentExpiry_preservesExpiryQuantities() {
+        Inventory inventory = new Inventory();
+        inventory.addIngredient(new Ingredient("Milk", 1, "carton", LocalDate.of(2026, 4, 1)));
+
+        AddIngredientCommand command = new AddIngredientCommand("Milk", 2, "carton",
+                LocalDate.of(2026, 5, 1));
+        command.execute(inventory);
+
+        Ingredient ingredient = inventory.getIngredient(0);
+        assertEquals(1, inventory.getSize());
+        assertEquals(3, ingredient.getQuantity());
+        assertEquals(2, ingredient.getExpiryQuantities().size());
+        assertEquals(LocalDate.of(2026, 4, 1), ingredient.getExpiryQuantities().get(0).getExpiryDate());
+        assertEquals(1, ingredient.getExpiryQuantities().get(0).getQuantity());
+        assertEquals(LocalDate.of(2026, 5, 1), ingredient.getExpiryQuantities().get(1).getExpiryDate());
+        assertEquals(2, ingredient.getExpiryQuantities().get(1).getQuantity());
+    }
+
+    @Test
     public void parse_validInputWithoutExpiry_addsIngredient() {
         Inventory inventory = new Inventory();
 
