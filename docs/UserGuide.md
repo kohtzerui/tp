@@ -173,6 +173,49 @@ Oops! Invalid add-i format. Use: add-i n/NAME q/QUANTITY u/UNIT [ex/YYYY-MM-DD]
 
 ---
 
+### Deleting an ingredient: `delete-i`
+
+Removes an ingredient (or a specific quantity of it) from your inventory.
+
+Format: `delete-i INDEX/NAME [QUANTITY]`
+
+* `INDEX` refers to the ingredient's position in `list-i` (1-based).
+* `NAME` can be used instead of an index to match by ingredient name (case-insensitive).
+* `QUANTITY` is optional. If provided, removes that specific amount from the ingredient's total.
+  If the quantity is greater than or equal to the total on hand, the entire ingredient entry is removed.
+* If `QUANTITY` is omitted, the entire ingredient entry is removed.
+
+Examples:
+
+`delete-i 1`
+
+`delete-i Milk`
+
+`delete-i Flour 0.5`
+
+Expected output (entire ingredient removed):
+```
+Removed all of: Milk
+```
+
+Expected output (partial quantity removed):
+```
+Removed 0.5 kg of Flour.
+Remaining: 0.5 kg
+```
+
+Expected output (ingredient not found):
+```
+Oops! Ingredient not found in inventory.
+```
+
+Expected output (invalid format):
+```
+Oops! Invalid delete-i format. Use: delete-i INDEX/NAME [QUANTITY]
+```
+
+---
+
 ### Cooking a recipe: `cook`
 
 Prepares a recipe and deducts its required ingredients from the inventory.
@@ -649,6 +692,7 @@ expiry dates for the same ingredient are preserved.
 | Cook recipe | `cook INDEX` |
 | Add ingredient | `add-i n/NAME q/QUANTITY u/UNIT [ex/YYYY-MM-DD]` |
 | List ingredients | `list-i` or `list-i ex/YYYY-MM-DD` |
+| Delete ingredient | `delete-i INDEX/NAME [QUANTITY]` |
 | Sort ingredients | `sort-i` |
 | Sort recipes | `sort-r n/` or `sort-r t/` or `sort-r c/` |
 | Search recipes | `search-r QUERY` |
