@@ -381,7 +381,7 @@ Recipe 1 deleted successfully.
 
 Expected output (index out of range):
 ```
-Invalid index: Index 5 is out of range. Valid range: 1 to 3
+Invalid index: Index 5 is out of range. (Valid range: 1 to 3)
 ```
 
 Expected output (non-numeric index):
