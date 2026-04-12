@@ -13,7 +13,7 @@ count — all through an intuitive text interface.
 1. Ensure that you have Java 17 or above installed.
 2. Download the latest version of `SudoCook` from [here](https://github.com/AY2526S2-CS2113-W13-2/tp/releases).
 3. Copy the JAR file to the folder you want to use as the home folder for SudoCook.
-4. Open a terminal, navigate to the folder, and run: `java -jar sudocook.jar`
+4. Open a terminal, navigate to the folder, and run: `java -jar [CS2113-W13-2][SudoCook].jar`
 
 ## Features
 
