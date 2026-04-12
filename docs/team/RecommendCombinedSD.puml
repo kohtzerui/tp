@@ -1,0 +1,74 @@
+@startuml
+hide footbox
+skinparam MaxMessageSize 200
+
+actor User
+participant ":Parser" as Parser
+participant ":RecipeBook" as RecipeBook
+participant ":Inventory" as Inventory
+participant ":Ui" as Ui
+
+User -> Parser : parse("recommend-r ...")
+activate Parser
+
+note over Parser
+  RecommendByXxxCommand represents one of:
+  RecommendByIngredientCommand,
+  RecommendByInventoryCommand,
+  RecommendByMissingCommand
+end note
+
+alt recommend-r n/NAME
+    create "cmd:RecommendByXxxCommand" as Cmd
+    create Cmd
+    Parser -> Cmd ** : RecommendByIngredientCommand(name)
+    activate Cmd
+    Cmd --> Parser
+    deactivate Cmd
+else recommend-r
+    create Cmd
+    Parser -> Cmd ** : RecommendByInventoryCommand()
+    activate Cmd
+    Cmd --> Parser
+    deactivate Cmd
+else recommend-r missing/N
+    create Cmd
+    Parser -> Cmd ** : RecommendByMissingCommand(N)
+    activate Cmd
+    Cmd --> Parser
+    deactivate Cmd
+end
+
+Parser --> User : cmd
+deactivate Parser
+
+User -> Cmd : execute(inventory, recipes)
+activate Cmd
+
+Cmd -> RecipeBook : iterate recipes
+activate RecipeBook
+RecipeBook --> Cmd : recipe list
+deactivate RecipeBook
+
+Cmd -> Inventory : check ingredient availability
+activate Inventory
+Inventory --> Cmd : available quantities
+deactivate Inventory
+
+note right of Cmd
+  Recipe qualifies based on mode:
+  n/NAME  → ingredient stock >= required qty
+  (none)  → all ingredients satisfied
+  missing/N → shortfall count <= N
+end note
+
+Cmd -> Ui : printMessage(result)
+activate Ui
+Ui --> Cmd
+deactivate Ui
+
+Cmd --> User
+deactivate Cmd
+destroy Cmd
+
+@enduml

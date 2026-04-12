@@ -168,25 +168,13 @@ The feature involves eight classes:
 
   ---
 
-#### Sequence Diagrams
+#### Sequence Diagram
 
-![Recommend Recipe Sequence Diagram](team/RecommendSD.png)
+![Recommend Command Sequence Diagram](team/RecommendCombinedSD.png)
 
-*Figure 2: Sequence Diagram for `recommend-r n/INGREDIENT_NAME` (ingredient-based mode)*
+*Figure 2: Sequence Diagram for `recommend-r` (all three modes)*
 
-<br>
-<br>
-
-![Recommend By Inventory Sequence Diagram](team/RecommendByInventorySD.png)
-
-*Figure 3: Sequence Diagram for `recommend-r` (inventory-based mode)*
-
-<br>
-<br>
-
-![Recommend By Inventory Sequence Diagram](team/RecommendByMissingSD.png)
-
-*Figure 4: Sequence Diagram for `recommend-r missing/N` (missing-based mode)*
+All three modes share the same top-level flow.
 
   ---
 
@@ -298,11 +286,11 @@ Both commands delegate to `RecipeBook` via `ListRecipeCommand` and `ViewRecipeCo
 
 ![List Recipe Sequence Diagram](team/ListRecipe.png)
 
-*Figure 5: Sequence Diagram for the `list-r` command*
+*Figure 3: Sequence Diagram for the `list-r` command*
 
 ![View Recipe Sequence Diagram](team/ViewRecipe.png)
 
-*Figure 6: Sequence Diagram for the `view-r` command*
+*Figure 4: Sequence Diagram for the `view-r` command*
 
 ---
 
@@ -388,7 +376,7 @@ Key snippet from `CookCommand`:
 
 ![Cook Sequence Diagram](team/cook.png)
 
-*Figure 7: Sequence Diagram for the `cook` command*
+*Figure 5: Sequence Diagram for the `cook` command*
 
   ---
 
@@ -486,7 +474,7 @@ Key snippet from `SortInventoryCommand`:
 
 ![Sort Inventory Sequence Diagram](team/SortInventory.png)
 
-*Figure 8: Sequence Diagram for the `sort-i` command*
+*Figure 6: Sequence Diagram for the `sort-i` command*
 
   ---
 
@@ -579,7 +567,7 @@ Key snippet from `ListIngredientCommand`:
 
 ![List Ingredients Sequence Diagram](team/ListIngredients.png)
 
-*Figure 9: Sequence Diagram for the `list-i` command*
+*Figure 7: Sequence Diagram for the `list-i` command*
 
   ---
 
@@ -757,7 +745,7 @@ Key snippet from `RecipeBook`:
 
 ![Filter Recipe Sequence Diagram](team/FilterRecipe.png)
 
-*Figure 10: Sequence Diagram for the `filter-r` command*
+*Figure 8: Sequence Diagram for the `filter-r` command*
 
 ---
 
@@ -827,7 +815,7 @@ The feature involves three classes:
 
 ![Delete Recipe Sequence Diagram](team/DeleteRecipe.png)
 
-*Figure 11: Sequence Diagram for the `delete-r` command*
+*Figure 9: Sequence Diagram for the `delete-r` command*
 
 ---
 
@@ -930,11 +918,11 @@ Key snippet from `FuzzySearch`:
 
 ![Search Recipe Sequence Diagram](team/SearchRecipe.png)
 
-*Figure 12: Sequence Diagram for the `search-r` command*
+*Figure 10: Sequence Diagram for the `search-r` command*
 
 ![Search Ingredient Sequence Diagram](team/SearchIngredient.png)
 
-*Figure 13: Sequence Diagram for the `search-i` command*
+*Figure 11: Sequence Diagram for the `search-i` command*
 
 ---
 
@@ -1061,7 +1049,7 @@ The `help` feature is implemented using a simple command pattern that bridges to
 
 ![Help Sequence Diagram](team/Help.png)
 
-*Figure 14: Sequence Diagram for the `help` command*
+*Figure 12: Sequence Diagram for the `help` command*
 
 ---
 
