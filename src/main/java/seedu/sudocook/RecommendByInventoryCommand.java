@@ -33,17 +33,21 @@ public class RecommendByInventoryCommand extends Command {
     private boolean canMake(Recipe recipe, Inventory inventory) {
         for (Ingredient required : IngredientRequirements.aggregateFor(recipe)) {
             double available = -1;
+            String availableUnit = null;
             for (int j = 0; j < inventory.getSize(); j++) {
                 Ingredient item = inventory.getIngredient(j);
                 if (item.getName().equalsIgnoreCase(required.getName())) {
-                    if (!item.getUnit().equalsIgnoreCase(required.getUnit())) {
-                        return false;
-                    }
                     available = item.getQuantity();
+                    availableUnit = item.getUnit();
                     break;
                 }
             }
-            if (available < required.getQuantity()) {
+            if (available < 0) {
+                return false;
+            }
+            double requiredInAvailableUnit = UnitConverter.convert(
+                    required.getQuantity(), required.getUnit(), availableUnit);
+            if (requiredInAvailableUnit < 0 || available < requiredInAvailableUnit) {
                 return false;
             }
         }

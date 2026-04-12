@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -186,6 +187,47 @@ public class RecommendByMissingCommandTest {
 
         assertTrue(cmd.getClass() == Command.class);
         assertTrue(getOutput().contains("Oops!"));
+    }
+
+    @Test
+    public void execute_largerUnitSufficient_notMissing() {
+        // Omelette needs Salt 1 g; inventory has Salt 0.002 kg (= 2 g ≥ 1 g) → Salt not missing
+        inventory.addIngredient(new Ingredient("Egg", 3, "pcs"));
+        inventory.addIngredient(new Ingredient("Salt", 0.002, "kg"));
+
+        new RecommendByMissingCommand(1).execute(inventory, recipes);
+
+        // Omelette should not appear in missing/1 because it is fully makeable
+        assertFalse(getOutput().contains("Omelette"));
+    }
+
+    @Test
+    public void execute_smallerUnitInsufficient_showsCorrectShortfall() {
+        // Omelette needs Salt 1 g; inventory has Salt 500 mg (= 0.5 g < 1 g) → shortfall 0.5 g
+        inventory.addIngredient(new Ingredient("Egg", 3, "pcs"));
+        inventory.addIngredient(new Ingredient("Salt", 500, "mg"));
+
+        new RecommendByMissingCommand(1).execute(inventory, recipes);
+
+        String out = getOutput();
+        assertTrue(out.contains("Omelette"));
+        assertTrue(out.contains("Salt"));
+        // shortfall = 1 g - 0.5 g = 0.5 g
+        assertTrue(out.contains("0.5"));
+        assertTrue(out.contains("g"));
+    }
+
+    @Test
+    public void execute_incompatibleUnit_treatedAsMissing() {
+        // Omelette needs Salt 1 g; inventory has Salt 999 cups (incompatible) → treated as 0 available
+        inventory.addIngredient(new Ingredient("Egg", 3, "pcs"));
+        inventory.addIngredient(new Ingredient("Salt", 999, "cups"));
+
+        new RecommendByMissingCommand(1).execute(inventory, recipes);
+
+        String out = getOutput();
+        assertTrue(out.contains("Omelette"));
+        assertTrue(out.contains("Salt"));
     }
 
     private String getOutput() {

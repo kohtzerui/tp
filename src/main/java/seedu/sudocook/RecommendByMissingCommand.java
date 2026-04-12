@@ -39,16 +39,18 @@ public class RecommendByMissingCommand extends Command {
     private ArrayList<String> getMissingIngredients(Recipe recipe, Inventory inventory) {
         ArrayList<String> missing = new ArrayList<>();
         for (Ingredient required : IngredientRequirements.aggregateFor(recipe)) {
-            double available = 0;
+            double availableInRequiredUnit = 0;
             for (int j = 0; j < inventory.getSize(); j++) {
                 Ingredient item = inventory.getIngredient(j);
                 if (item.getName().equalsIgnoreCase(required.getName())) {
-                    available = item.getQuantity();
+                    double converted = UnitConverter.convert(
+                            item.getQuantity(), item.getUnit(), required.getUnit());
+                    availableInRequiredUnit = (converted >= 0) ? converted : 0;
                     break;
                 }
             }
-            if (available < required.getQuantity()) {
-                double shortfall = required.getQuantity() - available;
+            if (availableInRequiredUnit < required.getQuantity()) {
+                double shortfall = required.getQuantity() - availableInRequiredUnit;
                 String formatted = required.getName() + " (" + shortfall + " " + required.getUnit() + ")";
                 missing.add(formatted);
             }

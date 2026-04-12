@@ -15,10 +15,12 @@ public class RecommendByIngredientCommand extends Command {
     @Override
     public void execute(Inventory inventory, RecipeBook recipes) {
         double amount = -1;
+        String inventoryUnit = null;
         for (int i = 0; i < inventory.getSize(); i++) {
             Ingredient ingredient = inventory.getIngredient(i);
             if (ingredient.getName().equalsIgnoreCase(ingredientName)) {
                 amount = ingredient.getQuantity();
+                inventoryUnit = ingredient.getUnit();
             }
         }
         if (amount < 0) {
@@ -30,11 +32,15 @@ public class RecommendByIngredientCommand extends Command {
         for (int i = 0; i < recipes.getSize(); i++) {
             Recipe recipe = recipes.getRecipe(i);
             for (Ingredient ing : IngredientRequirements.aggregateFor(recipe)) {
-                if (ing.getName().equalsIgnoreCase(ingredientName) && ing.getQuantity() <= amount) {
+                if (!ing.getName().equalsIgnoreCase(ingredientName)) {
+                    continue;
+                }
+                double required = UnitConverter.convert(ing.getQuantity(), ing.getUnit(), inventoryUnit);
+                if (required >= 0 && required <= amount) {
                     count += 1;
                     sb.append(count).append(". ").append(recipe.getName()).append("\n");
-                    break;
                 }
+                break;
             }
         }
         if (count == 0) {

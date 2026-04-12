@@ -266,6 +266,38 @@ The `recommend-r` command has three modes:
 - **Inventory-based** — finds every recipe that can be fully made using your current inventory.
 - **Missing-based** — finds recipes you are almost able to make, listing exactly what you still need to buy.
 
+**Unit conversion:** All three modes automatically convert between compatible units when comparing
+inventory quantities against recipe requirements. Only units within the same family (mass or volume)
+can be converted. Units from different families (e.g. `g` vs `cups`) are treated as incompatible and
+the recipe is excluded or marked as missing.
+
+Supported unit conversions (all keywords are case-insensitive):
+
+**Mass** — base unit: grams (g)
+
+| Accepted keyword(s) | Equivalent in grams |
+|---------------------|---------------------|
+| `mg`, `milligram`, `milligrams` | 0.001 g |
+| `g`, `gram`, `grams` | 1 g |
+| `kg`, `kilogram`, `kilograms` | 1 000 g |
+| `lb`, `lbs` | 453.592 g |
+| `oz` | 28.3495 g |
+
+**Volume** — base unit: millilitres (ml)
+
+| Accepted keyword(s) | Equivalent in millilitres |
+|---------------------|--------------------------|
+| `ml`, `milliliter`, `milliliters`, `millilitre`, `millilitres` | 1 ml |
+| `l`, `liter`, `liters`, `litre`, `litres` | 1 000 ml |
+| `tsp`, `teaspoon`, `teaspoons` | 4.929 ml |
+| `tbsp`, `tablespoon`, `tablespoons` | 14.787 ml |
+| `cup`, `cups` | 240 ml |
+
+**Count and other units** — no conversion is performed; the unit in the recipe and the unit in inventory must match exactly (e.g. `pcs` vs `pcs`).
+
+> **Example:** Inventory has `1 kg` of flour, recipe requires `500 g` of flour.
+> SudoCook converts 500 g → 0.5 kg, confirms 0.5 ≤ 1, and recommends the recipe.
+
 <br>
 
 #### Ingredient-based recommendation
@@ -392,7 +424,7 @@ Recipe 1 deleted successfully.
 
 Expected output (index out of range):
 ```
-Invalid index: Index 5 is out of range. Valid range: 1 to 3
+Invalid index: Index 5 is out of range. (Valid range: 1 to 3)
 ```
 
 Expected output (non-numeric index):

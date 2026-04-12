@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -176,6 +177,46 @@ public class RecommendByInventoryCommandTest {
 
         assertTrue(cmd.getClass() == Command.class);
         assertTrue(getOutput().contains("Oops!"));
+    }
+
+    @Test
+    public void execute_inventoryInLargerUnit_convertsAndRecommends() {
+        // Mixue needs Water 1 Liter + Sugar 1 mg
+        // Inventory: Water 2000 ml (= 2 L ≥ 1 L), Sugar 2 mg → should recommend Mixue
+        inventory.addIngredient(new Ingredient("Water", 2000, "ml"));
+        inventory.addIngredient(new Ingredient("Sugar", 2, "mg"));
+
+        new RecommendByInventoryCommand().execute(inventory, recipes);
+
+        assertTrue(getOutput().contains("Mixue"));
+    }
+
+    @Test
+    public void execute_smallerUnitInsufficient_recipeExcluded() {
+        // Mixue needs Water 1 Liter; Inventory has only 500 ml (< 1000 ml) → cannot make
+        inventory.addIngredient(new Ingredient("Water", 500, "ml"));
+        inventory.addIngredient(new Ingredient("Sugar", 2, "mg"));
+
+        new RecommendByInventoryCommand().execute(inventory, recipes);
+
+        assertTrue(getOutput().contains("No recipes"));
+    }
+
+    @Test
+    public void execute_incompatibleUnit_recipeExcluded() {
+        // Already-existing test style: recipe uses "grams", inventory has "cups" → excluded
+        // (preserved to confirm incompatible family still returns false)
+        ArrayList<Ingredient> riceIngredients = new ArrayList<>();
+        riceIngredients.add(new Ingredient("rice", 1, "grams"));
+        ArrayList<String> riceSteps = new ArrayList<>();
+        riceSteps.add("Cook");
+        recipes.addRecipe(new Recipe("UnitCook", riceIngredients, riceSteps, 5, 100));
+        inventory.addIngredient(new Ingredient("rice", 1, "cups"));
+        output.reset();
+
+        new RecommendByInventoryCommand().execute(inventory, recipes);
+
+        assertFalse(getOutput().contains("UnitCook"));
     }
 
     private String getOutput() {

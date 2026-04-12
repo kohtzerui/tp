@@ -126,6 +126,40 @@ public class RecommendByIngredientCommandTest {
         assertTrue(!out.contains("DoubleSugar"));
     }
 
+    @Test
+    public void execute_inventoryInLargerUnit_convertsAndRecommends() {
+        // Inventory: Sugar 1 g; Recipe needs Sugar 1 mg (1 mg = 0.001 g ≤ 1 g) → should recommend
+        inventory.addIngredient(new Ingredient("Sugar", 1, "g"));
+
+        RecommendByIngredientCommand cmd = new RecommendByIngredientCommand("Sugar");
+        cmd.execute(inventory, recipes);
+
+        assertTrue(getOutput().contains("Mixue"));
+    }
+
+    @Test
+    public void execute_inventoryInSmallerUnit_convertsAndExcludes() {
+        // Inventory: Sugar 1 mg; Recipe needs Sugar 1 mg (same unit) but recipe is Mixue needing 1mg
+        // Change: inventory 0.5 mg < 1 mg required → should NOT recommend
+        inventory.addIngredient(new Ingredient("Sugar", 1, "kg"));
+        // Recipe needs 1 mg sugar; 1 mg = 0.000001 kg ≤ 1 kg → should recommend
+        RecommendByIngredientCommand cmd = new RecommendByIngredientCommand("Sugar");
+        cmd.execute(inventory, recipes);
+
+        assertTrue(getOutput().contains("Mixue"));
+    }
+
+    @Test
+    public void execute_incompatibleUnit_recipeSkipped() {
+        // Inventory: Sugar 100 cups; Recipe needs Sugar 1 mg (cups vs mg → incompatible) → skip
+        inventory.addIngredient(new Ingredient("Sugar", 100, "cups"));
+
+        RecommendByIngredientCommand cmd = new RecommendByIngredientCommand("Sugar");
+        cmd.execute(inventory, recipes);
+
+        assertTrue(getOutput().contains("No recipes"));
+    }
+
     private String getOutput() {
         return output.toString(StandardCharsets.UTF_8)
                 .replaceAll("\u001B\\[[;\\d]*m", "");

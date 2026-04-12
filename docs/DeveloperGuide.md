@@ -93,7 +93,7 @@ The `recommend-r` command supports three modes of recipe recommendation:
 
 #### Implementation
 
-The feature involves six classes:
+The feature involves eight classes:
 
 | Class | Role |
 |---|---|
@@ -101,6 +101,8 @@ The feature involves six classes:
 | `RecommendByIngredientCommand` | Executes ingredient-based recommendation logic |
 | `RecommendByInventoryCommand` | Executes inventory-based recommendation logic |
 | `RecommendByMissingCommand` | Executes missing-based recommendation logic |
+| `IngredientRequirements` | Aggregates duplicate ingredients in a recipe into a single requirement entry |
+| `UnitConverter` | Converts quantities between compatible units (mass and volume families) |
 | `Inventory` | Provides access to current ingredient stocks |
 | `RecipeBook` | Provides access to all known recipes |
 
@@ -112,29 +114,15 @@ The feature involves six classes:
    a no-op `Command` is returned.
 3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
 4. Inside `execute()`:
-   - The inventory is searched linearly for a case-insensitive name match. The available quantity
-     is recorded using `Ingredient.getQuantity()`, which returns the total across all expiry dates.
+   - The inventory is searched linearly for a case-insensitive name match. Both the available
+     quantity (`Ingredient.getQuantity()`, summed across all expiry dates) and its unit are recorded.
    - If the ingredient is not found, `Ui.printError()` is called and execution stops.
-   - Otherwise, each recipe in `RecipeBook` is inspected. A recipe qualifies if it contains the
-     ingredient **and** requires a quantity ≤ the total available amount.
+   - Otherwise, each recipe in `RecipeBook` is inspected via `IngredientRequirements.aggregateFor()`.
+     For the matching ingredient entry, `UnitConverter.convert()` converts the recipe's required
+     quantity into the inventory unit. If the result is `≥ 0` and `≤` the available amount, the
+     recipe qualifies. If conversion returns `-1` (incompatible units), the recipe is skipped.
    - If no recipe qualifies, a "No recipes meet the requirement" message is printed; otherwise the
      list of matching recipe names is printed.
-
-Key snippet from `RecommendByIngredientCommand`:
-
-```text
-  for (int i = 0; i < recipes.size(); i++) {
-      Recipe recipe = recipes.getRecipe(i);
-      for (Ingredient ing : recipe.getIngredients()) {
-          if (ing.getName().equalsIgnoreCase(ingredientName)
-                  && ing.getQuantity() <= amount) {
-              count += 1;
-              sb.append(count).append(". ").append(recipe.getName()).append("\n");
-              break;
-          }
-      }
-  }
-```
 
   ---
 
@@ -145,34 +133,15 @@ Key snippet from `RecommendByIngredientCommand`:
    `RecommendByInventoryCommand`.
 3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
 4. Inside `execute()`, each recipe is evaluated by `canMake(recipe, inventory)`:
-   - For every ingredient required by the recipe, the inventory is searched for a
-     case-insensitive name match.
-   - If the ingredient is absent or the total available quantity across all expiry dates is less
-     than required, `canMake` returns `false` and the recipe is excluded.
+   - For every ingredient required by the recipe (aggregated via `IngredientRequirements.aggregateFor()`),
+     the inventory is searched for a case-insensitive name match. Both quantity and unit are recorded.
+   - If the ingredient is absent, `canMake` returns `false`.
+   - `UnitConverter.convert()` converts the required quantity into the inventory unit. If conversion
+     returns `-1` (incompatible units) or the converted requirement exceeds the available quantity,
+     `canMake` returns `false` and the recipe is excluded.
    - If all ingredients pass, `canMake` returns `true` and the recipe is appended to the result.
    - If no recipe is makeable, a "No recipes can be made" message is printed; otherwise the list of
      makeable recipe names is printed.
-
-Key snippet from `RecommendByInventoryCommand`:
-
-```text
-  private boolean canMake(Recipe recipe, Inventory inventory) {
-      for (Ingredient required : recipe.getIngredients()) {
-          double available = -1;
-          for (int j = 0; j < inventory.size(); j++) {
-              Ingredient item = inventory.getIngredient(j);
-              if (item.getName().equalsIgnoreCase(required.getName())) {
-                  available = item.getQuantity();
-                  break;
-              }
-          }
-          if (available < required.getQuantity()) {
-              return false;
-          }
-      }
-      return true;
-  }
-```
 
   ---
 
@@ -184,39 +153,18 @@ Key snippet from `RecommendByInventoryCommand`:
    printed and a no-op `Command` is returned.
 3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
 4. Inside `execute()`, each recipe is evaluated by `getMissingIngredients(recipe, inventory)`:
-   - For every ingredient required by the recipe, the inventory is searched for a case-insensitive
-     name match.
-   - If the ingredient is absent or the total available quantity across all expiry dates is less
-     than required, the shortfall (`required quantity − available quantity`) and unit are recorded.
+   - For every ingredient required by the recipe (aggregated via `IngredientRequirements.aggregateFor()`),
+     the inventory is searched for a case-insensitive name match.
+   - `UnitConverter.convert()` converts the inventory quantity into the recipe's unit. If conversion
+     returns `-1` (incompatible units), the available quantity is treated as zero.
+   - If the converted available quantity is less than required, the shortfall
+     (`required − converted available`) and the recipe's unit are recorded.
    - The method returns the list of formatted shortfall strings (e.g. `"Salt (1.0 g)"`).
 5. Back in `execute()`, the recipe is included in the output only if the number of missing items is
    **between 1 and N** (inclusive). Recipes with zero missing items — i.e. fully makeable ones —
    are always excluded.
 6. If no recipe qualifies, a "No recipes found" message is printed; otherwise the numbered list
    with per-recipe shortfall details is printed.
-
-Key snippet from `RecommendByMissingCommand`:
-
-```text
-  private ArrayList<String> getMissingIngredients(Recipe recipe, Inventory inventory) {
-      ArrayList<String> missing = new ArrayList<>();
-      for (Ingredient required : recipe.getIngredients()) {
-          double available = 0;
-          for (int j = 0; j < inventory.size(); j++) {
-              Ingredient item = inventory.getIngredient(j);
-              if (item.getName().equalsIgnoreCase(required.getName())) {
-                  available = item.getQuantity();
-                  break;
-              }
-          }
-          if (available < required.getQuantity()) {
-              double shortfall = required.getQuantity() - available;
-              missing.add(required.getName() + " (" + shortfall + " " + required.getUnit() + ")");
-          }
-      }
-      return missing;
-  }
-```
 
   ---
 
@@ -288,6 +236,23 @@ is still recommended.
 
 *Decision:* Linear scan is sufficient for the expected data sizes (daily record). The strategy may be further improved 
 if the product is extended to enterprises or larger groups.
+
+  ---
+
+**Aspect: Unit mismatch between inventory and recipe**
+
+| Option | Pros | Cons |
+|---|---|---|
+| Reject any unit mismatch | Simple to implement; no ambiguity | Causes false negatives — recipes are excluded even when the user has enough stock in a compatible unit (e.g. `1 kg` flour when recipe needs `500 g`) |
+| Convert within compatible unit families, reject across families (current) | Correctly handles same-dimension conversions; still rejects genuinely incompatible units (e.g. `g` vs `cups`) | Requires maintaining a conversion table (`UnitConverter`) |
+| Accept any unit and compare raw numbers | No extra code | Produces nonsensical comparisons (e.g. `500 g ≤ 1 kg` treated as `500 ≤ 1`) |
+
+*Decision:* `UnitConverter` performs conversion within two families — **mass** (mg, g, kg, lb, oz)
+and **volume** (ml, l, tsp, tbsp, cup) — each normalised to a base unit (grams and millilitres
+respectively). Units that are equal (case-insensitive) are passed through unchanged. Units from
+different families, or units not in either table (e.g. `pcs`), yield `-1`, which every command
+treats as "incompatible — skip or count as missing". This eliminates false negatives from unit
+scaling differences while keeping cross-dimension mismatches explicit.
 
 ---
 
@@ -855,17 +820,6 @@ The feature involves three classes:
       thrown and caught, and an error message is printed via `Ui.printMessage()`.
     - If the index is valid, the recipe is removed from the internal list and a success message is
       printed.
-
-Key snippet from `DeleteRecipeCommand`:
-
-```text
-  try {
-      recipes.removeRecipe(index);
-      Ui.printMessage("Recipe " + index + " deleted successfully.");
-  } catch (IndexOutOfBoundsException e) {
-      Ui.printMessage("Invalid index: " + e.getMessage());
-  }
-```
 
 ---
 
