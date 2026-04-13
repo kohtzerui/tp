@@ -723,7 +723,7 @@ expiry dates for the same ingredient are preserved.
 
 | Action | Format |
 |---|---|
-| Add recipe | `add-r {NAME} i/INGREDIENTS s/STEPS t/TIME c/CALORIES` |
+| Add recipe | `add-r {NAME} i/NAME QTY UNIT [NAME QTY UNIT]... s/STEP [STEP]... t/TIME c/CALORIES` |
 | List recipes | `list-r` |
 | View recipe(s) | `view-r` or `view-r INDEX` |
 | Filter recipes | `filter-r [t/MAX_TIME] [c/MAX_CALORIES]` |
