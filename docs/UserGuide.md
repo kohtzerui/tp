@@ -36,12 +36,21 @@ Examples:
 
 `add-r {Instant Noodles} i/water 2 cups noodles 1 packet s/{Boil water.} {Cook noodles.} t/5 c/350`
 
-Example output excerpt (successful addition):
+Example output (successful addition):
 ```
 Added recipe:
 Recipe Name: Fried Rice
 Preparation Time: 15 minutes
 Calories: 400 kcal
+
+    Ingredients:
+    - rice (2.0 cups)
+    - egg (2.0 pcs)
+
+    Steps:
+    - Cook the rice.
+    - Scramble the eggs.
+    - Mix everything together.
 ```
 
 Expected output (invalid format):
@@ -243,9 +252,9 @@ Examples:
 
 Expected output after a successful cook:
 ```
-Removed <quantity>: <ingredient>
-Removed <quantity>: <ingredient>
-Cooked Recipe <Recipe Name>
+Removed all of: rice
+Removed all of: egg
+Cooked Recipe Fried Rice
 ```
 
 Expected output (not enough ingredients):
