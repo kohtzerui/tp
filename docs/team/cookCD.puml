@@ -1,6 +1,6 @@
 @startuml
 !pragma layout smetana
-scale 4
+scale 2
 hide circle
 skinparam classAttributeIconSize 0
 

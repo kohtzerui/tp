@@ -454,14 +454,7 @@ The feature involves four main classes:
       non-null expiry date.
     - `Ui.printMessage("Sorting...")` is called to confirm the command is running.
 
-Key snippet from `SortInventoryCommand`:
 
-```text
-  public void execute (Inventory ingredients){
-      Ui.printMessage("Sorting...");
-      ingredients.sortIngredients();
-  }
-```
 
   ---
 
@@ -548,21 +541,7 @@ The feature involves four main classes:
     - If the resulting list is empty, `Ui.printMessage()` prints an empty-state message.
     - Otherwise, a numbered list with the appropriate header is built and printed.
 
-Key snippet from `ListIngredientCommand`:
 
-```text
-  ArrayList<Ingredient> ingredients = inventory.getIngredients();
-  if (expiry == null) {
-      return ingredients;
-  }
-
-  ArrayList<Ingredient> filteredIngredients = new ArrayList<>();
-  for (Ingredient ingredient : ingredients) {
-      if (ingredient.hasExpiryBefore(expiry)) {
-          filteredIngredients.add(ingredient);
-      }
-  }
-```
 
   ---
 
@@ -648,15 +627,7 @@ The feature involves four main classes:
       into an existing ingredient with the same name and unit.
     - A success message is printed via `Ui.printMessage()`.
 
-Key snippet from `AddIngredientCommand`:
 
-```text
-  public void execute(Inventory inventory) {
-      Ingredient ingredient = new Ingredient(name, quantity, unit, expiryDate);
-      inventory.addIngredient(ingredient);
-      Ui.printMessage("Added: " + ingredient);
-  }
-```
 
 ---
 

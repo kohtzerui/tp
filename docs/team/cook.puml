@@ -2,7 +2,7 @@
 'https://plantuml.com/sequence-diagram
 
 hide footbox
-
+scale 2
 skinparam MaxMessageSize 150
 
 actor User
