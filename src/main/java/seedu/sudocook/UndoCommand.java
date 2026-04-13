@@ -26,15 +26,15 @@ public class UndoCommand extends Command {
      */
     public void execute(CommandHistory history, RecipeBook recipeBook, Inventory inventory) {
         if (history == null || !history.canUndo()) {
-            Ui.printError("No previous commands to undo");
+            Ui.printError("No commands to undo.");
             return;
         }
 
         boolean success = history.undo(recipeBook, inventory);
         if (success) {
-            Ui.printMessage("Last command undone successfully");
+            Ui.printMessage("Command undone successfully!");
         } else {
-            Ui.printError("No previous commands to undo");
+            Ui.printError("No commands to undo.");
         }
     }
 }
