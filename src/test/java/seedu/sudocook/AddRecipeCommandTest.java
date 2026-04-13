@@ -109,17 +109,23 @@ public class AddRecipeCommandTest {
 
     @Test
     public void parserTest_negativeTime_rejected() {
-        assertInvalidTimeAndCalories("add-r {Fried Rice} i/rice 2 cups egg 2 pcs "
+        assertInvalidTime("add-r {Fried Rice} i/rice 2 cups egg 2 pcs "
                 + "s/{Cook the rice.} {Scramble the eggs.} t/-15 c/400");
     }
 
     @Test
     public void parserTest_negativeCalories_rejected() {
-        assertInvalidTimeAndCalories("add-r {Fried Rice} i/rice 2 cups egg 2 pcs "
+        assertInvalidCalories("add-r {Fried Rice} i/rice 2 cups egg 2 pcs "
                 + "s/{Cook the rice.} {Scramble the eggs.} t/15 c/-400");
     }
 
-    private void assertInvalidTimeAndCalories(String testCmd) {
+    @Test
+    public void parserTest_zeroCalories_rejected() {
+        assertInvalidCalories("add-r {Fried Rice} i/rice 2 cups egg 2 pcs "
+                + "s/{Cook the rice.} {Scramble the eggs.} t/15 c/0");
+    }
+
+    private void assertInvalidTime(String testCmd) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
         System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
@@ -132,7 +138,26 @@ public class AddRecipeCommandTest {
 
             assertEquals(0, testRecipeBook.getSize());
             assertTrue(output.toString(StandardCharsets.UTF_8)
-                    .contains("Oops! Time and calories cannot be negative."));
+                    .contains("Oops! Time cannot be negative."));
+        } finally {
+            System.setOut(originalOut);
+        }
+    }
+
+    private void assertInvalidCalories(String testCmd) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
+
+        try {
+            Ui ui = new Ui();
+            Parser parser = new Parser(ui);
+            Command cmd = parser.parse(testCmd);
+            cmd.execute(testRecipeBook);
+
+            assertEquals(0, testRecipeBook.getSize());
+            assertTrue(output.toString(StandardCharsets.UTF_8)
+                    .contains("Oops! Calories must be a positive number. A meal cannot have 0 or negative calories."));
         } finally {
             System.setOut(originalOut);
         }
