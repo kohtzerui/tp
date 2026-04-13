@@ -36,7 +36,7 @@ Format: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY 
 * `NAME` can be wrapped in `{}` to support spaces.
 * Each ingredient must be provided in groups of three: `NAME QUANTITY UNIT`.
 * Each ingredient quantity must be a positive number.
-* Ingredients or steps containing spaces should be wrapped in `{}`.
+* Ingredient or step **names** containing spaces should be wrapped in `{}` (e.g. `{soy sauce} 1 tbsp`). Do not wrap the entire ingredient in braces.
 * `TIME_IN_MINUTES` must be a non-negative integer.
 * `CALORIES` must be a positive integer (greater than 0) representing the calorie count in kcal.
 * Recipe names must be unique (case-insensitive). Adding a recipe with a duplicate name will be rejected.

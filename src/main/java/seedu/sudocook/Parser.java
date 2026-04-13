@@ -293,7 +293,8 @@ public class Parser {
         }
 
         if (ingredientTokens.size() % INGREDIENT_TOKEN_GROUP_SIZE != 0) {
-            Ui.printError("Invalid add-r format. Ingredients should be NAME QUANTITY UNIT.");
+            Ui.printError("Invalid add-r format. Each ingredient must be NAME QUANTITY UNIT. "
+                    + "For names with spaces, use {NAME} QUANTITY UNIT (e.g. {soy sauce} 1 tbsp).");
             logger.log(Level.INFO, "Caught invalid add-r command format in INGREDIENT NAME field");
             return new Command(false);
         }
