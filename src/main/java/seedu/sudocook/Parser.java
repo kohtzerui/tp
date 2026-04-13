@@ -308,6 +308,11 @@ public class Parser {
             String ingredientName = ingredientTokens.get(i);
             String quantityToken = ingredientTokens.get(i + 1);
             String unit = ingredientTokens.get(i + 2);
+            if (ingredientName.trim().isEmpty() || unit.trim().isEmpty()) {
+                Ui.printError("Invalid add-r format. Ingredients should be NAME QUANTITY UNIT.");
+                logger.log(Level.INFO, "Caught invalid add-r command format in INGREDIENT NAME or UNIT field");
+                return new Command(false);
+            }
             double quantity;
             try {
                 quantity = Double.parseDouble(quantityToken);
