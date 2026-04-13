@@ -1235,7 +1235,7 @@ codebase packaged as a single runnable JAR, with no DBMS and no reliance on remo
 
 ## Instructions for manual testing
 
-1. **Launch**: Run `java -jar sudocook.jar`. Verify the welcome banner appears.
+1. **Launch**: Run `java -jar [CS2113-W13-2][SudoCook].jar`. Verify the welcome banner appears.
 2. **Add a recipe**: `add-r {Fried Rice} i/rice 2 cups egg 2 pcs s/{Cook rice} {Fry egg} t/15 c/400`. Verify the recipe is added with the correct details.
 3. **List recipes**: `list-r`. Verify the recipe name appears in a numbered list.
 4. **View recipe**: `view-r 1`. Verify full recipe details including calories are displayed.
