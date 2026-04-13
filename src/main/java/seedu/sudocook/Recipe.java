@@ -31,12 +31,12 @@ public class Recipe {
         assert(steps != null);
     }
 
-    private String normalizeSpaces(String value) {
-        return value.trim().replaceAll("\\s+", " ");
-    }
-
     public Recipe(String name, ArrayList<Ingredient> ingredients, ArrayList<String> steps, int time) {
         this(name, ingredients, steps, time, 0);
+    }
+
+    private String normalizeSpaces(String value) {
+        return value.trim().replaceAll("\\s+", " ");
     }
 
     public String getName() {
