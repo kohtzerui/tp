@@ -1173,6 +1173,8 @@ codebase packaged as a single runnable JAR, with no DBMS and no reliance on remo
 | v2.0 | Fast-typer | Use an "undo" command to revert the last change | I can quickly fix accidental deletions or typos |
 | v2.0 | Busy Student | Filter recipe suggestions by cooking time (e.g.< 15 mins) | I can prepare a meal that fits between my lectures |
 | v2.0 | Forgetful User | Use keyword or fuzzy search for ingredients/recipes | I can find items even if I don't remember the exact name |
+| v2.0 | Organised User | Sort my recipe list by name, time, or calories | I can easily browse and find the most relevant recipes |
+| v2.0 | Organised User | Sort my ingredient inventory alphabetically | I can quickly scan what I have without hunting through an unsorted list |
 
 ## Non-Functional Requirements
 
@@ -1188,6 +1190,9 @@ codebase packaged as a single runnable JAR, with no DBMS and no reliance on remo
   more expiry/quantity pairs; recipe ingredients store the quantity and unit required by a recipe.
 * *Inventory* — The collection of ingredients currently available to the user.
 * *Recipe Book* — The collection of all saved recipes.
+* *Fuzzy Search* — A search technique that finds matches even when the query does not exactly match the target string, ranking results by similarity score.
+* *Undo* — A command that reverts the most recent state-changing operation (e.g. add or delete) by restoring the previous snapshot of the affected data.
+* *Command History* — An internal record of previous application states used to support the undo feature; stores snapshots of the recipe book and inventory before each mutating command.
 
 ## Instructions for manual testing
 
