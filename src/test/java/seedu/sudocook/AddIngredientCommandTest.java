@@ -2,7 +2,16 @@ package seedu.sudocook;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -145,6 +154,43 @@ public class AddIngredientCommandTest {
         parseAndExecute("add-i n/Tom@to q/3 u/pcs", inventory);
 
         assertEquals(0, inventory.getSize());
+    }
+
+    @Test
+    public void parse_invalidName_doesNotWriteInternalLogToStdErr() {
+        ByteArrayOutputStream errorOutput = new ByteArrayOutputStream();
+        PrintStream originalErr = System.err;
+        Logger rootLogger = Logger.getLogger("");
+        Handler[] originalHandlers = rootLogger.getHandlers();
+        Level originalLevel = rootLogger.getLevel();
+
+        System.setErr(new PrintStream(errorOutput, true, StandardCharsets.UTF_8));
+        for (Handler handler : originalHandlers) {
+            rootLogger.removeHandler(handler);
+        }
+        StreamHandler testHandler = new StreamHandler(System.err, new SimpleFormatter()) {
+            @Override
+            public synchronized void publish(LogRecord record) {
+                super.publish(record);
+                flush();
+            }
+        };
+        testHandler.setLevel(Level.WARNING);
+        rootLogger.setLevel(Level.WARNING);
+        rootLogger.addHandler(testHandler);
+
+        try {
+            parseAndExecute("add-i n/all-purpose flour q/1 u/kg", new Inventory());
+            assertEquals("", errorOutput.toString(StandardCharsets.UTF_8));
+        } finally {
+            rootLogger.removeHandler(testHandler);
+            testHandler.close();
+            rootLogger.setLevel(originalLevel);
+            for (Handler handler : originalHandlers) {
+                rootLogger.addHandler(handler);
+            }
+            System.setErr(originalErr);
+        }
     }
 
     @Test

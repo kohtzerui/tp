@@ -193,14 +193,14 @@ public class Parser {
             addIngredientInput = expiryMatcher.group(1);
             String expiryDateInput = expiryMatcher.group(2);
             if (!expiryDateInput.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                logger.log(Level.WARNING, "Invalid expiry date format: " + expiryDateInput);
+                logger.log(Level.FINE, "Invalid expiry date format: " + expiryDateInput);
                 Ui.printError("Invalid expiry date format. Use: YYYY-MM-DD");
                 return new Command(false);
             }
             try {
                 expiryDate = LocalDate.parse(expiryDateInput);
             } catch (java.time.format.DateTimeParseException e) {
-                logger.log(Level.WARNING, "Invalid expiry date format: " + expiryDateInput);
+                logger.log(Level.FINE, "Invalid expiry date format: " + expiryDateInput);
                 Ui.printError("Invalid expiry date format. Use: YYYY-MM-DD");
                 return new Command(false);
             }
@@ -209,7 +209,7 @@ public class Parser {
         Pattern addIngredientPattern = Pattern.compile("(?i)n/(.+?)\\s+q/([\\d.]+)\\s+u/(.+)");
         Matcher addIngredientMatcher = addIngredientPattern.matcher(addIngredientInput);
         if (!addIngredientMatcher.matches()) {
-            logger.log(Level.WARNING, "Invalid add-i format");
+            logger.log(Level.FINE, "Invalid add-i format");
             Ui.printError("Invalid add-i format. Use: add-i n/NAME q/QUANTITY u/UNIT [ex/YYYY-MM-DD]");
             return new Command(false);
         }
@@ -219,13 +219,13 @@ public class Parser {
         String unit = addIngredientMatcher.group(3).trim();
 
         if (!name.matches("[a-zA-Z0-9\\s]+")) {
-            logger.log(Level.WARNING, "Ingredient name contains special characters");
+            logger.log(Level.FINE, "Ingredient name contains special characters");
             Ui.printError("Ingredient name should not contain special characters.");
             return new Command(false);
         }
 
         if (!unit.matches("[a-zA-Z]+(?:\\s+[a-zA-Z]+)*")) {
-            logger.log(Level.WARNING, "Ingredient unit contains invalid characters");
+            logger.log(Level.FINE, "Ingredient unit contains invalid characters");
             Ui.printError("Invalid unit format. Use alphabetic units only (e.g., grams, cups, pcs).");
             return new Command(false);
         }
@@ -233,14 +233,14 @@ public class Parser {
         try {
             double quantity = Double.parseDouble(quantityStr);
             if (quantity <= 0) {
-                logger.log(Level.WARNING, "Invalid quantity: " + quantityStr);
+                logger.log(Level.FINE, "Invalid quantity: " + quantityStr);
                 Ui.printError("Quantity must be a positive number.");
                 return new Command(false);
             }
             logger.log(Level.FINE, "Creating add-i command for: " + name);
             return new AddIngredientCommand(name, quantity, unit, expiryDate);
         } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid quantity format: " + quantityStr);
+            logger.log(Level.FINE, "Invalid quantity format: " + quantityStr);
             Ui.printError("Invalid quantity format.");
             return new Command(false);
         }
