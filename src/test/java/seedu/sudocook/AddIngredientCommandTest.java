@@ -148,6 +148,15 @@ public class AddIngredientCommandTest {
     }
 
     @Test
+    public void parse_invalidUnitSymbols_doesNotAddIngredient() {
+        Inventory inventory = new Inventory();
+
+        parseAndExecute("add-i n/salt q/5 u/???", inventory);
+
+        assertEquals(0, inventory.getSize());
+    }
+
+    @Test
     public void parse_zeroQuantity_doesNotAddIngredient() {
         Inventory inventory = new Inventory();
 
