@@ -41,10 +41,23 @@ through an intuitive text interface.
     - Enhanced the `Help` command output formatting with gradient line endings for a polished CLI experience.
     - Fixed startup behavior and Checkstyle violations across multiple files.
 
+- **Developed Aesthetic ANSI Gradient System** (`Ui.java`)
+    - Implemented a 24-bit TrueColor (RGB) gradient generator (`getGradientText`) that interpolates colors across text strings to provide a premium, modern terminal feel.
+    - Integrated this system into the `printWelcome` banner and the `printGradientMessage` wrapper, ensuring all significant user-facing messages feature a cohesive purple-to-cyan visual identity.
+
+- **Enforced Strict Recipe Input Validation** (`Parser.java`)
+    - Improved the application's logical consistency by implementing stricter validation for calories and preparation time.
+    - Enhanced the `add-r` parser to reject zero or negative calories (Issue #102), ensuring all saved recipes represent realistic meals.
+    - Refactored numeric parsing to provide specific, helpful error messages for different failure modes (e.g., negative time vs. invalid calorie count).
+
 #### Contributions to the User Guide (UG)
+- Authored the `delete-i` (Delete Ingredient) section, including format specifications and usage examples (Issue #130).
 - Authored the `filter-r` section with format specifications, parameter notes, and usage examples.
-- Updated the `add-r` section to document the new `c/CALORIES` parameter.
-- Updated the command summary table to include the `filter-r` command.
+- Updated the `add-r` section to document the new `c/CALORIES` parameter and updated the expected output to match the current app logic.
+- **UG Standardization & Consistency**:
+    - Aligned the **Command Summary** table with the detailed Features section to ensure consistent format specifications (Issue #138).
+    - Synchronized all **Expected Output** examples (for `add-r` and `cook`) with actual application behavior to prevent user confusion (Issue #121).
+    - Explicitly defined the **Target Audience** and **Value Proposition** in the introduction to clearly communicate the product's scope (Issue #120).
 
 #### Contributions to the Developer Guide (DG)
 - Authored the `filter-r` implementation section covering:
@@ -53,12 +66,13 @@ through an intuitive text interface.
     - Design Consideration aspects with option tables and rationale.
 
 #### Contributions to Team-Based Tasks
-- **Test Coverage**: Significantly improved unit test coverage across recipe-related classes, ensuring
-  reliable CI builds and regression detection.
-- **CI Maintenance**: Diagnosed and fixed CI test failures related to `text-ui-test` expected output
-  mismatches after feature additions, and resolved Checkstyle line-length violations.
-- **Documentation Cleanup**: Updated `README.md`, `UserGuide.md`, and `DeveloperGuide.md` to replace
-  placeholder text and ensure consistency with the SudoCook project name.
+- **CI Maintenance & Regression Testing**:
+    - Maintained CI build stability by proactively updating unit tests (e.g., `AddRecipeCommandTest.java`) to align with new specific validation error messages.
+    - Diagnosed and fixed CI test failures related to `text-ui-test` expected output mismatches after feature additions.
+- **Project Structure & Git Hygiene**:
+    - Synchronized the local repository with the project's upstream master across multiple feature rounds.
+    - Configured repository-wide `.gitignore` rules to exclude local environment files (like `.vscode/`), ensuring a clean codebase for all contributors.
+- **Documentation Overhaul**: Updated `README.md`, `UserGuide.md`, and `DeveloperGuide.md` to replace placeholder text and ensure terminology consistency with the final SudoCook implementation.
 
 #### Review/Mentoring Contributions
 - Assisted teammates in debugging Checkstyle violations and test failures caused by cross-cutting
