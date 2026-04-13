@@ -49,6 +49,8 @@ public class Parser {
             return parseSearchR(trimmedInput);
         } else if (matchesCommandKeyword(trimmedInput, "search-i")) {
             return parseSearchI(trimmedInput);
+        } else if (matchesCommandKeyword(trimmedInput, "undo")) {
+            return parseUndo();
         } else if (trimmedInput.equalsIgnoreCase("help")) {
             return new HelpCommand();
         } else {
@@ -425,6 +427,11 @@ public class Parser {
             return token.substring(1, token.length() - 1);
         }
         return token;
+    }
+
+    private Command parseUndo() {
+        logger.log(Level.INFO, "Received undo request");
+        return new UndoCommand();
     }
 
     private boolean matchesCommandKeyword(String input, String keyword) {

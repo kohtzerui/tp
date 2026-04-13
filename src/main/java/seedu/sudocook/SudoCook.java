@@ -19,6 +19,7 @@ public class SudoCook {
     private static RecipeBook recipes;
     private static Inventory inventory;
     private static Ui ui;
+    private static CommandHistory commandHistory;
 
     private void run() {
         logger.log(Level.INFO, "Starting SudoCook application");
@@ -27,11 +28,13 @@ public class SudoCook {
         Parser parser = new Parser(ui);
         recipes = new RecipeBook();
         inventory = new Inventory();
+        commandHistory = new CommandHistory();
 
         assert ui != null : "Ui must be initialised";
         assert parser != null : "Parser must be initialised";
         assert recipes != null : "RecipeBook must be initialised";
         assert inventory != null : "Inventory must be initialised";
+        assert commandHistory != null : "CommandHistory must be initialised";
 
         // Initialize storage and load data
         Storage.initializeStorage();
@@ -52,17 +55,24 @@ public class SudoCook {
             if (cmd instanceof SearchIngredientCommand) {
                 logger.log(Level.FINE, "Routing search-i command to Inventory");
                 cmd.execute(inventory);
+            } else if (cmd instanceof UndoCommand) {
+                logger.log(Level.FINE, "Routing undo command");
+                ((UndoCommand) cmd).execute(commandHistory, recipes, inventory);
             } else if (cmd instanceof AddIngredientCommand ||
                     cmd instanceof ListIngredientCommand ||
                     cmd instanceof DeleteIngredientCommand) {
                 logger.log(Level.FINE, "Routing command to Inventory");
+                // Save snapshot before modifying commands
+                if (cmd instanceof AddIngredientCommand || cmd instanceof DeleteIngredientCommand) {
+                    commandHistory.saveSnapshot(recipes, inventory);
+                }
                 cmd.execute(inventory);
             } else if (cmd instanceof HelpCommand) {
                 logger.log(Level.FINE, "Routing help command");
                 cmd.execute(inventory); // Execute on either, it just prints UI
             } else if (cmd instanceof CookCommand) {
                 logger.log(Level.FINE, "Routing cook command");
-
+                commandHistory.saveSnapshot(recipes, inventory);
                 cmd.execute(recipes.getRecipe(cmd.getIndex()), inventory);
 
             } else if (cmd instanceof RecommendByIngredientCommand || cmd instanceof RecommendByInventoryCommand
@@ -71,6 +81,7 @@ public class SudoCook {
                 cmd.execute(inventory, recipes);
             } else if (cmd instanceof SortRecipeCommand) {
                 logger.log(Level.FINE, "Routing sort recipe command");
+                commandHistory.saveSnapshot(recipes, inventory);
                 cmd.execute(recipes);
             } else if (cmd instanceof SortInventoryCommand){
                 logger.log(Level.FINE, "Routing sort inventory command");
@@ -79,6 +90,11 @@ public class SudoCook {
                 listCommand.execute(inventory);
             } else {
                 logger.log(Level.FINE, "Routing command to RecipeBook");
+                // Save snapshot for recipe-modifying commands
+                if (!(cmd instanceof ListRecipeCommand || cmd instanceof ViewRecipeCommand || 
+                        cmd instanceof SearchRecipeCommand || cmd instanceof FilterRecipeCommand)) {
+                    commandHistory.saveSnapshot(recipes, inventory);
+                }
                 cmd.execute(recipes);
             }
             input = ui.readInput();
