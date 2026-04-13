@@ -224,6 +224,12 @@ public class Parser {
             return new Command(false);
         }
 
+        if (!unit.matches("[a-zA-Z]+(?:\\s+[a-zA-Z]+)*")) {
+            logger.log(Level.WARNING, "Ingredient unit contains invalid characters");
+            Ui.printError("Invalid unit format. Use alphabetic units only (e.g., grams, cups, pcs).");
+            return new Command(false);
+        }
+
         try {
             double quantity = Double.parseDouble(quantityStr);
             if (quantity <= 0) {
