@@ -185,14 +185,20 @@ public class Parser {
         String addIngredientInput = input.substring("add-i".length()).trim();
 
         LocalDate expiryDate = null;
-        Pattern expiryPattern = Pattern.compile("(.*)\\s+ex/(\\d{4}-\\d{2}-\\d{2})");
+        Pattern expiryPattern = Pattern.compile("(.*)\\s+ex/(.*)");
         Matcher expiryMatcher = expiryPattern.matcher(addIngredientInput);
         if (expiryMatcher.matches()) {
             addIngredientInput = expiryMatcher.group(1);
+            String expiryDateInput = expiryMatcher.group(2);
+            if (!expiryDateInput.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                logger.log(Level.WARNING, "Invalid expiry date format: " + expiryDateInput);
+                Ui.printError("Invalid expiry date format. Use: YYYY-MM-DD");
+                return new Command(false);
+            }
             try {
-                expiryDate = LocalDate.parse(expiryMatcher.group(2));
+                expiryDate = LocalDate.parse(expiryDateInput);
             } catch (java.time.format.DateTimeParseException e) {
-                logger.log(Level.WARNING, "Invalid expiry date format: " + expiryMatcher.group(2));
+                logger.log(Level.WARNING, "Invalid expiry date format: " + expiryDateInput);
                 Ui.printError("Invalid expiry date format. Use: YYYY-MM-DD");
                 return new Command(false);
             }

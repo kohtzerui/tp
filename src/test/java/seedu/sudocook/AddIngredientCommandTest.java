@@ -99,6 +99,15 @@ public class AddIngredientCommandTest {
     }
 
     @Test
+    public void parse_malformedExpiryDate_doesNotAddIngredient() {
+        Inventory inventory = new Inventory();
+
+        parseAndExecute("add-i n/Milk q/1 u/carton ex/2026-2-30", inventory);
+
+        assertEquals(0, inventory.getSize());
+    }
+
+    @Test
     public void parse_invalidName_doesNotAddIngredient() {
         Inventory inventory = new Inventory();
 
