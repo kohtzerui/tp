@@ -98,8 +98,7 @@ public class SudoCook {
                 logger.log(Level.FINE, "Routing command to RecipeBook");
                 // Save snapshot for recipe-modifying commands
                 if (!(cmd instanceof ListRecipeCommand || cmd instanceof ViewRecipeCommand || 
-                        cmd instanceof SearchRecipeCommand || cmd instanceof FilterRecipeCommand
-                        || cmd instanceof DeleteRecipeCommand)) {
+                        cmd instanceof SearchRecipeCommand || cmd instanceof FilterRecipeCommand)) {
                     commandHistory.saveSnapshot(recipes, inventory);
                 }
                 cmd.execute(recipes);
