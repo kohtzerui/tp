@@ -4,9 +4,19 @@
 ## Introduction
 
 **SudoCook** is a Java-based Command-Line Interface (CLI) application designed to help users manage
-recipes and kitchen inventory efficiently. It enables students and home cooks to track their
-ingredients, discover what they can cook, and filter recipes based on preparation time and calorie
-count — all through an intuitive text interface.
+recipes and kitchen inventory efficiently through an intuitive text interface.
+
+### Target Audience
+
+SudoCook is specifically designed for **single students living independently** (e.g., in campus dorms or
+small apartments) who are fast typists and prefer keyboard-driven workflows. It is ideal for those who 
+enjoy cooking but often struggle with disorganized ingredients or difficulty deciding what to eat.
+
+### Value Proposition
+
+SudoCook helps you **reduce food waste** by tracking ingredient expiry dates and **minimizes meal 
+indecision** by suggesting recipes based on what is currently in your pantry and your available cooking time.
+It is a portable, cross-platform tool that keeps all your data local and secure.
 
 ## Quick Start
 
@@ -28,7 +38,7 @@ Format: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY 
 * Each ingredient quantity must be a positive number.
 * Ingredients or steps containing spaces should be wrapped in `{}`.
 * `TIME_IN_MINUTES` must be a non-negative integer.
-* `CALORIES` must be a non-negative integer representing the calorie count in kcal.
+* `CALORIES` must be a positive integer (greater than 0) representing the calorie count in kcal.
 
 Examples:
 
@@ -36,12 +46,21 @@ Examples:
 
 `add-r {Instant Noodles} i/water 2 cups noodles 1 packet s/{Boil water.} {Cook noodles.} t/5 c/350`
 
-Example output excerpt (successful addition):
+Example output (successful addition):
 ```
 Added recipe:
 Recipe Name: Fried Rice
 Preparation Time: 15 minutes
 Calories: 400 kcal
+
+    Ingredients:
+    - rice (2.0 cups)
+    - egg (2.0 pcs)
+
+    Steps:
+    - Cook the rice.
+    - Scramble the eggs.
+    - Mix everything together.
 ```
 
 Expected output (invalid format):
@@ -59,9 +78,9 @@ Expected output (invalid ingredient quantity):
 Oops! Invalid ingredient quantity in add-r format.
 ```
 
-Expected output (negative time or calories):
+Expected output (zero or negative calories):
 ```
-Oops! Time and calories cannot be negative.
+Oops! Calories must be a positive number. A meal cannot have 0 or negative calories.
 ```
 
 ---
@@ -243,9 +262,9 @@ Examples:
 
 Expected output after a successful cook:
 ```
-Removed <quantity>: <ingredient>
-Removed <quantity>: <ingredient>
-Cooked Recipe <Recipe Name>
+Removed all of: rice
+Removed all of: egg
+Cooked Recipe Fried Rice
 ```
 
 Expected output (not enough ingredients):
@@ -723,7 +742,7 @@ expiry dates for the same ingredient are preserved.
 
 | Action | Format |
 |---|---|
-| Add recipe | `add-r {NAME} i/INGREDIENTS s/STEPS t/TIME c/CALORIES` |
+| Add recipe | `add-r {NAME} i/NAME QTY UNIT [NAME QTY UNIT]... s/STEP [STEP]... t/TIME c/CALORIES` |
 | List recipes | `list-r` |
 | View recipe(s) | `view-r` or `view-r INDEX` |
 | Filter recipes | `filter-r [t/MAX_TIME] [c/MAX_CALORIES]` |

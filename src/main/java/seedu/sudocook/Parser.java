@@ -269,8 +269,12 @@ public class Parser {
         try {
             time = Integer.parseInt(timeInput);
             calories = Integer.parseInt(calorieInput);
-            if (time < 0 || calories < 0) {
-                Ui.printError("Time and calories cannot be negative.");
+            if (time < 0) {
+                Ui.printError("Time cannot be negative.");
+                return new Command(false);
+            }
+            if (calories <= 0) {
+                Ui.printError("Calories must be a positive number. A meal cannot have 0 or negative calories.");
                 return new Command(false);
             }
         } catch (NumberFormatException e) {
