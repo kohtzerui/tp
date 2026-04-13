@@ -138,7 +138,8 @@ public class Parser {
         if (listIngredientInput.isEmpty()) {
             return new ListIngredientCommand();
         }
-        Pattern listIngredientPattern = Pattern.compile("ex/(\\d{4}-\\d{2}-\\d{2})");
+        Pattern listIngredientPattern = Pattern.compile(
+                "ex/(\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))");
         Matcher listIngredientMatcher = listIngredientPattern.matcher(listIngredientInput);
         if (!listIngredientMatcher.matches()) {
             Ui.printError("Invalid list-i format. Use: list-i [ex/YYYY-MM-DD]");
@@ -187,12 +188,11 @@ public class Parser {
         String addIngredientInput = input.substring("add-i".length()).trim();
 
         LocalDate expiryDate = null;
-        Pattern expiryPattern = Pattern.compile("(.*)\\s+ex/(.*)");
-        Matcher expiryMatcher = expiryPattern.matcher(addIngredientInput);
-        if (expiryMatcher.matches()) {
-            addIngredientInput = expiryMatcher.group(1);
-            String expiryDateInput = expiryMatcher.group(2);
-            if (!expiryDateInput.matches("\\d{4}-\\d{2}-\\d{2}")) {
+        int expiryIndex = addIngredientInput.lastIndexOf(" ex/");
+        if (expiryIndex >= 0) {
+            String expiryDateInput = addIngredientInput.substring(expiryIndex + " ex/".length()).trim();
+            addIngredientInput = addIngredientInput.substring(0, expiryIndex);
+            if (!expiryDateInput.matches("\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])")) {
                 logger.log(Level.WARNING, "Invalid expiry date format: " + expiryDateInput);
                 Ui.printError("Invalid expiry date format. Use: YYYY-MM-DD");
                 return new Command(false);

@@ -108,6 +108,24 @@ public class AddIngredientCommandTest {
     }
 
     @Test
+    public void parse_monthOutOfRange_doesNotAddIngredient() {
+        Inventory inventory = new Inventory();
+
+        parseAndExecute("add-i n/Milk q/1 u/carton ex/2024-13-01", inventory);
+
+        assertEquals(0, inventory.getSize());
+    }
+
+    @Test
+    public void parse_malformedDateExtraDigits_doesNotAddIngredient() {
+        Inventory inventory = new Inventory();
+
+        parseAndExecute("add-i n/Milk q/1 u/carton ex/20230-13-100", inventory);
+
+        assertEquals(0, inventory.getSize());
+    }
+
+    @Test
     public void parse_invalidName_doesNotAddIngredient() {
         Inventory inventory = new Inventory();
 
