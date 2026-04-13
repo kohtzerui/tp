@@ -33,7 +33,7 @@ Adds an ingredient to your inventory with optional expiry date tracking.
 
 Format: `add-i n/NAME q/QUANTITY u/UNIT [ex/YYYY-MM-DD]`
 
-* `n/NAME` is the name of the ingredient.
+* `n/NAME` is the name of the ingredient and should be alphanumeric.
 * `q/QUANTITY` is the amount of the ingredient (can be decimal, e.g., 2.5).
 * `u/UNIT` is the unit of measurement (e.g., cups, grams, pcs).
 * `ex/YYYY-MM-DD` is optional. If provided, sets the expiry date for the ingredient. Use format YYYY-MM-DD.
