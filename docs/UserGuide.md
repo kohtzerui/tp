@@ -4,9 +4,19 @@
 ## Introduction
 
 **SudoCook** is a Java-based Command-Line Interface (CLI) application designed to help users manage
-recipes and kitchen inventory efficiently. It enables students and home cooks to track their
-ingredients, discover what they can cook, and filter recipes based on preparation time and calorie
-count — all through an intuitive text interface.
+recipes and kitchen inventory efficiently through an intuitive text interface.
+
+### Target Audience
+
+SudoCook is specifically designed for **single students living independently** (e.g., in campus dorms or
+small apartments) who are fast typists and prefer keyboard-driven workflows. It is ideal for those who 
+enjoy cooking but often struggle with disorganized ingredients or difficulty deciding what to eat.
+
+### Value Proposition
+
+SudoCook helps you **reduce food waste** by tracking ingredient expiry dates and **minimizes meal 
+indecision** by suggesting recipes based on what is currently in your pantry and your available cooking time.
+It is a portable, cross-platform tool that keeps all your data local and secure.
 
 ## Quick Start
 
