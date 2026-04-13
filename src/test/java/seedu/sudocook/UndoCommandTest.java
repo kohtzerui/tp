@@ -42,14 +42,14 @@ public class UndoCommandTest {
     public void execute_noHistory_printsError() {
         UndoCommand cmd = new UndoCommand();
         cmd.execute(history, recipeBook, inventory);
-        assertTrue(getOutput().contains("No previous commands to undo"));
+        assertTrue(getOutput().contains("No commands to undo."));
     }
 
     @Test
     public void execute_undoWithNullHistory_handlesGracefully() {
         UndoCommand cmd = new UndoCommand();
         cmd.execute(null, recipeBook, inventory);
-        assertTrue(getOutput().contains("No previous commands to undo"));
+        assertTrue(getOutput().contains("No commands to undo."));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class UndoCommandTest {
         UndoCommand cmd = new UndoCommand();
         cmd.execute(history, recipeBook, inventory);
         
-        assertTrue(getOutput().contains("Last command undone successfully"));
+        assertTrue(getOutput().contains("Command undone successfully!"));
     }
 
     // --- Test CommandHistory functionality ---

@@ -85,6 +85,7 @@ public class SudoCook {
                 cmd.execute(recipes);
             } else if (cmd instanceof SortInventoryCommand){
                 logger.log(Level.FINE, "Routing sort inventory command");
+                commandHistory.saveSnapshot(recipes, inventory);
                 cmd.execute(inventory);
                 Command listCommand = new ListIngredientCommand();
                 listCommand.execute(inventory);
@@ -92,7 +93,8 @@ public class SudoCook {
                 logger.log(Level.FINE, "Routing command to RecipeBook");
                 // Save snapshot for recipe-modifying commands
                 if (!(cmd instanceof ListRecipeCommand || cmd instanceof ViewRecipeCommand || 
-                        cmd instanceof SearchRecipeCommand || cmd instanceof FilterRecipeCommand)) {
+                        cmd instanceof SearchRecipeCommand || cmd instanceof FilterRecipeCommand
+                        || cmd instanceof DeleteRecipeCommand)) {
                     commandHistory.saveSnapshot(recipes, inventory);
                 }
                 cmd.execute(recipes);
