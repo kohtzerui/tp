@@ -31,9 +31,10 @@ It is a portable, cross-platform tool that keeps all your data local and secure.
 
 Adds a new recipe to the recipe book.
 
-Format: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY UNIT]... s/{STEP_1} [{STEP_2}]... t/TIME_IN_MINUTES c/CALORIES`
+Format: `add-r NAME i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY UNIT]... s/STEP_1 [STEP_2]... t/TIME_IN_MINUTES c/CALORIES`
 
-* `NAME` can be wrapped in `{}` to support spaces.
+* Multi-word names and steps must be wrapped in `{}` (e.g. `{Fried Rice}`, `{Cook the rice.}`).
+  Single-word names and steps do not need braces.
 * Each ingredient must be provided in groups of three: `NAME QUANTITY UNIT`.
 * Each ingredient quantity must be a positive number.
 * Ingredients or steps containing spaces should be wrapped in `{}`.
@@ -78,10 +79,6 @@ Expected output (invalid ingredient quantity):
 Oops! Invalid ingredient quantity in add-r format.
 ```
 
-Expected output (zero or negative calories):
-```
-Oops! Calories must be a positive number. A meal cannot have 0 or negative calories.
-```
 
 ---
 

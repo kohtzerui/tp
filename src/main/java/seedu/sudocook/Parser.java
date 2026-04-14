@@ -369,9 +369,14 @@ public class Parser {
         Matcher timeMatcher = timePattern.matcher(filterInput);
         if (timeMatcher.find()) {
             try {
-                maxTime = Integer.parseInt(timeMatcher.group(1));
+                long timeLong = Long.parseLong(timeMatcher.group(1));
+                if (timeLong < 0 || timeLong > Integer.MAX_VALUE) {
+                    Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
+                    return new Command(false);
+                }
+                maxTime = (int) timeLong;
             } catch (NumberFormatException e) {
-                Ui.printError("Invalid time format for filter-r.");
+                Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
                 return new Command(false);
             }
         }
@@ -380,9 +385,14 @@ public class Parser {
         Matcher calorieMatcher = caloriePattern.matcher(filterInput);
         if (calorieMatcher.find()) {
             try {
-                maxCalories = Integer.parseInt(calorieMatcher.group(1));
+                long calorieLong = Long.parseLong(calorieMatcher.group(1));
+                if (calorieLong < 0 || calorieLong > Integer.MAX_VALUE) {
+                    Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
+                    return new Command(false);
+                }
+                maxCalories = (int) calorieLong;
             } catch (NumberFormatException e) {
-                Ui.printError("Invalid calorie format for filter-r.");
+                Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
                 return new Command(false);
             }
         }

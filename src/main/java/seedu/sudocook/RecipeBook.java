@@ -22,13 +22,11 @@ public class RecipeBook {
     }
 
     public Recipe getRecipe(int index){
-
-        try {
-            return recipes.get(index);
-        } catch (IndexOutOfBoundsException exception) {
+        if (index < 0 || index >= recipes.size()) {
             Ui.printError("Index out of bounds");
             return null;
         }
+        return recipes.get(index);
     }
 
     public void listRecipe() {
