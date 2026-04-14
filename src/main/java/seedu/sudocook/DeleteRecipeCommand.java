@@ -21,7 +21,7 @@ public class DeleteRecipeCommand extends Command {
             Ui.printMessage("Recipe " + index + " deleted successfully.");
         } catch (IndexOutOfBoundsException e) {
             logger.log(Level.WARNING, "Delete failed: " + e.getMessage());
-            Ui.printMessage("Invalid index: " + e.getMessage());
+            Ui.printError("Invalid index: " + e.getMessage());
         }
 
     }

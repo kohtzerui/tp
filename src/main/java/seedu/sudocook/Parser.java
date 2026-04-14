@@ -62,7 +62,12 @@ public class Parser {
     private Command parseDeleteR(String input) {
         logger.log(Level.INFO, "Received delete-r request");
         try {
-            int index = Integer.parseInt(input.substring(DELETE_R_PREFIX).trim());
+            long indexLong = Long.parseLong(input.substring(DELETE_R_PREFIX).trim());
+            if (indexLong > Integer.MAX_VALUE || indexLong < Integer.MIN_VALUE) {
+                Ui.printError("Invalid index for delete-r. Use: delete-r INDEX");
+                return new Command(false);
+            }
+            int index = (int) indexLong;
             assert index > 0 : "Parsed index must be positive";
             return new DeleteRecipeCommand(index);
         } catch (NumberFormatException e) {
@@ -84,7 +89,12 @@ public class Parser {
             return new ViewRecipeCommand();
         }
         try {
-            int index = Integer.parseInt(viewArgs);
+            long indexLong = Long.parseLong(viewArgs);
+            if (indexLong > Integer.MAX_VALUE || indexLong < Integer.MIN_VALUE) {
+                Ui.printError("Invalid index for view-r. Use: view-r [INDEX]");
+                return new Command(false);
+            }
+            int index = (int) indexLong;
             return new ViewRecipeCommand(index);
         } catch (NumberFormatException e) {
             Ui.printError("Invalid index for view-r. Use: view-r [INDEX]");
@@ -111,7 +121,12 @@ public class Parser {
     private Command parseRecommendByMissing(String args) {
         String maxMissingStr = args.substring("missing/".length()).trim();
         try {
-            int maxMissing = Integer.parseInt(maxMissingStr);
+            long maxMissingLong = Long.parseLong(maxMissingStr);
+            if (maxMissingLong > Integer.MAX_VALUE || maxMissingLong < Integer.MIN_VALUE) {
+                Ui.printError("Invalid format. Use: recommend-r missing/N");
+                return new Command(false);
+            }
+            int maxMissing = (int) maxMissingLong;
             if (maxMissing <= 0) {
                 Ui.printError("Missing count must be a positive number.");
                 return new Command(false);
@@ -187,29 +202,29 @@ public class Parser {
         String addIngredientInput = input.substring("add-i".length()).trim();
 
         LocalDate expiryDate = null;
-        Pattern expiryPattern = Pattern.compile("(.*)\\s+ex/(.*)");
+        Pattern expiryPattern = Pattern.compile("(?i)(.*)\\s+ex/(.*)");
         Matcher expiryMatcher = expiryPattern.matcher(addIngredientInput);
         if (expiryMatcher.matches()) {
             addIngredientInput = expiryMatcher.group(1);
             String expiryDateInput = expiryMatcher.group(2);
             if (!expiryDateInput.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                logger.log(Level.WARNING, "Invalid expiry date format: " + expiryDateInput);
+                logger.log(Level.FINE, "Invalid expiry date format: " + expiryDateInput);
                 Ui.printError("Invalid expiry date format. Use: YYYY-MM-DD");
                 return new Command(false);
             }
             try {
                 expiryDate = LocalDate.parse(expiryDateInput);
             } catch (java.time.format.DateTimeParseException e) {
-                logger.log(Level.WARNING, "Invalid expiry date format: " + expiryDateInput);
+                logger.log(Level.FINE, "Invalid expiry date format: " + expiryDateInput);
                 Ui.printError("Invalid expiry date format. Use: YYYY-MM-DD");
                 return new Command(false);
             }
         }
 
-        Pattern addIngredientPattern = Pattern.compile("n/(.+?)\\s+q/([\\d.]+)\\s+u/(.+)");
+        Pattern addIngredientPattern = Pattern.compile("(?i)n/(.+?)\\s+q/([\\d.]+)\\s+u/(.+)");
         Matcher addIngredientMatcher = addIngredientPattern.matcher(addIngredientInput);
         if (!addIngredientMatcher.matches()) {
-            logger.log(Level.WARNING, "Invalid add-i format");
+            logger.log(Level.FINE, "Invalid add-i format");
             Ui.printError("Invalid add-i format. Use: add-i n/NAME q/QUANTITY u/UNIT [ex/YYYY-MM-DD]");
             return new Command(false);
         }
@@ -219,22 +234,28 @@ public class Parser {
         String unit = addIngredientMatcher.group(3).trim();
 
         if (!name.matches("[a-zA-Z0-9\\s]+")) {
-            logger.log(Level.WARNING, "Ingredient name contains special characters");
+            logger.log(Level.FINE, "Ingredient name contains special characters");
             Ui.printError("Ingredient name should not contain special characters.");
+            return new Command(false);
+        }
+
+        if (!unit.matches("[a-zA-Z]+(?:\\s+[a-zA-Z]+)*")) {
+            logger.log(Level.FINE, "Ingredient unit contains invalid characters");
+            Ui.printError("Invalid unit format. Use alphabetic units only (e.g., grams, cups, pcs).");
             return new Command(false);
         }
 
         try {
             double quantity = Double.parseDouble(quantityStr);
             if (quantity <= 0) {
-                logger.log(Level.WARNING, "Invalid quantity: " + quantityStr);
+                logger.log(Level.FINE, "Invalid quantity: " + quantityStr);
                 Ui.printError("Quantity must be a positive number.");
                 return new Command(false);
             }
             logger.log(Level.FINE, "Creating add-i command for: " + name);
             return new AddIngredientCommand(name, quantity, unit, expiryDate);
         } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Invalid quantity format: " + quantityStr);
+            logger.log(Level.FINE, "Invalid quantity format: " + quantityStr);
             Ui.printError("Invalid quantity format.");
             return new Command(false);
         }
@@ -245,7 +266,7 @@ public class Parser {
         ArrayList<Ingredient> ingredients = new ArrayList<>();
         ArrayList<String> steps = new ArrayList<>();
         String addRecipeInput = input.substring("add-r".length()).trim();
-        Pattern addRecipePattern = Pattern.compile("^(.*?)\\s+i/(.+?)\\s+s/(.+?)\\s+t/(-?\\d+)\\s+c/(-?\\d+)$");
+        Pattern addRecipePattern = Pattern.compile("(?i)^(.*?)\\s+i/(.+?)\\s+s/(.+?)\\s+t/(-?\\d+)\\s+c/(-?\\d+)$");
         Matcher addRecipeMatcher = addRecipePattern.matcher(addRecipeInput);
 
         if (!addRecipeMatcher.matches()) {
@@ -269,18 +290,22 @@ public class Parser {
         int time;
         int calories;
         try {
-            time = Integer.parseInt(timeInput);
-            calories = Integer.parseInt(calorieInput);
-            if (time < 0) {
-                Ui.printError("Time cannot be negative.");
+            long timeLong = Long.parseLong(timeInput);
+            long calorieLong = Long.parseLong(calorieInput);
+
+            if (timeLong < 1 || timeLong > 100000) {
+                Ui.printError("Time must be between 1 and 100,000 minutes.");
                 return new Command(false);
             }
-            if (calories <= 0) {
-                Ui.printError("Calories must be a positive number. A meal cannot have 0 or negative calories.");
+            if (calorieLong < 1 || calorieLong > 100000) {
+                Ui.printError("Calories must be between 1 and 100,000 kcal.");
                 return new Command(false);
             }
+
+            time = (int) timeLong;
+            calories = (int) calorieLong;
         } catch (NumberFormatException e) {
-            Ui.printError("Invalid add-r format. Time and calories should be integers.");
+            Ui.printError("Invalid add-r format. Time and calories must be integers between 1 and 100,000.");
             logger.log(Level.INFO, "Caught invalid add-r command format in numeric fields");
             return new Command(false);
         }
@@ -302,6 +327,11 @@ public class Parser {
             String ingredientName = ingredientTokens.get(i);
             String quantityToken = ingredientTokens.get(i + 1);
             String unit = ingredientTokens.get(i + 2);
+            if (ingredientName.trim().isEmpty() || unit.trim().isEmpty()) {
+                Ui.printError("Invalid add-r format. Ingredients should be NAME QUANTITY UNIT.");
+                logger.log(Level.INFO, "Caught invalid add-r command format in INGREDIENT NAME or UNIT field");
+                return new Command(false);
+            }
             double quantity;
             try {
                 quantity = Double.parseDouble(quantityToken);
@@ -342,27 +372,46 @@ public class Parser {
         logger.log(Level.INFO, "Received filter-r request");
         String filterInput = input.substring("filter-r".length()).trim();
 
+        // Validate: the entire input must consist only of t/DIGITS and c/DIGITS tokens,
+        // in any order, with optional whitespace between them. Any extra garbage is rejected.
+        Pattern validFilterPattern = Pattern.compile(
+                "(?i)^(?:\\s*(?:t/\\d+|c/\\d+)\\s*)+$");
+        if (!filterInput.isEmpty() && !validFilterPattern.matcher(filterInput).matches()) {
+            Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
+            return new Command(false);
+        }
+
         Integer maxTime = null;
         Integer maxCalories = null;
 
-        Pattern timePattern = Pattern.compile("t/(\\d+)");
+        Pattern timePattern = Pattern.compile("(?i)t/(\\d+)");
         Matcher timeMatcher = timePattern.matcher(filterInput);
         if (timeMatcher.find()) {
             try {
-                maxTime = Integer.parseInt(timeMatcher.group(1));
+                long timeLong = Long.parseLong(timeMatcher.group(1));
+                if (timeLong < 0 || timeLong > Integer.MAX_VALUE) {
+                    Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
+                    return new Command(false);
+                }
+                maxTime = (int) timeLong;
             } catch (NumberFormatException e) {
-                Ui.printError("Invalid time format for filter-r.");
+                Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
                 return new Command(false);
             }
         }
 
-        Pattern caloriePattern = Pattern.compile("c/(\\d+)");
+        Pattern caloriePattern = Pattern.compile("(?i)c/(\\d+)");
         Matcher calorieMatcher = caloriePattern.matcher(filterInput);
         if (calorieMatcher.find()) {
             try {
-                maxCalories = Integer.parseInt(calorieMatcher.group(1));
+                long calorieLong = Long.parseLong(calorieMatcher.group(1));
+                if (calorieLong < 0 || calorieLong > Integer.MAX_VALUE) {
+                    Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
+                    return new Command(false);
+                }
+                maxCalories = (int) calorieLong;
             } catch (NumberFormatException e) {
-                Ui.printError("Invalid calorie format for filter-r.");
+                Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
                 return new Command(false);
             }
         }
@@ -379,7 +428,12 @@ public class Parser {
         logger.log(Level.INFO, "Received cook request");
         String cookArgs = input.substring("cook".length()).trim();
         try {
-            int index = Integer.parseInt(cookArgs) - 1;
+            long indexLong = Long.parseLong(cookArgs);
+            if (indexLong > Integer.MAX_VALUE || indexLong < Integer.MIN_VALUE) {
+                Ui.printError("You should indicate the index of the recipe when cooking!");
+                return new Command(false);
+            }
+            int index = (int) indexLong - 1;
             return new CookCommand(false, index);
         } catch (NumberFormatException e) {
             Ui.printError("You should indicate the index of the recipe when cooking!");
@@ -435,9 +489,11 @@ public class Parser {
     }
 
     private boolean matchesCommandKeyword(String input, String keyword) {
-        return input.equals(keyword)
-                || (input.startsWith(keyword)
-                && input.length() > keyword.length()
-                && Character.isWhitespace(input.charAt(keyword.length())));
+        if (input.equalsIgnoreCase(keyword)) {
+            return true;
+        }
+        return input.length() > keyword.length()
+                && input.regionMatches(true, 0, keyword, 0, keyword.length())
+                && Character.isWhitespace(input.charAt(keyword.length()));
     }
 }

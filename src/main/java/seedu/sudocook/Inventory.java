@@ -40,6 +40,16 @@ public class Inventory {
         return new ArrayList<>(ingredients);
     }
 
+    public boolean hasIngredientWithMismatchedUnit(Ingredient ingredient) {
+        for (Ingredient existing : ingredients) {
+            if (existing.getName().equalsIgnoreCase(ingredient.getName())
+                    && !existing.getUnit().equalsIgnoreCase(ingredient.getUnit())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ArrayList<Ingredient> sortIngredients() {
         ingredients.sort(Comparator.comparing(
                 Ingredient::getExpiryDate,

@@ -8,7 +8,7 @@ recipes and kitchen inventory efficiently through an intuitive text interface.
 
 ### Target Audience
 
-SudoCook is specifically designed for **single students living independently** (e.g., in campus dorms or
+SudoCook is specifically designed for **English-speaking** single students living independently (e.g., in campus dorms or
 small apartments) who are fast typists and prefer keyboard-driven workflows. It is ideal for those who 
 enjoy cooking but often struggle with disorganized ingredients or difficulty deciding what to eat.
 
@@ -31,14 +31,15 @@ It is a portable, cross-platform tool that keeps all your data local and secure.
 
 Adds a new recipe to the recipe book.
 
-Format: `add-r {NAME} i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY UNIT]... s/{STEP_1} [{STEP_2}]... t/TIME_IN_MINUTES c/CALORIES`
+Format: `add-r NAME i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY UNIT]... s/STEP_1 [STEP_2]... t/TIME_IN_MINUTES c/CALORIES`
 
-* `NAME` can be wrapped in `{}` to support spaces.
+* Multi-word names and steps must be wrapped in `{}` (e.g. `{Fried Rice}`, `{Cook the rice.}`).
+  Single-word names and steps do not need braces.
 * Each ingredient must be provided in groups of three: `NAME QUANTITY UNIT`.
 * Each ingredient quantity must be a positive number.
 * Ingredients or steps containing spaces should be wrapped in `{}`.
-* `TIME_IN_MINUTES` must be a non-negative integer.
-* `CALORIES` must be a positive integer (greater than 0) representing the calorie count in kcal.
+* `TIME_IN_MINUTES` must be a non-negative integer between 1 and 100,000.
+* `CALORIES` must be a positive integer between 1 and 100,000 representing the calorie count in kcal.
 
 Examples:
 
@@ -54,8 +55,8 @@ Preparation Time: 15 minutes
 Calories: 400 kcal
 
     Ingredients:
-    - rice (2.0 cups)
-    - egg (2.0 pcs)
+    - rice (2.00 cups)
+    - egg (2.00 pcs)
 
     Steps:
     - Cook the rice.
@@ -70,7 +71,7 @@ Oops! Invalid add-r format. Use: add-r NAME i/INGREDIENTS s/STEPS t/TIME c/CALOR
 
 Expected output (invalid integer):
 ```
-Oops! Invalid add-r format. Time and calories should be integers.
+Oops! Invalid add-r format. Time and calories must be integers between 1 and 100,000.
 ```
 
 Expected output (invalid ingredient quantity):
@@ -78,10 +79,6 @@ Expected output (invalid ingredient quantity):
 Oops! Invalid ingredient quantity in add-r format.
 ```
 
-Expected output (zero or negative calories):
-```
-Oops! Calories must be a positive number. A meal cannot have 0 or negative calories.
-```
 
 ---
 
@@ -112,14 +109,14 @@ Examples:
 Expected output (listing all ingredients):
 ```
 Here are the ingredients in your inventory:
-1. Milk (3.0 carton) expiries: [2026-03-30: 1.0 carton, 2026-04-10: 2.0 carton]
-2. Salt (1.0 kg) expiries: [no expiry: 1.0 kg]
+1. Milk (3.00 carton) expiries: [2026-03-30: 1.00 carton, 2026-04-10: 2.00 carton]
+2. Salt (1.00 kg) expiries: [no expiry: 1.00 kg]
 ```
 
 Expected output (listing ingredients before a cutoff date):
 ```
 Here are the ingredients in your inventory expiring before 2026-04-01:
-1. Milk (1.0 carton) expiries: [2026-03-30: 1.0 carton]
+1. Milk (1.00 carton) expiries: [2026-03-30: 1.00 carton]
 ```
 
 Expected output (no matching ingredients):
@@ -181,12 +178,12 @@ Examples:
 
 Expected output (with expiry):
 ```
-Added: Tomato (5.0 pcs) expires: 2024-12-25
+Added: Tomato (5.00 pcs) expires: 2024-12-25
 ```
 
 Expected output (without expiry):
 ```
-Added: Flour (1.0 kg)
+Added: Flour (1.00 kg)
 ```
 
 Expected output (invalid date format):
@@ -233,8 +230,8 @@ Removed all of: Milk
 
 Expected output (partial quantity removed):
 ```
-Removed 0.5 kg of Flour.
-Remaining: 0.5 kg
+Removed 0.50 kg of Flour.
+Remaining: 0.50 kg
 ```
 
 Expected output (ingredient not found):
@@ -420,8 +417,8 @@ Examples:
 Expected output (some recipes qualify):
 ```
 Recipes you're almost able to make:
-1. Omelette (missing: Salt (1.0 g))
-2. Pasta (missing: Flour (200.0 g), Salt (5.0 g))
+1. Omelette (missing: Salt (1.00 g))
+2. Pasta (missing: Flour (200.00 g), Salt (5.00 g))
 ```
 
 Expected output (no recipe is missing at most N ingredients):
@@ -432,6 +429,11 @@ No recipes found missing at most 1 ingredient(s).
 Expected output (invalid N):
 ```
 Oops! Missing count must be a positive number.
+```
+
+Expected output (invalid recommend-r format):
+```
+Oops! Invalid format. Use: recommend-r n/INGREDIENT_NAME, recommend-r missing/N, or recommend-r
 ```
 
 ---
@@ -459,7 +461,7 @@ Recipe 1 deleted successfully.
 
 Expected output (index out of range):
 ```
-Invalid index: Index 5 is out of range. (Valid range: 1 to 3)
+Oops! Invalid index: Index 5 is out of range. (Valid range: 1 to 3)
 ```
 
 Expected output (non-numeric index):
@@ -476,8 +478,8 @@ Filters recipes by maximum preparation time and/or maximum calorie count.
 Format: `filter-r [t/MAX_TIME] [c/MAX_CALORIES]`
 
 * At least one of `t/MAX_TIME` or `c/MAX_CALORIES` must be provided.
-* `MAX_TIME` is the maximum preparation time in minutes (non-negative integer).
-* `MAX_CALORIES` is the maximum calorie count in kcal (non-negative integer).
+* `MAX_TIME` is the maximum preparation time in minutes (non-negative integer between 1 and 100,000). A value of `0` is treated as no upper bound for time.
+* `MAX_CALORIES` is the maximum calorie count in kcal (non-negative integer between 1 and 100,000). A value of `0` is treated as no upper bound for calories.
 * Both filters can be used together to narrow results further.
 
 Examples:
@@ -560,8 +562,8 @@ Preparation Time: 15 minutes
 Calories: 400 kcal
 
     Ingredients:
-    - rice (2.0 cups)
-    - egg (2.0 pcs)
+    - rice (2.00 cups)
+    - egg (2.00 pcs)
 
     Steps:
     - Cook the rice.
@@ -577,6 +579,11 @@ Oops! Index 5 is out of range. (Valid range: 1 to 2)
 Expected output (no recipes saved):
 ```
 No recipes found.
+```
+
+Expected output (recipe book is empty when INDEX is specified):
+```
+Oops! The recipe book is currently empty.
 ```
 
 ---
@@ -674,7 +681,7 @@ Examples:
 Expected output (matches found):
 ```
 Found 1 ingredient(s) matching "tomato":
-1. Tomato (3.0 pcs)
+1. Tomato (3.00 pcs)
 ```
 
 Expected output (no matches):

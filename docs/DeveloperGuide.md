@@ -21,7 +21,7 @@ pair. Each `Ingredient` owns a list of expiry/quantity pairs, represented by `In
 This allows the app to keep separate batches such as:
 
 ```text
-Milk (3.0 carton) expiries: [2026-04-01: 1.0 carton, 2026-05-01: 2.0 carton]
+Milk (3.00 carton) expiries: [2026-04-01: 1.00 carton, 2026-05-01: 2.00 carton]
 ```
 
 Callers that only need stock availability continue to call `Ingredient.getQuantity()`, which returns
@@ -117,9 +117,10 @@ The feature involves eight classes:
    a no-op `Command` is returned.
 3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
 4. Inside `execute()`:
-   - The inventory is searched linearly for a case-insensitive name match. Both the available
-     quantity (`Ingredient.getQuantity()`, summed across all expiry dates) and its unit are recorded.
-   - If the ingredient is not found, `Ui.printError()` is called and execution stops.
+   - The inventory is scanned linearly for all case-insensitive name matches. The available
+     quantity is the sum of all matching entries (converted via `UnitConverter.convert()` into
+     the unit of the first match). Entries with incompatible units are ignored.
+   - If no matching entry is found, `Ui.printError()` is called and execution stops.
    - Otherwise, each recipe in `RecipeBook` is inspected via `IngredientRequirements.aggregateFor()`.
      For the matching ingredient entry, `UnitConverter.convert()` converts the recipe's required
      quantity into the inventory unit. If the result is `≥ 0` and `≤` the available amount, the
@@ -137,10 +138,11 @@ The feature involves eight classes:
 3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
 4. Inside `execute()`, each recipe is evaluated by `canMake(recipe, inventory)`:
    - For every ingredient required by the recipe (aggregated via `IngredientRequirements.aggregateFor()`),
-     the inventory is searched for a case-insensitive name match. Both quantity and unit are recorded.
-   - If the ingredient is absent, `canMake` returns `false`.
-   - `UnitConverter.convert()` converts the required quantity into the inventory unit. If conversion
-     returns `-1` (incompatible units) or the converted requirement exceeds the available quantity,
+     the inventory is scanned for all case-insensitive name matches. Their quantities are converted
+     into the recipe's required unit via `UnitConverter.convert()` and summed.
+   - If no matching entry is found or all conversions return `-1` (incompatible units),
+     `canMake` returns `false`.
+   - If the summed available quantity is less than the required amount,
      `canMake` returns `false` and the recipe is excluded.
    - If all ingredients pass, `canMake` returns `true` and the recipe is appended to the result.
    - If no recipe is makeable, a "No recipes can be made" message is printed; otherwise the list of
@@ -157,12 +159,12 @@ The feature involves eight classes:
 3. `SudoCook` calls `cmd.execute(inventory, recipes)`.
 4. Inside `execute()`, each recipe is evaluated by `getMissingIngredients(recipe, inventory)`:
    - For every ingredient required by the recipe (aggregated via `IngredientRequirements.aggregateFor()`),
-     the inventory is searched for a case-insensitive name match.
-   - `UnitConverter.convert()` converts the inventory quantity into the recipe's unit. If conversion
-     returns `-1` (incompatible units), the available quantity is treated as zero.
-   - If the converted available quantity is less than required, the shortfall
-     (`required − converted available`) and the recipe's unit are recorded.
-   - The method returns the list of formatted shortfall strings (e.g. `"Salt (1.0 g)"`).
+     the inventory is scanned for all case-insensitive name matches. Their quantities are converted
+     into the recipe's required unit via `UnitConverter.convert()` and summed. Entries with
+     incompatible units (conversion returns `-1`) are ignored.
+   - If the summed available quantity is less than required, the shortfall
+     (`required − summed available`) and the recipe's unit are recorded.
+   - The method returns the list of formatted shortfall strings (e.g. `"Salt (1.00 g)"`).
 5. Back in `execute()`, the recipe is included in the output only if the number of missing items is
    **between 1 and N** (inclusive). Recipes with zero missing items — i.e. fully makeable ones —
    are always excluded.

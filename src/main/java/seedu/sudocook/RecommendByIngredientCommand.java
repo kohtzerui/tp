@@ -14,16 +14,26 @@ public class RecommendByIngredientCommand extends Command {
 
     @Override
     public void execute(Inventory inventory, RecipeBook recipes) {
-        double amount = -1;
+        double amount = 0;
         String inventoryUnit = null;
+        boolean found = false;
         for (int i = 0; i < inventory.getSize(); i++) {
             Ingredient ingredient = inventory.getIngredient(i);
             if (ingredient.getName().equalsIgnoreCase(ingredientName)) {
-                amount = ingredient.getQuantity();
-                inventoryUnit = ingredient.getUnit();
+                if (!found) {
+                    inventoryUnit = ingredient.getUnit();
+                    amount = ingredient.getQuantity();
+                    found = true;
+                } else {
+                    double converted = UnitConverter.convert(
+                            ingredient.getQuantity(), ingredient.getUnit(), inventoryUnit);
+                    if (converted >= 0) {
+                        amount += converted;
+                    }
+                }
             }
         }
-        if (amount < 0) {
+        if (!found) {
             Ui.printError("Ingredient \"" + ingredientName + "\" does not exist in inventory.");
             return;
         }

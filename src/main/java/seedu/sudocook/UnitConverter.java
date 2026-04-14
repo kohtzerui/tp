@@ -38,12 +38,12 @@ final class UnitConverter {
         VOLUME_TO_ML.put("liters", 1000.0);
         VOLUME_TO_ML.put("litre", 1000.0);
         VOLUME_TO_ML.put("litres", 1000.0);
-        VOLUME_TO_ML.put("tsp", 4.92892);
-        VOLUME_TO_ML.put("teaspoon", 4.92892);
-        VOLUME_TO_ML.put("teaspoons", 4.92892);
-        VOLUME_TO_ML.put("tbsp", 14.7868);
-        VOLUME_TO_ML.put("tablespoon", 14.7868);
-        VOLUME_TO_ML.put("tablespoons", 14.7868);
+        VOLUME_TO_ML.put("tsp", 4.929);
+        VOLUME_TO_ML.put("teaspoon", 4.929);
+        VOLUME_TO_ML.put("teaspoons", 4.929);
+        VOLUME_TO_ML.put("tbsp", 14.787);
+        VOLUME_TO_ML.put("tablespoon", 14.787);
+        VOLUME_TO_ML.put("tablespoons", 14.787);
         VOLUME_TO_ML.put("cup", 240.0);
         VOLUME_TO_ML.put("cups", 240.0);
     }

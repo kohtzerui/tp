@@ -62,15 +62,16 @@ public class DeleteIngredientCommand extends Command {
         Ingredient targetIngredient = inventory.getIngredient(indexToRemove);
         String name = targetIngredient.getName();
         String unit = targetIngredient.getUnit();
+        double originalQuantity = targetIngredient.getQuantity();
 
-        if (isRemoveAll || targetIngredient.getQuantity() <= quantityToRemove) {
+        if (isRemoveAll || originalQuantity <= quantityToRemove + 1e-9) {
             inventory.removeIngredient(indexToRemove);
             Ui.printMessage("Removed all of: " + name);
         } else {
             inventory.updateQuantity(indexToRemove, quantityToRemove);
-            Ingredient updatedIngredient = inventory.getIngredient(indexToRemove);
-            Ui.printMessage("Removed " + quantityToRemove + " " + unit + " of " + name + ".\n"
-                    + "Remaining: " + updatedIngredient.getQuantity() + " " + unit);
+            double remaining = originalQuantity - quantityToRemove;
+            Ui.printMessage("Removed " + Ui.formatQuantity(quantityToRemove) + " " + unit + " of " + name + ".\n"
+                    + "Remaining: " + Ui.formatQuantity(remaining) + " " + unit);
         }
     }
 }

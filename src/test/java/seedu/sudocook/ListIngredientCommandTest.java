@@ -56,7 +56,7 @@ public class ListIngredientCommandTest {
         Command cmd = parser.parse("list-i ex/2026-04-15");
         cmd.execute(inventory);
 
-        assertTrue(getOutput().contains("Milk (1.0 carton) expiries: [2026-04-01: 1.0 carton]"));
+        assertTrue(getOutput().contains("Milk (1.00 carton) expiries: [2026-04-01: 1.00 carton]"));
         assertFalse(getOutput().contains("2026-05-01"));
     }
 

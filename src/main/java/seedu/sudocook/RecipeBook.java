@@ -22,13 +22,11 @@ public class RecipeBook {
     }
 
     public Recipe getRecipe(int index){
-
-        try {
-            return recipes.get(index);
-        } catch (IndexOutOfBoundsException exception) {
+        if (index < 0 || index >= recipes.size()) {
             Ui.printError("Index out of bounds");
             return null;
         }
+        return recipes.get(index);
     }
 
     public void listRecipe() {
@@ -75,13 +73,13 @@ public class RecipeBook {
 
     public Recipe addRecipe(String name, ArrayList<Ingredient> ingredients,
             ArrayList<String> steps, int time, int calories) {
-        Recipe newRecipe = new Recipe(name, ingredients, steps, time, calories);
-        for (int i = 0; i < recipes.size(); i++) {
-            if (recipes.get(i).getName().equalsIgnoreCase(name)) {
-                recipes.set(i, newRecipe);
-                return newRecipe;
+        String normalizedName = normalizeSpaces(name);
+        for (Recipe recipe : recipes) {
+            if (recipe.getName().equalsIgnoreCase(normalizedName)) {
+                throw new IllegalArgumentException("A recipe named \"" + normalizedName + "\" already exists.");
             }
         }
+        Recipe newRecipe = new Recipe(normalizedName, ingredients, steps, time, calories);
         recipes.add(newRecipe);
         return newRecipe;
     }
@@ -89,6 +87,10 @@ public class RecipeBook {
     public Recipe addRecipe(Recipe recipe){
         recipes.add(recipe);
         return recipe;
+    }
+
+    private String normalizeSpaces(String value) {
+        return value.trim().replaceAll("\\s+", " ");
     }
 
     public void filterRecipes(Integer maxTime, Integer maxCalories) {

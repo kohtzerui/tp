@@ -63,6 +63,10 @@ public class AddIngredientCommand extends Command {
         } else {
             ingredient = new Ingredient(name, quantity, unit);
         }
+        if (inventory.hasIngredientWithMismatchedUnit(ingredient)) {
+            Ui.printError("Unit mismatch detected with existing stock");
+            return;
+        }
         inventory.addIngredient(ingredient);
         Ui.printMessage("Added: " + ingredient);
     }

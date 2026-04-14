@@ -47,8 +47,8 @@ public class Ingredient {
         assert name != null && !name.isEmpty() : "Ingredient name must not be null or empty";
         assert quantity > 0 : "Ingredient quantity must be positive";
         assert unit != null && !unit.isEmpty() : "Ingredient unit must not be null or empty";
-        this.name = name;
-        this.unit = unit;
+        this.name = normalizeSpaces(name);
+        this.unit = normalizeSpaces(unit);
         this.expiryQuantities = new ArrayList<>();
         addQuantity(quantity, null);
     }
@@ -65,10 +65,14 @@ public class Ingredient {
         assert name != null && !name.isEmpty() : "Ingredient name must not be null or empty";
         assert quantity > 0 : "Ingredient quantity must be positive";
         assert unit != null && !unit.isEmpty() : "Ingredient unit must not be null or empty";
-        this.name = name;
-        this.unit = unit;
+        this.name = normalizeSpaces(name);
+        this.unit = normalizeSpaces(unit);
         this.expiryQuantities = new ArrayList<>();
         addQuantity(quantity, expiryDate);
+    }
+
+    private String normalizeSpaces(String value) {
+        return value.trim().replaceAll("\\s+", " ");
     }
 
     public String getName() {
@@ -195,7 +199,7 @@ public class Ingredient {
     private String format(LocalDate expiryCutoff, boolean alwaysShowExpiryQuantities) {
         ArrayList<ExpiryQuantity> expiryQuantitiesToDisplay = getExpiryQuantitiesToDisplay(expiryCutoff);
         double displayedQuantity = getTotalQuantity(expiryQuantitiesToDisplay);
-        String result = name + " (" + displayedQuantity + " " + unit + ")";
+        String result = name + " (" + Ui.formatQuantity(displayedQuantity) + " " + unit + ")";
         if (!alwaysShowExpiryQuantities && expiryQuantitiesToDisplay.size() == 1) {
             LocalDate expiryDate = expiryQuantitiesToDisplay.get(0).expiryDate;
             if (expiryDate != null) {
@@ -229,7 +233,7 @@ public class Ingredient {
             } else {
                 sb.append(expiryQuantity.expiryDate);
             }
-            sb.append(": ").append(expiryQuantity.quantity).append(" ").append(unit);
+            sb.append(": ").append(Ui.formatQuantity(expiryQuantity.quantity)).append(" ").append(unit);
             if (i < expiryQuantitiesToDisplay.size() - 1) {
                 sb.append(", ");
             }

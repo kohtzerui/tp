@@ -24,7 +24,11 @@ public class AddRecipeCommand extends Command {
     @Override
     public void execute(RecipeBook recipes) {
         assert(recipes!=null);
-        Recipe addedRecipe = recipes.addRecipe(name, ingredients, steps, time, calories);
-        Ui.printGradientMessage("Added recipe:\n" + addedRecipe.toString());
+        try {
+            Recipe addedRecipe = recipes.addRecipe(name, ingredients, steps, time, calories);
+            Ui.printGradientMessage("Added recipe:\n" + addedRecipe.toString());
+        } catch (IllegalArgumentException e) {
+            Ui.printError(e.getMessage());
+        }
     }
 }

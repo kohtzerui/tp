@@ -33,31 +33,72 @@ public class AddRecipeCommandTest {
     }
 
     @Test
-    public void addCommand_existingNameCaseInsensitive_overwritesOriginalRecipe() {
-        ArrayList<Ingredient> originalIngredients = new ArrayList<>();
-        originalIngredients.add(new Ingredient("Rice", 2, "cups"));
-        ArrayList<String> originalSteps = new ArrayList<>();
-        originalSteps.add("Cook rice");
+    public void addCommand_duplicateNameCaseInsensitive_rejected() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
 
-        AddRecipeCommand original = new AddRecipeCommand("Fried Rice", originalIngredients, originalSteps, 15, 400);
-        original.execute(testRecipeBook);
+        try {
+            ArrayList<Ingredient> originalIngredients = new ArrayList<>();
+            originalIngredients.add(new Ingredient("Rice", 2, "cups"));
+            ArrayList<String> originalSteps = new ArrayList<>();
+            originalSteps.add("Cook rice");
 
-        ArrayList<Ingredient> replacementIngredients = new ArrayList<>();
-        replacementIngredients.add(new Ingredient("Noodles", 1, "packet"));
-        ArrayList<String> replacementSteps = new ArrayList<>();
-        replacementSteps.add("Boil noodles");
+            AddRecipeCommand original = new AddRecipeCommand("Fried Rice", originalIngredients, originalSteps, 15, 400);
+            original.execute(testRecipeBook);
 
-        AddRecipeCommand replacement = new AddRecipeCommand("fried rice", replacementIngredients, replacementSteps,
-                5, 350);
-        replacement.execute(testRecipeBook);
+            ArrayList<Ingredient> duplicateIngredients = new ArrayList<>();
+            duplicateIngredients.add(new Ingredient("Noodles", 1, "packet"));
+            ArrayList<String> duplicateSteps = new ArrayList<>();
+            duplicateSteps.add("Boil noodles");
 
-        Recipe savedRecipe = testRecipeBook.getRecipe(0);
+            AddRecipeCommand duplicate = new AddRecipeCommand("fried rice", duplicateIngredients, duplicateSteps,
+                    5, 350);
+            duplicate.execute(testRecipeBook);
+
+            assertEquals(1, testRecipeBook.getSize());
+            assertTrue(output.toString(StandardCharsets.UTF_8)
+                    .contains("A recipe named \"fried rice\" already exists."));
+        } finally {
+            System.setOut(originalOut);
+        }
+    }
+
+    @Test
+    public void parserTest_extraInternalSpacesInName_normalizesName() {
+        String testCmd = "add-r {Fried  Rice} i/rice 2 cups egg 2 pcs "
+                + "s/{Cook the rice.} {Scramble the eggs.} t/15 c/400";
+        Ui ui = new Ui();
+        Parser parser = new Parser(ui);
+        Command cmd = parser.parse(testCmd);
+        cmd.execute(testRecipeBook);
+
         assertEquals(1, testRecipeBook.getSize());
-        assertEquals("fried rice", savedRecipe.getName());
-        assertEquals("Noodles", savedRecipe.getIngredients().get(0).getName());
-        assertEquals("Boil noodles", savedRecipe.getSteps().get(0));
-        assertEquals(5, savedRecipe.getTime());
-        assertEquals(350, savedRecipe.getCalories());
+        assertEquals("Fried Rice", testRecipeBook.getRecipe(0).getName());
+    }
+
+    @Test
+    public void parserTest_duplicateNameWithExtraInternalSpaces_rejected() {
+        String originalCmd = "add-r {Fried Rice} i/rice 1 cup s/{Cook} t/10 c/100";
+        String duplicateCmd = "add-r {Fried   Rice} i/rice 2 cup s/{Cook again} t/20 c/200";
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
+
+        try {
+            Ui ui = new Ui();
+            Parser parser = new Parser(ui);
+            parser.parse(originalCmd).execute(testRecipeBook);
+            parser.parse(duplicateCmd).execute(testRecipeBook);
+
+            assertEquals(1, testRecipeBook.getSize());
+            assertEquals("Fried Rice", testRecipeBook.getRecipe(0).getName());
+            assertTrue(output.toString(StandardCharsets.UTF_8)
+                    .contains("A recipe named \"Fried Rice\" already exists."));
+        } finally {
+            System.setOut(originalOut);
+        }
     }
 
     @Test
@@ -86,6 +127,18 @@ public class AddRecipeCommandTest {
     }
 
     @Test
+    public void parserTest_uppercaseCommandAndPrefixes_addsRecipe() {
+        String testCmd = "ADD-R {Fried Rice} I/rice 2 cups egg "
+                + "2 pcs soy_sauce 1 tbsp S/{Cook the rice.} {Scramble the eggs.} {Mix everything together.}"
+                + " T/15 C/400";
+        Ui ui = new Ui();
+        Parser parser = new Parser(ui);
+        Command cmd = parser.parse(testCmd);
+        cmd.execute(testRecipeBook);
+        assertEquals(1, testRecipeBook.getSize());
+    }
+
+    @Test
     public void parserTest_emptyRecipeName_rejected() {
         assertInvalidRecipeText("add-r {} i/salt 1 g s/{Add salt.} t/10 c/100");
     }
@@ -93,6 +146,16 @@ public class AddRecipeCommandTest {
     @Test
     public void parserTest_emptyRecipeStep_rejected() {
         assertInvalidRecipeText("add-r {Salt Mix} i/salt 1 g s/{} t/10 c/100");
+    }
+
+    @Test
+    public void parserTest_emptyIngredientName_rejected() {
+        assertInvalidIngredientText("add-r {Mystery} i/{} 1 cup s/{Cook} t/10 c/100");
+    }
+
+    @Test
+    public void parserTest_emptyIngredientUnit_rejected() {
+        assertInvalidIngredientText("add-r {Mystery} i/salt 1 {} s/{Cook} t/10 c/100");
     }
 
     @Test
@@ -138,7 +201,7 @@ public class AddRecipeCommandTest {
 
             assertEquals(0, testRecipeBook.getSize());
             assertTrue(output.toString(StandardCharsets.UTF_8)
-                    .contains("Oops! Time cannot be negative."));
+                    .contains("Oops! Time must be between 1 and 100,000 minutes."));
         } finally {
             System.setOut(originalOut);
         }
@@ -157,7 +220,7 @@ public class AddRecipeCommandTest {
 
             assertEquals(0, testRecipeBook.getSize());
             assertTrue(output.toString(StandardCharsets.UTF_8)
-                    .contains("Oops! Calories must be a positive number. A meal cannot have 0 or negative calories."));
+                    .contains("Oops! Calories must be between 1 and 100,000 kcal."));
         } finally {
             System.setOut(originalOut);
         }
@@ -177,6 +240,25 @@ public class AddRecipeCommandTest {
             assertEquals(0, testRecipeBook.getSize());
             assertTrue(output.toString(StandardCharsets.UTF_8)
                     .contains("Oops! Invalid ingredient quantity in add-r format."));
+        } finally {
+            System.setOut(originalOut);
+        }
+    }
+
+    private void assertInvalidIngredientText(String testCmd) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
+
+        try {
+            Ui ui = new Ui();
+            Parser parser = new Parser(ui);
+            Command cmd = parser.parse(testCmd);
+            cmd.execute(testRecipeBook);
+
+            assertEquals(0, testRecipeBook.getSize());
+            assertTrue(output.toString(StandardCharsets.UTF_8)
+                    .contains("Oops! Invalid add-r format. Ingredients should be NAME QUANTITY UNIT."));
         } finally {
             System.setOut(originalOut);
         }

@@ -32,22 +32,20 @@ public class RecommendByInventoryCommand extends Command {
 
     private boolean canMake(Recipe recipe, Inventory inventory) {
         for (Ingredient required : IngredientRequirements.aggregateFor(recipe)) {
-            double available = -1;
-            String availableUnit = null;
+            double available = 0;
+            boolean found = false;
             for (int j = 0; j < inventory.getSize(); j++) {
                 Ingredient item = inventory.getIngredient(j);
                 if (item.getName().equalsIgnoreCase(required.getName())) {
-                    available = item.getQuantity();
-                    availableUnit = item.getUnit();
-                    break;
+                    double converted = UnitConverter.convert(
+                            item.getQuantity(), item.getUnit(), required.getUnit());
+                    if (converted >= 0) {
+                        available += converted;
+                        found = true;
+                    }
                 }
             }
-            if (available < 0) {
-                return false;
-            }
-            double requiredInAvailableUnit = UnitConverter.convert(
-                    required.getQuantity(), required.getUnit(), availableUnit);
-            if (requiredInAvailableUnit < 0 || available < requiredInAvailableUnit) {
+            if (!found || available < required.getQuantity()) {
                 return false;
             }
         }

@@ -16,9 +16,9 @@
      Calories: 400 kcal
 
          Ingredients:
-         - rice (2.0 cups)
-         - egg (2.0 pcs)
-         - soySauce (1.0 tbsp)
+         - rice (2.00 cups)
+         - egg (2.00 pcs)
+         - soySauce (1.00 tbsp)
 
          Steps:
          - Cook the rice.
@@ -34,9 +34,9 @@
      Calories: 400 kcal
 
          Ingredients:
-         - rice (2.0 cups)
-         - egg (2.0 pcs)
-         - soySauce (1.0 tbsp)
+         - rice (2.00 cups)
+         - egg (2.00 pcs)
+         - soySauce (1.00 tbsp)
 
          Steps:
          - Cook the rice.
@@ -49,9 +49,9 @@
      Calories: 400 kcal
 
          Ingredients:
-         - rice (2.0 cups)
-         - egg (2.0 pcs)
-         - soySauce (1.0 tbsp)
+         - rice (2.00 cups)
+         - egg (2.00 pcs)
+         - soySauce (1.00 tbsp)
 
          Steps:
          - Cook the rice.
@@ -59,45 +59,45 @@
          - Mix everything together.
     ____________________________________________________________
     >
-     Added: rice (3.0 cups) expires: 2020-01-01
+     Added: rice (3.00 cups) expires: 2020-01-01
     ____________________________________________________________
     >
-     Added: egg (3.0 pcs) expires: 2019-01-01
+     Added: egg (3.00 pcs) expires: 2019-01-01
     ____________________________________________________________
     >
-     Added: soySauce (2.0 tbsp) expires: 2023-01-01
+     Added: soySauce (2.00 tbsp) expires: 2023-01-01
     ____________________________________________________________
     >
      Here are the ingredients in your inventory:
-     1. rice (3.0 cups) expiries: [2020-01-01: 3.0 cups]
-     2. egg (3.0 pcs) expiries: [2019-01-01: 3.0 pcs]
-     3. soySauce (2.0 tbsp) expiries: [2023-01-01: 2.0 tbsp]
+     1. rice (3.00 cups) expiries: [2020-01-01: 3.00 cups]
+     2. egg (3.00 pcs) expiries: [2019-01-01: 3.00 pcs]
+     3. soySauce (2.00 tbsp) expiries: [2023-01-01: 2.00 tbsp]
     ____________________________________________________________
     >
      Here are the ingredients in your inventory expiring before 2021-01-01:
-     1. rice (3.0 cups) expiries: [2020-01-01: 3.0 cups]
-     2. egg (3.0 pcs) expiries: [2019-01-01: 3.0 pcs]
+     1. rice (3.00 cups) expiries: [2020-01-01: 3.00 cups]
+     2. egg (3.00 pcs) expiries: [2019-01-01: 3.00 pcs]
     ____________________________________________________________
     >
-     Removed 2.0 cups of rice.
-     Remaining: 1.0 cups
+     Removed 2.00 cups of rice.
+     Remaining: 1.00 cups
     ____________________________________________________________
 
-     Removed 2.0 pcs of egg.
-     Remaining: 1.0 pcs
+     Removed 2.00 pcs of egg.
+     Remaining: 1.00 pcs
     ____________________________________________________________
 
-     Removed 1.0 tbsp of soySauce.
-     Remaining: 1.0 tbsp
+     Removed 1.00 tbsp of soySauce.
+     Remaining: 1.00 tbsp
     ____________________________________________________________
 
      Cooked Recipe Fried Rice
     ____________________________________________________________
     >
      Here are the ingredients in your inventory:
-     1. rice (1.0 cups) expiries: [2020-01-01: 1.0 cups]
-     2. egg (1.0 pcs) expiries: [2019-01-01: 1.0 pcs]
-     3. soySauce (1.0 tbsp) expiries: [2023-01-01: 1.0 tbsp]
+     1. rice (1.00 cups) expiries: [2020-01-01: 1.00 cups]
+     2. egg (1.00 pcs) expiries: [2019-01-01: 1.00 pcs]
+     3. soySauce (1.00 tbsp) expiries: [2023-01-01: 1.00 tbsp]
     ____________________________________________________________
     >
      No recipes found matching the criteria.
@@ -108,9 +108,9 @@
      Calories: 400 kcal
 
          Ingredients:
-         - rice (2.0 cups)
-         - egg (2.0 pcs)
-         - soySauce (1.0 tbsp)
+         - rice (2.00 cups)
+         - egg (2.00 pcs)
+         - soySauce (1.00 tbsp)
 
          Steps:
          - Cook the rice.

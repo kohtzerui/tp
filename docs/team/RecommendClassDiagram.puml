@@ -3,23 +3,26 @@ scale 4
 hide circle
 skinparam classAttributeIconSize 0
 
-class Command {
+class RecommendByIngredientCommand {
+    - ingredientName: String
     --
     + execute(inventory: Inventory, recipes: RecipeBook): void
 }
 
-class RecommendByIngredientCommand {
-    - ingredientName: String
-    --
-}
-
 class RecommendByInventoryCommand {
     --
+    + execute(inventory: Inventory, recipes: RecipeBook): void
 }
 
 class RecommendByMissingCommand {
     - maxMissing: int
     --
+    + execute(inventory: Inventory, recipes: RecipeBook): void
+}
+
+class Command {
+    --
+    + execute(inventory: Inventory, recipes: RecipeBook): void
 }
 
 class Inventory {
@@ -48,18 +51,25 @@ together {
     class RecommendByMissingCommand
 }
 
-' Guide layout: data stores below outer subclasses to avoid crossings
-RecommendByIngredientCommand -[hidden]-> Inventory
-RecommendByMissingCommand -[hidden]-> RecipeBook
+together {
+    class Inventory
+    class RecipeBook
+}
 
-' Inheritance
-RecommendByIngredientCommand --|> Command
-RecommendByInventoryCommand --|> Command
-RecommendByMissingCommand --|> Command
+' Inheritance - -down-|> places Recommend classes above Command
+RecommendByIngredientCommand -down-|> Command
+RecommendByInventoryCommand -down-|> Command
+RecommendByMissingCommand -down-|> Command
 
-' All commands operate on Inventory and RecipeBook via execute()
+' All four command classes have dependency on both Inventory and RecipeBook
 Command ..> Inventory
 Command ..> RecipeBook
+RecommendByIngredientCommand ..> Inventory
+RecommendByInventoryCommand ..> Inventory
+RecommendByInventoryCommand ..> RecipeBook
+RecommendByMissingCommand ..> RecipeBook
+RecommendByIngredientCommand ..> RecipeBook
+RecommendByMissingCommand ..> Inventory
 
 ' Inventory owns Ingredients by value; Recipe references shared Ingredient instances
 Inventory "1" o-- "*" Ingredient

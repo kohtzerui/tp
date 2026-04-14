@@ -3,7 +3,7 @@ setlocal enableextensions
 pushd %~dp0
 
 cd ..
-call gradlew clean shadowJar
+call gradlew clean jar
 
 cd build\libs
 for /f "tokens=*" %%a in (

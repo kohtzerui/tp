@@ -45,13 +45,18 @@ public class SudoCook {
 
         Command cmd;
         String input = ui.readInput();
-        while (!input.equals("bye")) {
+        while (!input.equalsIgnoreCase("bye")) {
             if (input.isBlank()) {
                 logger.log(Level.FINE, "Empty input received, skipping");
                 input = ui.readInput();
                 continue;
             }
             cmd = parser.parse(input);
+            if (cmd.getClass() == Command.class) {
+                logger.log(Level.FINE, "Ignoring no-op command");
+                input = ui.readInput();
+                continue;
+            }
             if (cmd instanceof SearchIngredientCommand) {
                 logger.log(Level.FINE, "Routing search-i command to Inventory");
                 cmd.execute(inventory);
@@ -72,9 +77,11 @@ public class SudoCook {
                 cmd.execute(inventory); // Execute on either, it just prints UI
             } else if (cmd instanceof CookCommand) {
                 logger.log(Level.FINE, "Routing cook command");
-                commandHistory.saveSnapshot(recipes, inventory);
-                cmd.execute(recipes.getRecipe(cmd.getIndex()), inventory);
-
+                Recipe recipe = recipes.getRecipe(cmd.getIndex());
+                if (recipe != null) {
+                    commandHistory.saveSnapshot(recipes, inventory);
+                    cmd.execute(recipe, inventory);
+                }
             } else if (cmd instanceof RecommendByIngredientCommand || cmd instanceof RecommendByInventoryCommand
                     || cmd instanceof RecommendByMissingCommand) {
                 logger.log(Level.FINE, "Routing recommend command");
@@ -93,8 +100,7 @@ public class SudoCook {
                 logger.log(Level.FINE, "Routing command to RecipeBook");
                 // Save snapshot for recipe-modifying commands
                 if (!(cmd instanceof ListRecipeCommand || cmd instanceof ViewRecipeCommand || 
-                        cmd instanceof SearchRecipeCommand || cmd instanceof FilterRecipeCommand
-                        || cmd instanceof DeleteRecipeCommand)) {
+                        cmd instanceof SearchRecipeCommand || cmd instanceof FilterRecipeCommand)) {
                     commandHistory.saveSnapshot(recipes, inventory);
                 }
                 cmd.execute(recipes);
@@ -122,8 +128,8 @@ public class SudoCook {
                 flush();
             }
         };
-        handler.setLevel(Level.FINE);
-        rootLogger.setLevel(Level.FINE);
+        handler.setLevel(Level.WARNING);
+        rootLogger.setLevel(Level.WARNING);
         rootLogger.addHandler(handler);
         new SudoCook().run();
     }
