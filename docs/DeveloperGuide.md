@@ -256,7 +256,7 @@ scaling differences while keeping cross-dimension mismatches explicit.
 Two commands are provided for browsing recipes:
 
 - `list-r` prints a compact numbered list of recipe names only, giving the user a quick overview.
-- `view-r` prints full recipe details (ingredients and steps). It can be used with or without an index.
+- `view-r` prints full recipe details (ingredients, steps, preparation time, and calories). It can be used with or without an index.
 
 **Command formats:**
 - `list-r` — lists all recipe names

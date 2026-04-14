@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp log --oneline --author=\"atirm\\\\|1cecream\" -20)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp log --oneline -20)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp log --oneline --all)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp log --oneline --author=\"1cecream03\" --all)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp show 39583d8 --stat)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp show 4eb7971 --stat)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp show bd72406 --stat)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp show ff52810 --stat)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp show ef89502 --stat)",
+      "Bash(git -C /c/Users/atirm/IdeaProjects/tp show 33e8b1a --stat)"
+    ]
+  }
+}
