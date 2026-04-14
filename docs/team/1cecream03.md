@@ -45,6 +45,13 @@ through an intuitive text interface.
       and `sort-r c/` by ascending calorie count.
     * Invalid or missing criteria are caught with a clear error message guiding the user to the correct format.
 
+* **Fixed PE-D bugs in `Parser.java` and related classes**
+    * Validated expiry date ranges and reliably rejected malformed dates in `add-i`; added regression tests.
+    * Normalised whitespace in all parsed string fields across every command to prevent silent mismatches; added tests.
+    * Rejected duplicate recipe names at parse/execution time with a clear error message; updated tests.
+    * Suppressed verbose `java.util.logging` output that was leaking into the CLI during normal use.
+    * Clarified the `add-r` ingredient error message and updated the UG to document names with spaces.
+
 ---
 
 ### 3. Contributions to the User Guide (UG)
@@ -74,7 +81,6 @@ through an intuitive text interface.
     * Class responsibility table for the involved classes.
     * Step-by-step execution walkthrough for all three sort criteria.
     * One Design Consideration aspect with rationale (supporting multiple sort criteria vs. fixed order).
-    * Added sequence diagram: `SortRecipe.png`.
 
 ---
 
@@ -82,4 +88,11 @@ through an intuitive text interface.
 * Set up the foundational `Parser` and `Ui` classes used by all teammates' commands throughout
   the project, establishing consistent input handling and output formatting conventions.
 * Wrote unit tests for `SearchRecipeCommand`, `SearchIngredientCommand`, `UiTest`,
-  `ListRecipeCommand`, `ViewRecipeCommand`, `SortRecipeCommand`, and `FuzzySearch`.
+  `ViewRecipeCommand`, `SortRecipeCommand`, and `FuzzySearch`.
+* Restructured the User Guide to follow a consistent order (ingredients before recipes;
+  add/list before delete/search) for better readability.
+
+---
+
+### 6. Review/Mentoring Contributions
+* Manually tested teammates' commands and reported functional issues during development.
