@@ -16,8 +16,7 @@ project created by the [SE-EDU initiative](https://se-education.org).
 
 #### Overview
 
-SudoCook stores inventory ingredients as one `Ingredient` object per case-insensitive name and unit
-pair. Each `Ingredient` owns a list of expiry/quantity pairs, represented by `Ingredient.ExpiryQuantity`.
+SudoCook stores inventory ingredients as one `Ingredient` object per case-insensitive name. Each ingredient can only correspond to one unit. Each `Ingredient` owns a list of expiry/quantity pairs, represented by `Ingredient.ExpiryQuantity`.
 This allows the app to keep separate batches such as:
 
 ```text
