@@ -728,12 +728,16 @@ The feature involves three classes:
 **Step-by-step execution:**
 
 1. The user enters `filter-r [t/MAX_TIME] [c/MAX_CALORIES]`.
-2. `Parser.parse()` detects the `filter-r` prefix and extracts the optional `t/` and `c/` arguments
-   using `Pattern.compile("t/(\\d+)")` and `Pattern.compile("c/(\\d+)")` respectively.
-3. If neither argument is provided, an error is printed and a no-op `Command` is returned.
-4. A `FilterRecipeCommand` is constructed with `maxTime` and `maxCalories` (both nullable `Integer`).
-5. `SudoCook` calls `cmd.execute(recipes)`.
-6. Inside `RecipeBook.filterRecipes(maxTime, maxCalories)`:
+2. `Parser.parse()` detects the `filter-r` prefix and first validates that the entire input
+   consists only of valid `t/DIGITS` and `c/DIGITS` tokens (in any order, with optional whitespace).
+   If any extra text or malformed tokens are detected, an error is printed and a no-op `Command` is
+   returned.
+3. If the input is well-formed, the optional `t/` and `c/` values are extracted using
+   `Pattern.compile("(?i)t/(\\d+)")` and `Pattern.compile("(?i)c/(\\d+)")` respectively.
+4. If neither argument is provided, an error is printed and a no-op `Command` is returned.
+5. A `FilterRecipeCommand` is constructed with `maxTime` and `maxCalories` (both nullable `Integer`).
+6. `SudoCook` calls `cmd.execute(recipes)`.
+7. Inside `RecipeBook.filterRecipes(maxTime, maxCalories)`:
     - Each recipe is checked against both criteria (if provided).
     - A recipe is kept only if its time ≤ `maxTime` (when set) **and** its calories ≤ `maxCalories`
       (when set).

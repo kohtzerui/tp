@@ -353,10 +353,19 @@ public class Parser {
         logger.log(Level.INFO, "Received filter-r request");
         String filterInput = input.substring("filter-r".length()).trim();
 
+        // Validate: the entire input must consist only of t/DIGITS and c/DIGITS tokens,
+        // in any order, with optional whitespace between them. Any extra garbage is rejected.
+        Pattern validFilterPattern = Pattern.compile(
+                "(?i)^(?:\\s*(?:t/\\d+|c/\\d+)\\s*)+$");
+        if (!filterInput.isEmpty() && !validFilterPattern.matcher(filterInput).matches()) {
+            Ui.printError("Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]");
+            return new Command(false);
+        }
+
         Integer maxTime = null;
         Integer maxCalories = null;
 
-        Pattern timePattern = Pattern.compile("t/(\\d+)");
+        Pattern timePattern = Pattern.compile("(?i)t/(\\d+)");
         Matcher timeMatcher = timePattern.matcher(filterInput);
         if (timeMatcher.find()) {
             try {
@@ -367,7 +376,7 @@ public class Parser {
             }
         }
 
-        Pattern caloriePattern = Pattern.compile("c/(\\d+)");
+        Pattern caloriePattern = Pattern.compile("(?i)c/(\\d+)");
         Matcher calorieMatcher = caloriePattern.matcher(filterInput);
         if (calorieMatcher.find()) {
             try {

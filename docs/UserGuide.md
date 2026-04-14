@@ -497,6 +497,11 @@ Expected output (no filter provided):
 Oops! No valid filter targets provided. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]
 ```
 
+Expected output (malformed or extra tokens in filter):
+```
+Oops! Invalid filter-r format. Use: filter-r [t/MAX_TIME] [c/MAX_CALORIES]
+```
+
 ---
 
 ### Listing recipes: `list-r`
