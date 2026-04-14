@@ -139,7 +139,6 @@ multiple expiry dates, its earliest known expiry date is used for sorting.
 Format: `sort-i`
 
 * Ingredients with no dated expiry batches are placed at the end of the inventory list.
-* Use `list-i` after sorting to view the updated order.
 
 Example:
 
@@ -148,6 +147,7 @@ Example:
 Expected output:
 ```
 Sorting...
+<Sorted Inventory>
 ```
 
 ---
