@@ -86,7 +86,7 @@ Oops! Invalid ingredient quantity in add-r format.
 
 Shows the ingredients currently stored in your inventory.
 
-SudoCook stores each ingredient as one inventory item per name and unit, with separate quantities for
+SudoCook stores each ingredient as one inventory item per name, with separate quantities for
 each expiry date. For example, adding `Milk` in `carton` units twice with two different expiry dates
 keeps one Milk entry whose expiry list shows how much expires on each date.
 
