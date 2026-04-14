@@ -50,6 +50,14 @@ through an intuitive text interface.
     - Enhanced the `add-r` parser to reject zero or negative calories (Issue #102), ensuring all saved recipes represent realistic meals.
     - Refactored numeric parsing to provide specific, helpful error messages for different failure modes (e.g., negative time vs. invalid calorie count).
 
+- **Enhanced Recommendation Engine with Multi-Unit Summation** (`RecommendByIngredientCommand.java`, `RecommendByInventoryCommand.java`, `RecommendByMissingCommand.java`)
+    - Redesigned the recommendation logic to aggregate quantities across the entire inventory for compatible units (e.g., summing `500ml` and `0.5L` milk batches). This ensures users receive accurate recipe suggestions even when their inventory is split across different unit scales.
+    - Synchronized `UnitConverter` factors to match documented precision.
+
+- **Standardized UI Quantity Formatting** (`Ui.java`, `RecommendByMissingCommand.java`, `Ingredient.java`, `DeleteIngredientCommand.java`)
+    - Implemented a unified `Ui.formatQuantity` helper to standardize all numeric outputs to exactly two decimal places (`X.XX`). This improved visual consistency across list, search, view, and recipe recommendation commands.
+
+
 #### Contributions to the User Guide (UG)
 - Authored the `delete-i` (Delete Ingredient) section, including format specifications and usage examples (Issue #130).
 - Authored the `filter-r` section with format specifications, parameter notes, and usage examples.
@@ -58,12 +66,19 @@ through an intuitive text interface.
     - Aligned the **Command Summary** table with the detailed Features section to ensure consistent format specifications (Issue #138).
     - Synchronized all **Expected Output** examples (for `add-r` and `cook`) with actual application behavior to prevent user confusion (Issue #121).
     - Explicitly defined the **Target Audience** and **Value Proposition** in the introduction to clearly communicate the product's scope (Issue #120).
+- **UG Final PED Sweep & Synchronization**:
+    - Performed a comprehensive audit to ensure 1:1 correspondence between code and documentation.
+    - Synchronized `add-r` error messages for numeric bounds and fixed missing `Oops!` prefixes in `delete-r` expected outputs.
+    - Clarified actual logic for `filter-r` (zero as no upper bound) and added missing edge cases for `view-r` on empty recipe books.
+
 
 #### Contributions to the Developer Guide (DG)
 - Authored the `filter-r` implementation section covering:
     - Class responsibility table for `Parser`, `FilterRecipeCommand`, and `RecipeBook`.
     - Step-by-step execution walkthrough.
     - Design Consideration aspects with option tables and rationale.
+- **DG recommend-r modes update**: Updated descriptions for all mode walkthroughs (Ingredient-based, Inventory-based, and Missing-based) to reflect the new multi-unit summation logic.
+
 
 #### Contributions to Team-Based Tasks
 - **CI Maintenance & Regression Testing**:
@@ -73,6 +88,8 @@ through an intuitive text interface.
     - Synchronized the local repository with the project's upstream master across multiple feature rounds.
     - Configured repository-wide `.gitignore` rules to exclude local environment files (like `.vscode/`), ensuring a clean codebase for all contributors.
 - **Documentation Overhaul**: Updated `README.md`, `UserGuide.md`, and `DeveloperGuide.md` to replace placeholder text and ensure terminology consistency with the final SudoCook implementation.
+- **Test Suite Synchronisation**: Updated `EXPECTED.TXT` and `runtest.bat` to ensure text-UI tests pass with the new quantity formatting and build configurations.
+
 
 #### Review/Mentoring Contributions
 - Assisted teammates in debugging Checkstyle violations and test failures caused by cross-cutting
