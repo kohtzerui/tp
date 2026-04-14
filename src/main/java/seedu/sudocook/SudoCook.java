@@ -45,7 +45,7 @@ public class SudoCook {
 
         Command cmd;
         String input = ui.readInput();
-        while (!input.equals("bye")) {
+        while (!input.equalsIgnoreCase("bye")) {
             if (input.isBlank()) {
                 logger.log(Level.FINE, "Empty input received, skipping");
                 input = ui.readInput();
@@ -77,9 +77,11 @@ public class SudoCook {
                 cmd.execute(inventory); // Execute on either, it just prints UI
             } else if (cmd instanceof CookCommand) {
                 logger.log(Level.FINE, "Routing cook command");
-                commandHistory.saveSnapshot(recipes, inventory);
-                cmd.execute(recipes.getRecipe(cmd.getIndex()), inventory);
-
+                Recipe recipe = recipes.getRecipe(cmd.getIndex());
+                if (recipe != null) {
+                    commandHistory.saveSnapshot(recipes, inventory);
+                    cmd.execute(recipe, inventory);
+                }
             } else if (cmd instanceof RecommendByIngredientCommand || cmd instanceof RecommendByInventoryCommand
                     || cmd instanceof RecommendByMissingCommand) {
                 logger.log(Level.FINE, "Routing recommend command");
