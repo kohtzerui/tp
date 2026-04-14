@@ -8,7 +8,7 @@ recipes and kitchen inventory efficiently through an intuitive text interface.
 
 ### Target Audience
 
-SudoCook is specifically designed for **single students living independently** (e.g., in campus dorms or
+SudoCook is specifically designed for **English-speaking** single students living independently (e.g., in campus dorms or
 small apartments) who are fast typists and prefer keyboard-driven workflows. It is ideal for those who 
 enjoy cooking but often struggle with disorganized ingredients or difficulty deciding what to eat.
 
@@ -38,8 +38,8 @@ Format: `add-r NAME i/INGREDIENT_NAME QUANTITY UNIT [INGREDIENT_NAME QUANTITY UN
 * Each ingredient must be provided in groups of three: `NAME QUANTITY UNIT`.
 * Each ingredient quantity must be a positive number.
 * Ingredients or steps containing spaces should be wrapped in `{}`.
-* `TIME_IN_MINUTES` must be a non-negative integer.
-* `CALORIES` must be a positive integer (greater than 0) representing the calorie count in kcal.
+* `TIME_IN_MINUTES` must be a non-negative integer between 1 and 100,000.
+* `CALORIES` must be a positive integer between 1 and 100,000 representing the calorie count in kcal.
 
 Examples:
 
@@ -55,8 +55,8 @@ Preparation Time: 15 minutes
 Calories: 400 kcal
 
     Ingredients:
-    - rice (2.0 cups)
-    - egg (2.0 pcs)
+    - rice (2.00 cups)
+    - egg (2.00 pcs)
 
     Steps:
     - Cook the rice.
@@ -109,14 +109,14 @@ Examples:
 Expected output (listing all ingredients):
 ```
 Here are the ingredients in your inventory:
-1. Milk (3.0 carton) expiries: [2026-03-30: 1.0 carton, 2026-04-10: 2.0 carton]
-2. Salt (1.0 kg) expiries: [no expiry: 1.0 kg]
+1. Milk (3.00 carton) expiries: [2026-03-30: 1.00 carton, 2026-04-10: 2.00 carton]
+2. Salt (1.00 kg) expiries: [no expiry: 1.00 kg]
 ```
 
 Expected output (listing ingredients before a cutoff date):
 ```
 Here are the ingredients in your inventory expiring before 2026-04-01:
-1. Milk (1.0 carton) expiries: [2026-03-30: 1.0 carton]
+1. Milk (1.00 carton) expiries: [2026-03-30: 1.00 carton]
 ```
 
 Expected output (no matching ingredients):
@@ -174,12 +174,12 @@ Examples:
 
 Expected output (with expiry):
 ```
-Added: Tomato (5.0 pcs) expires: 2024-12-25
+Added: Tomato (5.00 pcs) expires: 2024-12-25
 ```
 
 Expected output (without expiry):
 ```
-Added: Flour (1.0 kg)
+Added: Flour (1.00 kg)
 ```
 
 Expected output (invalid date format):
@@ -221,8 +221,8 @@ Removed all of: Milk
 
 Expected output (partial quantity removed):
 ```
-Removed 0.5 kg of Flour.
-Remaining: 0.5 kg
+Removed 0.50 kg of Flour.
+Remaining: 0.50 kg
 ```
 
 Expected output (ingredient not found):
@@ -408,8 +408,8 @@ Examples:
 Expected output (some recipes qualify):
 ```
 Recipes you're almost able to make:
-1. Omelette (missing: Salt (1.0 g))
-2. Pasta (missing: Flour (200.0 g), Salt (5.0 g))
+1. Omelette (missing: Salt (1.00 g))
+2. Pasta (missing: Flour (200.00 g), Salt (5.00 g))
 ```
 
 Expected output (no recipe is missing at most N ingredients):
@@ -464,8 +464,8 @@ Filters recipes by maximum preparation time and/or maximum calorie count.
 Format: `filter-r [t/MAX_TIME] [c/MAX_CALORIES]`
 
 * At least one of `t/MAX_TIME` or `c/MAX_CALORIES` must be provided.
-* `MAX_TIME` is the maximum preparation time in minutes (non-negative integer).
-* `MAX_CALORIES` is the maximum calorie count in kcal (non-negative integer).
+* `MAX_TIME` is the maximum preparation time in minutes (non-negative integer between 1 and 100,000).
+* `MAX_CALORIES` is the maximum calorie count in kcal (non-negative integer between 1 and 100,000).
 * Both filters can be used together to narrow results further.
 
 Examples:
@@ -548,8 +548,8 @@ Preparation Time: 15 minutes
 Calories: 400 kcal
 
     Ingredients:
-    - rice (2.0 cups)
-    - egg (2.0 pcs)
+    - rice (2.00 cups)
+    - egg (2.00 pcs)
 
     Steps:
     - Cook the rice.
@@ -662,7 +662,7 @@ Examples:
 Expected output (matches found):
 ```
 Found 1 ingredient(s) matching "tomato":
-1. Tomato (3.0 pcs)
+1. Tomato (3.00 pcs)
 ```
 
 Expected output (no matches):

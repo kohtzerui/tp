@@ -21,7 +21,7 @@ pair. Each `Ingredient` owns a list of expiry/quantity pairs, represented by `In
 This allows the app to keep separate batches such as:
 
 ```text
-Milk (3.0 carton) expiries: [2026-04-01: 1.0 carton, 2026-05-01: 2.0 carton]
+Milk (3.00 carton) expiries: [2026-04-01: 1.00 carton, 2026-05-01: 2.00 carton]
 ```
 
 Callers that only need stock availability continue to call `Ingredient.getQuantity()`, which returns
@@ -162,7 +162,7 @@ The feature involves eight classes:
      returns `-1` (incompatible units), the available quantity is treated as zero.
    - If the converted available quantity is less than required, the shortfall
      (`required − converted available`) and the recipe's unit are recorded.
-   - The method returns the list of formatted shortfall strings (e.g. `"Salt (1.0 g)"`).
+   - The method returns the list of formatted shortfall strings (e.g. `"Salt (1.00 g)"`).
 5. Back in `execute()`, the recipe is included in the output only if the number of missing items is
    **between 1 and N** (inclusive). Recipes with zero missing items — i.e. fully makeable ones —
    are always excluded.

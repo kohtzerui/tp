@@ -97,6 +97,10 @@ public class Ui {
         printLine();
     }
 
+    public static String formatQuantity(double quantity) {
+        return String.format("%.2f", quantity);
+    }
+
     public String readInput() {
         System.out.print(INDENT + ">");
         if (scanner.hasNextLine()) {

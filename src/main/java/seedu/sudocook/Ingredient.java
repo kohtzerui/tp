@@ -199,7 +199,7 @@ public class Ingredient {
     private String format(LocalDate expiryCutoff, boolean alwaysShowExpiryQuantities) {
         ArrayList<ExpiryQuantity> expiryQuantitiesToDisplay = getExpiryQuantitiesToDisplay(expiryCutoff);
         double displayedQuantity = getTotalQuantity(expiryQuantitiesToDisplay);
-        String result = name + " (" + displayedQuantity + " " + unit + ")";
+        String result = name + " (" + Ui.formatQuantity(displayedQuantity) + " " + unit + ")";
         if (!alwaysShowExpiryQuantities && expiryQuantitiesToDisplay.size() == 1) {
             LocalDate expiryDate = expiryQuantitiesToDisplay.get(0).expiryDate;
             if (expiryDate != null) {
@@ -233,7 +233,7 @@ public class Ingredient {
             } else {
                 sb.append(expiryQuantity.expiryDate);
             }
-            sb.append(": ").append(expiryQuantity.quantity).append(" ").append(unit);
+            sb.append(": ").append(Ui.formatQuantity(expiryQuantity.quantity)).append(" ").append(unit);
             if (i < expiryQuantitiesToDisplay.size() - 1) {
                 sb.append(", ");
             }

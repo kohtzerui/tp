@@ -70,8 +70,8 @@ public class DeleteIngredientCommand extends Command {
         } else {
             inventory.updateQuantity(indexToRemove, quantityToRemove);
             double remaining = originalQuantity - quantityToRemove;
-            Ui.printMessage("Removed " + quantityToRemove + " " + unit + " of " + name + ".\n"
-                    + "Remaining: " + String.format("%.2f", remaining) + " " + unit);
+            Ui.printMessage("Removed " + Ui.formatQuantity(quantityToRemove) + " " + unit + " of " + name + ".\n"
+                    + "Remaining: " + Ui.formatQuantity(remaining) + " " + unit);
         }
     }
 }
